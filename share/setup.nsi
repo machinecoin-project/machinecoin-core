@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.8.6.1
+!define VERSION 0.8.6.2
 !define COMPANY "Machinecoin project"
 !define URL http://machinecoin.de/
 
@@ -45,13 +45,13 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile machinecoin-0.8.6.1-win32-setup.exe
+OutFile machinecoin-0.8.6.2-win32-setup.exe
 InstallDir $PROGRAMFILES\Machinecoin
 CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
-VIProductVersion 0.8.6.1
+VIProductVersion 0.8.6.2
 VIAddVersionKey ProductName Machinecoin
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
