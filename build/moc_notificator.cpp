@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'notificator.h'
 **
-** Created: Tue Jan 7 19:07:30 2014
+** Created: Wed Jan 15 23:14:30 2014
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
