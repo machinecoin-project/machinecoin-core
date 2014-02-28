@@ -1,0 +1,162 @@
+%%%========================== %%%
+%%%  Beamer als Klasse festlegen        
+%%%==========================%%%
+%%
+%% Beamer
+\documentclass{beamer}
+
+%%%========================== %%%
+%%%  Theme festlegen        
+%%%==========================%%%
+%%
+%% Warsaw
+\usetheme{Warsaw}
+
+%%%========================== %%%
+%%%  Deutsche Umlaute                            
+%%%==========================%%%
+%%
+%% Für Mac OS X
+%% \usepackage[applemac]{inputenc}
+%% Für PC Windows
+%% \usepackage[ansinew]{inputenc}
+%%
+%% Für PC Linux 
+%% \usepackage[latin1]{inputenc}
+%%
+%% Für UTF-8
+\usepackage[utf8]{inputenc}
+
+%%%========================== %%%
+%%%  Deutsche Silbentrennung              
+%%%==========================%%%
+%%
+\usepackage{ngerman}
+
+%%%========================== %%%
+%%%  Anführungsstriche
+%%%  \enquote{}       
+%%%==========================%%%
+%%
+\usepackage[babel,german=quotes]{csquotes}
+
+%%%========================== %%%
+%%%  Einstellungen zur Startseite              
+%%%==========================%%%
+%%
+\title{Why should i get involved into the Machinecoin? (DRAFT)}
+\author{\texorpdfstring{\ Jürgen Scholz \ \newline\url{j.scholz@idienstler.de}}{Author}}
+\institute{iDienstler.de $-$ simply make apps and love the\enquote{i}}
+\date{\today}
+
+%%%========================== %%%
+%%%  Dokument Start                                
+%%%==========================%%%
+%%
+\begin{document}
+
+\frame{\titlepage}
+
+\section{The value of the Machinecoin}
+\subsection{Basics}
+\frame
+{
+%% \frametitle{Frametitle}
+ \begin{definition}
+   Let $X$ be the set of all products and services that exist on earth and $x_a$ and $x_b$ be vectors over $X$ with the following structure 
+   $$x_{a}=(x_{1}^a, x_{2}^a, \dots )$$
+   $$x_{b}=(x_{1}^b, x_{2}^b, \dots )$$
+   We then define every single vector to be a \textbf{bundle of products and services}. 
+ \end{definition}
+}
+\frame
+{
+%% \frametitle{Frametitle}
+  \begin{example}
+   Imagine our $X$ would be something like
+   $$X=\{Raspberry\ Pi, Ford\ Focus, iPhone\ 5S, \dots \}$$
+   and our 
+   $$x_{a}=(1,0,0, \dots)$$
+   $$x_{b}=(1,0,1, \dots)$$
+   Then $x_{a}$ would stand for a bundle that cosists of one Raspberry Pi, no Ford Focus and no iPhone 5S. Furthermore $x_{b}$ would stand for a bundle that cosists of one Raspberry Pi, no Ford Focus and one iPhone 5S.
+ \end{example}
+}
+\frame
+{
+%% \frametitle{Frametitle}
+  How can we now express that somebody loves 
+  \begin{itemize}
+  \item $x_{a}$ more than $x_{b}$ ?
+  \item $x_{b}$ more than $x_{a}$  ?
+  \item $x_{a}$ as much as $x_{b}$ ?
+  \end{itemize}
+  $\rightarrow$ \textbf{We just need to define a relation $R$ over $X$ to model this.}
+}
+\frame
+{
+%% \frametitle{Frametitle}
+ \begin{definition}
+   Let 
+   $$x_{a}Rx_{b}:=(x_{a},x_{b}) \in R$$
+   be the relation $R$ over $X$ that means if  $(x_{a},x_{b})$ is an element of R then $x_{a}$ is at least as good as $x_{b}$. 
+ \end{definition}
+ \begin{example}
+ Lets assume that its better to have  \textbf{one Raspberry Pi, no Ford Focus and one iPhone 5S} than just one Raspberry Pi, no Ford Focus and no iPhone 5S so here 
+ $$((\textbf{1},\textbf{0},\textbf{1}, \dots),(1,0,0, \dots))\in R$$
+ would be an element of this relation.
+ \end{example}
+}
+\frame
+{
+%% \frametitle{Frametitle}
+  Now we are able to express if someone prefers 
+  \begin{itemize}
+  \item $x_{a}$ more than $x_{b}$ 
+  \item $x_{b}$ more than $x_{a}$  
+  \item $x_{a}$ as much as $x_{b}$ 
+  \end{itemize}
+  But what if we want to compare 3, 4 or even more bundles?
+  \newline
+  $\rightarrow$ \textbf{We just need to define a usage function $u$ to model this.}
+}
+\frame
+{
+%% \frametitle{Frametitle}
+ \begin{definition}
+   Let 
+   $$u:X\rightarrow \mathbb{R}$$
+   be a function that maps the relation $R$ from $X$ to $\mathbb{R}$. We then call $u$ to be an usage function if for all vectors 
+   $$x_{a}, x_{b} \in X : x_{a}Rx_{b} \leftrightarrow u(x_{a}) \geq u(x_{b})$$
+ \end{definition}
+ $\rightarrow$ There exists an infinite number of functions that can be an usage function. 
+ \newline
+ $\rightarrow$ In general different people have got different usage functions.
+ \newline
+  $\rightarrow$ Statistically the more people you look at the more aproximately similar are their usage functions. 
+    
+}
+\subsection{The specific value}
+\frame
+{
+%% \frametitle{Frametitle}
+  So now let's have a look at what we are primarily interested in: the value of a given currency and especially the value of the Machinecoin. Given a special amount $M$ of Machinecoins. What is the specific value $v$ of these Machinecoins?
+ $$v(M)=\begin{cases}max\{u(x_{a}), u(x_{b}), \dots)\}:x_{a}, x_{b}, \dots \\ \quad  \text{are bundles that I believe}\\ \quad \text{that are available} \\ \quad \text{in exchange to M and the price}\\ \quad \text{of each of these bundles is less}\\ \quad  \text{or equal to M} &\text{if the set is not empty}\\0&\text{otherwise}\end{cases}$$
+}
+\subsection{Conclusion}
+\frame
+{
+The value of a specific amount M of a currency like the Machinecoin is therefore just the maximum of the usage of all bundles that someone believes he is able to get in exchange for M in case there exists such and otherwise its 0.
+\newline
+$\rightarrow$ The value of a given currency like the Machinecoin rises for more and more people with every new offer. 
+\newline
+$\rightarrow$ Its worth to be an early adopter and therefore to also create own offers in exchange for Machinecoins because this will automatically lead to a point where more and more people will automatically join this process and also create their own offers. 
+\newline
+$\rightarrow$ With more and more available products and services in exchange for Machinecoins on the real market also those who once started the process of selling their own products and services in exchange for Machinecoins will then also be able to spend their early earned Machinecoins into real products and services.  
+\newline
+$\rightarrow$ \textbf{Get involved now.}
+}
+%% \frametitle{Frametitle}
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%
+%%%  Dokument Ende                           
+%%%%%%%%%%%%%%%%%%%%%%
