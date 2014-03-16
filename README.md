@@ -1,7 +1,7 @@
 Machinecoin integration/staging tree
 ================================
 
-http://machinecoin.de
+http://machinecoin.org
 
 Copyright (c) 2009-2013 Bitcoin Developers
 Copyright (c) 2011-2013 Litecoin Developers
@@ -20,7 +20,7 @@ The rest is the same as Bitcoin.
  - 2016 blocks to retarget difficulty
 
 For more information, as well as an immediately useable, binary version of
-the Machinecoin client sofware, see http://machinecoin.de.
+the Machinecoin client sofware, see http://machinecoin.org.
 
 License
 -------

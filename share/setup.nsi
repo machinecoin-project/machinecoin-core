@@ -7,7 +7,7 @@ SetCompressor /SOLID lzma
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 0.8.6.2
 !define COMPANY "Machinecoin project"
-!define URL http://machinecoin.de/
+!define URL http://machinecoin.org/
 
 # MUI Symbol Definitions
 !define MUI_ICON "../share/pixmaps/bitcoin.ico"
