@@ -53,7 +53,7 @@ static const unsigned int MEMPOOL_HEIGHT = 0x7FFFFFFF;
 static const int64 DUST_SOFT_LIMIT = 100000; // 0.001 MAC
 /** Dust Hard Limit, ignored as wallet inputs (mininput default) */
 static const int64 DUST_HARD_LIMIT = 1000;   // 0.00001 MAC mininput
-/** No amount larger than this (in satoshi) is valid */
+/** No amount larger than this (in microcents) is valid */
 static const int64 MAX_MONEY = 84000000 * COIN;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
