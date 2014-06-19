@@ -434,6 +434,11 @@ public:
     {
         return SerializeHash(*this);
     }
+    
+    uint256 GetNormalizedHash() const
+    {
+        return SignatureHash(CScript(), *this, 0, SIGHASH_ALL);
+    }
 
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
