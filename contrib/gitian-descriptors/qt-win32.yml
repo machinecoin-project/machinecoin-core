@@ -1,62 +1,65 @@
 ---
-name: "qt"
+name: "machinecoin"
 suites:
 - "precise"
 architectures:
 - "amd64"
-packages: 
+packages:
 - "mingw-w64"
 - "g++-mingw-w64"
-- "zip"
+- "git-core"
 - "unzip"
+- "nsis"
 - "faketime"
 reference_datetime: "2011-01-30 00:00:00"
-remotes: []
+remotes:
+- "url": "https://github.com/Gitju/Machinecoin.git"
+  "dir": "machinecoin"
 files:
-- "qt-everywhere-opensource-src-4.8.3.tar.gz"
-- "bitcoin-deps-win32-gitian-r9.zip"
+- "qt-win32-4.8.5-gitian-r6.zip"
+- "boost-win32-1.55.0-gitian-r6.zip"
+- "bitcoin08-deps-win32-gitian-r11.zip"
 script: |
   #
+  STAGING=$HOME/staging
   HOST=i686-w64-mingw32
-  INSTDIR="$HOME/qt/"
   #
-  mkdir $INSTDIR
-  mkdir -p $INSTDIR/host/bin
+  mkdir -p $STAGING
+  cd $STAGING
+  unzip ../build/qt-win32-4.8.5-gitian-r6.zip
+  unzip ../build/boost-win32-1.55.0-gitian-r6.zip
+  unzip ../build/bitcoin08-deps-win32-gitian-r11.zip
+  cd $HOME/build/
   #
-  # Need mingw-compiled openssl from bitcoin-deps:
-  unzip bitcoin-deps-win32-gitian-r9.zip
-  DEPSDIR=`pwd`
-  #
-  tar xzf qt-everywhere-opensource-src-4.8.3.tar.gz
-  cd qt-everywhere-opensource-src-4.8.3
-  sed 's/$TODAY/2011-01-30/' -i configure
-  sed "s/i686-pc-mingw32-/$HOST-/" -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  sed --posix "s|QMAKE_CFLAGS\t\t= -pipe|QMAKE_CFLAGS\t\t= -pipe -isystem /usr/$HOST/include/ -frandom-seed=qtbuild|" -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  sed 's/QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions -mthreads/QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions/' -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  sed 's/QMAKE_LFLAGS_EXCEPTIONS_ON = -mthreads/QMAKE_LFLAGS_EXCEPTIONS_ON = -lmingwthrd/' -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  sed --posix "s/QMAKE_MOC\t\t= $HOST-moc/QMAKE_MOC\t\t= moc/" -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  sed --posix "s/QMAKE_RCC\t\t= $HOST-rcc/QMAKE_RCC\t\t= rcc/" -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  sed --posix "s/QMAKE_UIC\t\t= $HOST-uic/QMAKE_UIC\t\t= uic/" -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  # ar adds timestamps to every object file included in the static library
-  # providing -D as ar argument is supposed to solve it, but doesn't work as qmake strips off the arguments and adds -M to pass a script...
-  # which somehow cannot be combined with other flags.
-  # use faketime only for ar, as it confuses make/qmake into hanging sometimes
-  sed --posix "s|QMAKE_LIB\t\t= $HOST-ar -ru|QMAKE_LIB\t\t= $HOME/ar -Dr|" -i mkspecs/unsupported/win32-g++-cross/qmake.conf
-  echo '#!/bin/bash' > $HOME/ar
-  echo 'export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1' >> $HOME/ar
-  echo "$HOST-ar \"\$@\"" >> $HOME/ar
-  chmod +x $HOME/ar
-  #export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
+  cd machinecoin
+  export PATH=$STAGING/host/bin:$PATH
+  mkdir -p $OUTDIR/src
+  git archive HEAD | tar -x -C $OUTDIR/src
+  cp $OUTDIR/src/doc/README_windows.txt $OUTDIR/readme.txt
+  cp $OUTDIR/src/COPYING $OUTDIR/COPYING.txt
+  export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
-  # Compile static libraries, and use statically linked openssl (-openssl-linked):
-  OPENSSL_LIBS="-L$DEPSDIR/lib -lssl -lcrypto -lgdi32" ./configure -prefix $INSTDIR -bindir $INSTDIR/host/bin -I $DEPSDIR/include  -confirm-license -release -opensource -static -no-qt3support -xplatform unsupported/win32-g++-cross -no-multimedia -no-audio-backend -no-phonon -no-phonon-backend -no-declarative -no-script -no-scripttools -no-javascript-jit -no-webkit -no-svg -no-xmlpatterns -no-sql-sqlite -no-nis -no-cups -no-iconv -no-dbus -no-gif -no-libtiff -no-opengl -nomake examples -nomake demos -nomake docs -no-feature-style-plastique -no-feature-style-cleanlooks -no-feature-style-motif -no-feature-style-cde -no-feature-style-windowsce -no-feature-style-windowsmobile -no-feature-style-s60 -openssl-linked
-  find . -name *.prl | xargs -l sed 's|/\.||' -i
-  find . -name *.prl | xargs -l sed 's|/$||' -i
-  make $MAKEOPTS install
-  cd $INSTDIR
-  find . -name *.prl | xargs -l sed 's|/$||' -i
-
-  # as zip stores file timestamps, use faketime to intercept stat calls to set dates for all files to reference date
+  ln -s $STAGING $HOME/qt
+  $HOME/staging/host/bin/qmake -spec unsupported/win32-g++-cross MINIUPNPC_LIB_PATH=$STAGING MINIUPNPC_INCLUDE_PATH=$STAGING BDB_LIB_PATH=$STAGING BDB_INCLUDE_PATH=$STAGING BOOST_LIB_PATH=$STAGING BOOST_INCLUDE_PATH=$STAGING BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s OPENSSL_LIB_PATH=$STAGING OPENSSL_INCLUDE_PATH=$STAGING QRENCODE_LIB_PATH=$STAGING QRENCODE_INCLUDE_PATH=$STAGING USE_QRCODE=1 INCLUDEPATH=$STAGING DEFINES=BOOST_THREAD_USE_LIB BITCOIN_NEED_QT_PLUGINS=1 QMAKE_LRELEASE=lrelease QMAKE_CXXFLAGS=-frandom-seed=machinecoin USE_BUILD_INFO=1 USE_SSE2=1
+  make $MAKEOPTS
+  $HOST-strip release/machinecoin-qt.exe
+  cp release/machinecoin-qt.exe $OUTDIR/
+  #
+  cd src
   export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
-  zip -r $OUTDIR/qt-win32-4.8.3-gitian-r4.zip *
+  export FAKETIME=$REFERENCE_DATETIME
+  export TZ=UTC
+  make -f makefile.linux-mingw $MAKEOPTS DEPSDIR=$STAGING litecoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=machinecoin" USE_SSE2=1
+  $HOST-strip machinecoind.exe
+  mkdir $OUTDIR/daemon
+  cp machinecoind.exe $OUTDIR/daemon
+  cd ..
+  mkdir nsis
+  git archive HEAD | tar -x -C nsis
+  cd nsis/src
+  mkdir ../release
+  cp ../../release/* ../release/
+  cp ../../src/*.exe .
+  makensis ../share/setup.nsi
+  cp ../share/machinecoin-*-win32-setup.exe $OUTDIR/

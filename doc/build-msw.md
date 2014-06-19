@@ -22,10 +22,10 @@ Dependencies
 Libraries you need to download separately and build:
 
                 default path               download
-OpenSSL         \openssl-1.0.1c-mgw        http://www.openssl.org/source/
+OpenSSL         \openssl-1.0.1h-mgw        http://www.openssl.org/source/
 Berkeley DB     \db-4.8.30.NC-mgw          http://www.oracle.com/technology/software/products/berkeley-db/index.html
-Boost           \boost-1.50.0-mgw          http://www.boost.org/users/download/
-miniupnpc       \miniupnpc-1.6-mgw         http://miniupnp.tuxfamily.org/files/
+Boost           \boost-1.55.0-mgw          http://www.boost.org/users/download/
+miniupnpc       \miniupnpc-1.9-mgw         http://miniupnp.tuxfamily.org/files/
 
 Their licenses:
 
@@ -36,10 +36,10 @@ Their licenses:
 
 Versions used in this release:
 
-	OpenSSL      1.0.1c
+	OpenSSL      1.0.1h
 	Berkeley DB  4.8.30.NC
-	Boost        1.50.0
-	miniupnpc    1.6
+	Boost        1.55.0
+	miniupnpc    1.9
 
 
 OpenSSL
@@ -49,7 +49,7 @@ MSYS shell:
 un-tar sources with MSYS 'tar xfz' to avoid issue with symlinks (OpenSSL ticket 2377)
 change 'MAKE' env. variable from 'C:\MinGW32\bin\mingw32-make.exe' to '/c/MinGW32/bin/mingw32-make.exe'
 
-	cd /c/openssl-1.0.1c-mgw
+	cd /c/openssl-1.0.1h-mgw
 	./config
 	make
 
@@ -66,7 +66,7 @@ Boost
 DOS prompt:
 
 	downloaded boost jam 3.1.18
-	cd \boost-1.50.0-mgw
+	cd \boost-1.55.0-mgw
 	bjam toolset=gcc --build-type=complete stage
 
 MiniUPnPc
@@ -75,7 +75,7 @@ UPnP support is optional, make with `USE_UPNP=` to disable it.
 
 MSYS shell:
 
-	cd /c/miniupnpc-1.6-mgw
+	cd /c/miniupnpc-1.9-mgw
 	make -f Makefile.mingw
 	mkdir miniupnpc
 	cp *.h miniupnpc/
