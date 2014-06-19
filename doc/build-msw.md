@@ -63,7 +63,7 @@ MSYS shell:
 
 Boost
 -----
-DOS prompt:
+MSYS shell:
 
 	downloaded boost jam 3.1.18
 	cd \boost-1.55.0-mgw
@@ -82,7 +82,7 @@ MSYS shell:
 
 Machinecoin
 -------
-DOS prompt:
+MSYS shell:
 
 	cd \machinecoin\src
 	mingw32-make -f makefile.mingw

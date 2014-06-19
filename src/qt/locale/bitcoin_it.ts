@@ -1409,8 +1409,8 @@ Indirizzo: %4
     </message>
     <message>
         <location line="+34"/>
-        <source>The address to send the payment to (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>L&apos;indirizzo del beneficiario a cui inviare il pagamento (ad esempio Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>The address to send the payment to (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>L&apos;indirizzo del beneficiario a cui inviare il pagamento (ad esempio MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -1450,8 +1450,8 @@ Indirizzo: %4
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Machinecoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Inserisci un indirizzo Machinecoin (ad esempio Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>Enter a Machinecoin address (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Inserisci un indirizzo Machinecoin (ad esempio MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
 </context>
 <context>
@@ -1473,8 +1473,8 @@ Indirizzo: %4
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to sign the message with (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Inserisci un indirizzo Machinecoin (ad esempio Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>The address to sign the message with (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Inserisci un indirizzo Machinecoin (ad esempio MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1546,8 +1546,8 @@ Indirizzo: %4
     </message>
     <message>
         <location line="+21"/>
-        <source>The address the message was signed with (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Inserisci un indirizzo Machinecoin (ad esempio Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>The address the message was signed with (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Inserisci un indirizzo Machinecoin (ad esempio MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -1567,8 +1567,8 @@ Indirizzo: %4
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Machinecoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Inserisci un indirizzo Machinecoin (ad esempio Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>Enter a Machinecoin address (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Inserisci un indirizzo Machinecoin (ad esempio MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="-2"/>

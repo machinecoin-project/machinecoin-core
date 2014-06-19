@@ -208,8 +208,6 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             if (wtx.CheckTransaction(state) && (wtx.GetHash() == hash) && state.IsValid())
                 wtx.BindWallet(pwallet);
             else
-
-
                 return false;
 
             // Undo serialize changes in 31600
@@ -235,7 +233,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             if (wtx.nOrderPos == -1)
                 fAnyUnordered = true;
 
-			pwallet->mapWallet[hash] = wtx;
+            pwallet->mapWallet[hash] = wtx;
             //// debug print
             //printf("LoadWallet  %s\n", wtx.GetHash().ToString().c_str());
             //printf(" %12"PRI64d"  %s  %s  %s\n",

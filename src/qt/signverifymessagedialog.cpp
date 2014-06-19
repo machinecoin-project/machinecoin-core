@@ -1,3 +1,7 @@
+// Copyright (c) 2011-2013 The Bitcoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include "signverifymessagedialog.h"
 #include "ui_signverifymessagedialog.h"
 
@@ -24,10 +28,10 @@ SignVerifyMessageDialog::SignVerifyMessageDialog(QWidget *parent) :
 
 #if (QT_VERSION >= 0x040700)
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
-    ui->addressIn_SM->setPlaceholderText(tr("Enter a Machinecoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)"));
+    ui->addressIn_SM->setPlaceholderText(tr("Enter a Machinecoin address (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)"));
     ui->signatureOut_SM->setPlaceholderText(tr("Click \"Sign Message\" to generate signature"));
 
-    ui->addressIn_VM->setPlaceholderText(tr("Enter a Machinecoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)"));
+    ui->addressIn_VM->setPlaceholderText(tr("Enter a Machinecoin address (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)"));
     ui->signatureIn_VM->setPlaceholderText(tr("Enter Machinecoin signature"));
 #endif
 

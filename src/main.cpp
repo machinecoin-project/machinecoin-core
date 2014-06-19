@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,6 +17,10 @@
 
 using namespace std;
 using namespace boost;
+
+#if defined(NDEBUG)
+# error "Machinecoin cannot be compiled without assertions."
+#endif
 
 //
 // Global state
@@ -395,6 +399,10 @@ bool CTransaction::IsStandard(string& strReason) const
             strReason = "scriptsig-not-pushonly";
             return false;
         }
+        if (!txin.scriptSig.HasCanonicalPushes()) {
+            strReason = "non-canonical-push";
+            return false;
+        }
     }
     BOOST_FOREACH(const CTxOut& txout, vout) {
         if (!::IsStandard(txout.scriptPubKey)) {
@@ -645,7 +653,7 @@ void CTxMemPool::pruneSpent(const uint256 &hashTx, CCoins &coins)
 }
 
 bool CTxMemPool::accept(CValidationState &state, CTransaction &tx, bool fCheckInputs, bool fLimitFree,
-                        bool* pfMissingInputs)
+                        bool* pfMissingInputs, bool fRejectInsaneFee)
 {
     if (pfMissingInputs)
         *pfMissingInputs = false;
@@ -780,6 +788,11 @@ bool CTxMemPool::accept(CValidationState &state, CTransaction &tx, bool fCheckIn
             dFreeCount += nSize;
         }
 
+        if (fRejectInsaneFee && nFees > CTransaction::nMinRelayTxFee * 1000)
+            return error("CTxMemPool::accept() : insane fees %s, %"PRI64d" > %"PRI64d,
+                         hash.ToString().c_str(),
+                         nFees, CTransaction::nMinRelayTxFee * 1000);
+
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
         if (!tx.CheckInputs(state, view, true, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC))
@@ -808,10 +821,10 @@ bool CTxMemPool::accept(CValidationState &state, CTransaction &tx, bool fCheckIn
     return true;
 }
 
-bool CTransaction::AcceptToMemoryPool(CValidationState &state, bool fCheckInputs, bool fLimitFree, bool* pfMissingInputs)
+bool CTransaction::AcceptToMemoryPool(CValidationState &state, bool fCheckInputs, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee)
 {
     try {
-        return mempool.accept(state, *this, fCheckInputs, fLimitFree, pfMissingInputs);
+        return mempool.accept(state, *this, fCheckInputs, fLimitFree, pfMissingInputs, fRejectInsaneFee);
     } catch(std::runtime_error &e) {
         return state.Abort(_("System error: ") + e.what());
     }
@@ -891,7 +904,7 @@ void CTxMemPool::queryHashes(std::vector<uint256>& vtxid)
 
 
 
-int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
+int CMerkleTx::GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const
 {
     if (hashBlock == 0 || nIndex == -1)
         return 0;
@@ -916,6 +929,14 @@ int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
     return pindexBest->nHeight - pindex->nHeight + 1;
 }
 
+int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
+{
+    int nResult = GetDepthInMainChainINTERNAL(pindexRet);
+    if (nResult == 0 && !mempool.exists(GetHash()))
+        return -1; // Not in chain, not in mempool
+
+    return nResult;
+}
 
 int CMerkleTx::GetBlocksToMaturity() const
 {
@@ -1343,12 +1364,14 @@ unsigned int CTransaction::GetP2SHSigOpCount(CCoinsViewCache& inputs) const
 
 void CTransaction::UpdateCoins(CValidationState &state, CCoinsViewCache &inputs, CTxUndo &txundo, int nHeight, const uint256 &txhash) const
 {
+    bool ret;
     // mark inputs spent
     if (!IsCoinBase()) {
         BOOST_FOREACH(const CTxIn &txin, vin) {
             CCoins &coins = inputs.GetCoins(txin.prevout.hash);
             CTxInUndo undo;
-            assert(coins.Spend(txin.prevout, undo));
+            ret = coins.Spend(txin.prevout, undo);
+            assert(ret);
             txundo.vprevout.push_back(undo);
         }
     }

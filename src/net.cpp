@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1193,11 +1193,14 @@ void MapPort(bool)
 // The second name should resolve to a list of seed addresses.
 static const char *strMainNetDNSSeed[][2] = {
     {"machinecoin.org", "dnsseed.machinecoin.org"},
+    {"machinecoin.de", "dnsseed.machinecoin.de"},
+    {"scryptpower.de", "dnsseed.scryptpower.de"},
+    {"hoster-mac.tk", "dnsseed.hoster-mac.tk"},
     {NULL, NULL}
 };
 
 static const char *strTestNetDNSSeed[][2] = {
-    {"machinecoin.org", "testnet-seed.machinecoin.org"},
+    {"machinecoin.org", "testnet-dnsseed.machinecoin.org"},
     {NULL, NULL}
 };
 

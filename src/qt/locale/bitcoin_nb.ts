@@ -1408,8 +1408,8 @@ Adresse: %4
     </message>
     <message>
         <location line="+34"/>
-        <source>The address to send the payment to (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Adressen betalingen skal sendes til  (f.eks. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>The address to send the payment to (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Adressen betalingen skal sendes til  (f.eks. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -1449,8 +1449,8 @@ Adresse: %4
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Machinecoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Skriv inn en Machinecoin adresse (f.eks. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>Enter a Machinecoin address (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Skriv inn en Machinecoin adresse (f.eks. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
 </context>
 <context>
@@ -1472,8 +1472,8 @@ Adresse: %4
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to sign the message with (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Adressen for signering av meldingen (f.eks. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>The address to sign the message with (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Adressen for signering av meldingen (f.eks. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1545,8 +1545,8 @@ Adresse: %4
     </message>
     <message>
         <location line="+21"/>
-        <source>The address the message was signed with (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Adressen meldingen var signert med (f.eks. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>The address the message was signed with (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Adressen meldingen var signert med (f.eks. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -1566,8 +1566,8 @@ Adresse: %4
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Machinecoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
-        <translation>Skriv inn en Machinecoin adresse (f.eks. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
+        <source>Enter a Machinecoin address (e.g. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</source>
+        <translation>Skriv inn en Machinecoin adresse (f.eks. MCsEypMLMtBkAuqzevYxeFxiSUx5eWAU3y)</translation>
     </message>
     <message>
         <location line="-2"/>
