@@ -25,6 +25,10 @@ class CNode;
 
 struct CBlockIndexWorkComparator;
 
+#define NDIFF_START_DIGISHIELD 76000
+
+#define NDIFF_START_DIGISHIELD_TESTNET 10
+
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 1000000;                      // 1000KB block hard limit
 /** Obsolete: maximum size for mined blocks */

@@ -99,4 +99,3 @@ script: |
   #
   cd $INSTALLPREFIX
   zip -r $OUTDIR/bitcoin08-deps-win32-gitian-r11.zip include lib
-  

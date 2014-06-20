@@ -76,7 +76,7 @@ Installing the dependencies using MacPorts is very straightforward.
 
 1. Clone the github tree to get the source code and go into the directory.
 
-        git clone git@github.com:Gitju/machinecoin.git machinecoin
+        git clone git@github.com:Gitju/Machinecoin.git machinecoin
         cd machinecoin
 
 2.  Build machinecoind:
@@ -111,7 +111,7 @@ Rerunning "openssl version" should now return the correct version.
 
 1. Clone the github tree to get the source code and go into the directory.
 
-        git clone git@github.com:Gitju/machinecoin.git machinecoin
+        git clone git@github.com:Gitju/Machinecoin.git machinecoin
         cd machinecoin
 
 2.  Modify source in order to pick up the `openssl` library.

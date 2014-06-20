@@ -31,7 +31,7 @@ Unpack the files into a directory and run:
 - bin/64/machinecoin-qt (GUI, 64-bit)
 - bin/64/machinecoind (headless, 64-bit)
 
-See the documentation at the [Machinecoin Wiki](http://machinecoin.info)
+See the documentation at the [Machinecoin Wiki](http://machinecoin.org)
 for help and more information.
 
 
