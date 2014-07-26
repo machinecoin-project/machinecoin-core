@@ -10,14 +10,12 @@ Copyright (c) 2014 Machinecoin Developers
 What is Machinecoin?
 ----------------
 
-Machinecoin is a lite version of Bitcoin using scrypt as a proof-of-work algorithm.
+The Machinecoin (3 letter short form often used in public: MAC) is a free and decentralized peer-to-peer cryptocurrency that was created on the basis of Litecoin and Bitcoin.
  - 2.5 minute block targets
  - subsidy halves in 840k blocks (~4 years)
  - ~84 million total coins
-
-The rest is the same as Bitcoin.
  - 50 coins per block
- - 2016 blocks to retarget difficulty
+ - 1 block to retarget difficulty
 
 For more information, as well as an immediately useable, binary version of
 the Machinecoin client sofware, see http://machinecoin.org.
