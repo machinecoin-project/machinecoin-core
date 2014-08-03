@@ -259,7 +259,7 @@
 			  <string/>
 			 </property>
 			 <property name="pixmap">
-			  <pixmap resource="../dogecoin.qrc">:/images/wallet_bgcoin</pixmap>
+			  <pixmap resource="../bitcoin.qrc">:/images/wallet_bgcoin</pixmap>
 			 </property>
 			 <property name="scaledContents">
 			  <bool>false</bool>
