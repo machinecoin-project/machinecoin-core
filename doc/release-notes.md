@@ -1,3 +1,8 @@
+0.8.7.4 changes
+=============
+- Upgrade OpenSSL to 1.0.1i that fixes some bugs in OpenSSL 1.0.1h but which are not critical for the MachineCoin Core
+    see https://www.openssl.org/news/secadv_20140806.txt for further infos
+
 0.8.7.3 changes
 =============
 - Digishield Retarget
