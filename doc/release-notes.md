@@ -1,19 +1,33 @@
 0.8.7.4 changes
 =============
+
 - Upgrade OpenSSL to 1.0.1i that fixes some bugs in OpenSSL 1.0.1h but which are not critical for the MachineCoin Core
     see https://www.openssl.org/news/secadv_20140806.txt for further infos
 
+- Add a new checkpoint
+
+- Minor fixes:
+  - Fix request of external ip
+
+- Thanks to the sponsors that made this update possible.
+  - Dirk
+  - Nico
+  - Anonymous
+
 0.8.7.3 changes
 =============
+
 - Digishield Retarget
 
 0.8.7.2 changes
 =============
+
 - Mac and Windows Official Gitian Builds: upgrade to openssl-1.0.1h for CVE-2014-0224
                    Linux Gitian build uses Lucid 0.9.8k-7ubuntu8.18
 
 0.8.7.1 changes
 =============
+
 - Mac and Windows Official Gitian Builds: upgrade to openssl-1.0.1g for CVE-2014-0160
                    Linux was not vulnerable with Lucid openssl-0.9.8k
                    Older versions were only vulnerable with rarely used RPC SSL
