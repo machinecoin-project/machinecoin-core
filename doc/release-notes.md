@@ -9,9 +9,13 @@
 - Minor fixes:
   - Fix request of external ip
 
-- Thanks to the sponsors that made this update possible.
+- Thanks to all the contributors and sponsors that made this update possible:
   - Dirk
+  - Ria
   - Nico
+  - Julia
+  - Michael
+  - Andrea
   - Anonymous
 
 0.8.7.3 changes
