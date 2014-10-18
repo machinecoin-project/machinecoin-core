@@ -1202,7 +1202,6 @@ unsigned int GetNextWorkRequired_V2(const CBlockIndex* pindexLast, const CBlockH
 {
     unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
 
-    int nHeight = pindexLast->nHeight + 1;
     int blockstogoback = 0;
 
     // Genesis block
@@ -1289,13 +1288,13 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
         if (pindexLast->nHeight+1 >= NDIFF_START_DIGISHIELD) { DiffMode = 2; } // change the retarget in productive
     }
 
-    if		(DiffMode == 1)
+    if     (DiffMode == 1)
     {
         return GetNextWorkRequired_V1(pindexLast, pblock);
     }
-    else if	(DiffMode == 2)
-    {
-        return GetNextWorkRequired_V2(pindexLast, pblock);
+    else // DiffMode == 2
+    {  
+        return GetNextWorkRequired_V2(pindexLast, pblock); 
     }
 
 }
