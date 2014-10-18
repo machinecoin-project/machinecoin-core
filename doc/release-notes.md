@@ -8,6 +8,8 @@
 
 - Minor fixes:
   - Fix request of external ip
+  - Fix compiler warnings
+  - Update coin icon sets
 
 - Thanks to all the contributors and sponsors that made this update possible:
   - Dirk
