@@ -46,7 +46,7 @@ Licenses of statically linked libraries:
 
 - Versions used in this release:
 -  GCC           4.3.3
--  OpenSSL       1.0.1i
+-  OpenSSL       1.0.1j
 -  Berkeley DB   4.8.30.NC
 -  Boost         1.55
 -  miniupnpc     1.9

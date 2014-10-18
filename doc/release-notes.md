@@ -1,8 +1,8 @@
 0.8.7.4 changes
 =============
 
-- Upgrade OpenSSL to 1.0.1i that fixes some bugs in OpenSSL 1.0.1h but which are not critical for the MachineCoin Core
-    see https://www.openssl.org/news/secadv_20140806.txt for further infos
+- Upgrade OpenSSL to 1.0.1j based on several bugs in OpenSSL 1.0.1h and OpenSSL 1.0.1i
+    see https://www.openssl.org/news/secadv_20140806.txt and http://www.openssl.org/news/secadv_20141015.txt for further details
 
 - Add a new checkpoint
 
