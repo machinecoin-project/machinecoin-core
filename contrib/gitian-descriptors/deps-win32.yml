@@ -18,7 +18,7 @@ files:
 - "db-4.8.30.NC.tar.gz"
 - "miniupnpc-1.9.20140401.tar.gz"
 - "zlib-1.2.8.tar.gz"
-- "libpng-1.6.8.tar.gz"
+- "libpng-1.6.14.tar.gz"
 - "qrencode-3.4.4.tar.bz2"
 script: |
   #
@@ -32,7 +32,7 @@ script: |
   echo "12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz"    | sha256sum -c
   echo "d02670112125300f7a3d61421714d99105edd90190bf12542d16785f16f017aa  miniupnpc-1.9.20140401.tar.gz"   | sha256sum -c
   echo "36658cb768a54c1d4dec43c3116c27ed893e88b02ecfcb44f2166f9c0b7f2a0d  zlib-1.2.8.tar.gz"      | sha256sum -c
-  echo "32c7acf1608b9c8b71b743b9780adb7a7b347563dbfb4a5263761056da44cc96  libpng-1.6.8.tar.gz"    | sha256sum -c
+  echo "e6cab38f051bfc66929e766c1e67eba6fafac9e0f463ee3bbeb4ac16f173fe8e  libpng-1.6.14.tar.gz"    | sha256sum -c
   echo "dfd71487513c871bad485806bfd1fdb304dedc84d2b01a8fb8e0940b50597a98  qrencode-3.4.4.tar.bz2" | sha256sum -c
 
   #
@@ -83,8 +83,8 @@ script: |
   make install
   cd ..
   #
-  tar xzf libpng-1.6.8.tar.gz
-  cd libpng-1.6.8
+  tar xzf libpng-1.6.14.tar.gz
+  cd libpng-1.6.14
   CPPFLAGS="-I$INSTALLPREFIX/include" LDFLAGS="-L$INSTALLPREFIX/lib" ./configure --disable-shared --prefix=$INSTALLPREFIX --host=$HOST
   make $MAKEOPTS
   make install
