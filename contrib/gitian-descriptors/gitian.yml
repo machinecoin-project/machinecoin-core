@@ -24,13 +24,13 @@ remotes:
   "dir": "machinecoin"
 files:
 - "miniupnpc-1.9.20140401.tar.gz"
-- "qrencode-3.4.3.tar.bz2"
+- "qrencode-3.4.4.tar.bz2"
 script: |
   INSTDIR="$HOME/install"
   export LIBRARY_PATH="$INSTDIR/lib"
   # Integrity Check
   echo "d02670112125300f7a3d61421714d99105edd90190bf12542d16785f16f017aa  miniupnpc-1.9.20140401.tar.gz"   | sha256sum -c
-  echo "dfd71487513c871bad485806bfd1fdb304dedc84d2b01a8fb8e0940b50597a98  qrencode-3.4.3.tar.bz2" | sha256sum -c
+  echo "efe5188b1ddbcbf98763b819b146be6a90481aac30cfc8d858ab78a19cde1fa5  qrencode-3.4.4.tar.bz2" | sha256sum -c
 
   #
   tar xzf miniupnpc-1.9.20140401.tar.gz
@@ -38,8 +38,8 @@ script: |
   INSTALLPREFIX=$INSTDIR make $MAKEOPTS install
   cd ..
   #
-  tar xjf qrencode-3.4.3.tar.bz2
-  cd qrencode-3.4.3
+  tar xjf qrencode-3.4.4.tar.bz2
+  cd qrencode-3.4.4
   ./configure --prefix=$INSTDIR --enable-static --disable-shared
   make $MAKEOPTS install
   cd ..

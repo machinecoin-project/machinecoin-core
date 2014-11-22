@@ -19,7 +19,7 @@ files:
 - "miniupnpc-1.9.20140401.tar.gz"
 - "zlib-1.2.8.tar.gz"
 - "libpng-1.6.8.tar.gz"
-- "qrencode-3.4.3.tar.bz2"
+- "qrencode-3.4.4.tar.bz2"
 script: |
   #
   export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
@@ -33,7 +33,7 @@ script: |
   echo "d02670112125300f7a3d61421714d99105edd90190bf12542d16785f16f017aa  miniupnpc-1.9.20140401.tar.gz"   | sha256sum -c
   echo "36658cb768a54c1d4dec43c3116c27ed893e88b02ecfcb44f2166f9c0b7f2a0d  zlib-1.2.8.tar.gz"      | sha256sum -c
   echo "32c7acf1608b9c8b71b743b9780adb7a7b347563dbfb4a5263761056da44cc96  libpng-1.6.8.tar.gz"    | sha256sum -c
-  echo "dfd71487513c871bad485806bfd1fdb304dedc84d2b01a8fb8e0940b50597a98  qrencode-3.4.3.tar.bz2" | sha256sum -c
+  echo "dfd71487513c871bad485806bfd1fdb304dedc84d2b01a8fb8e0940b50597a98  qrencode-3.4.4.tar.bz2" | sha256sum -c
 
   #
   mkdir -p $INSTALLPREFIX
@@ -90,8 +90,8 @@ script: |
   make install
   cd ..
   #
-  tar xjf qrencode-3.4.3.tar.bz2
-  cd qrencode-3.4.3
+  tar xjf qrencode-3.4.4.tar.bz2
+  cd qrencode-3.4.4
   png_CFLAGS="-I$INSTALLPREFIX/include" png_LIBS="-L$INSTALLPREFIX/lib -lpng" ./configure --prefix=$INSTALLPREFIX --host=$HOST
   make
   make install
