@@ -1,8 +1,7 @@
 0.8.7.4 changes
 =============
 
-- Upgrade OpenSSL to 1.0.1j based on several bugs in OpenSSL 1.0.1h and OpenSSL 1.0.1i
-    see https://www.openssl.org/news/secadv_20140806.txt and http://www.openssl.org/news/secadv_20141015.txt for further details
+- Upgrade OpenSSL to 1.0.1k based on several bugs
 
 - Add a new checkpoint
 
