@@ -3,9 +3,9 @@ Machinecoin integration/staging tree
 
 http://machinecoin.org
 
-Copyright (c) 2009-2014 Bitcoin Developers
-Copyright (c) 2011-2014 Litecoin Developers
-Copyright (c) 2014 Machinecoin Developers
+Copyright (c) 2009-2015 Bitcoin Developers
+Copyright (c) 2011-2015 Litecoin Developers
+Copyright (c) 2015 Machinecoin Developers
 
 What is Machinecoin?
 ----------------
