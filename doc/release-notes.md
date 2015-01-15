@@ -1,9 +1,11 @@
 0.8.7.4 changes
 =============
 
-- Upgrade OpenSSL to 1.0.1k based on several bugs
+- Upgrade OpenSSL to 1.0.1k based on several bugs in prior versions of OpenSSL.
+  Machinecoin patched to work with OpenSSL CVE-2014-8275 which broke 
+  compatibility with Machinecoin.
 
-- Add a new checkpoint
+- Added several new checkpoints
 
 - Minor fixes:
   - Fix request of external ip
