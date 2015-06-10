@@ -3,7 +3,7 @@ Machinecoin Core version 0.10.2.1 is now available from:
   <https://github.com/Gitju/Machinecoin/tree/exp-0.10>
 
 This is a new major version release, bringing bug fixes and translation 
-updates. It is recommended to upgrade to this version.
+updates.
 
 Please report bugs using the issue tracker at github:
 
