@@ -1,12 +1,16 @@
+// Copyright (c) 2011-2013 The Bitcoin Core developers
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 //
 // Unit tests for block-chain checkpoints
 //
-#include <boost/assign/list_of.hpp> // for 'map_list_of()'
-#include <boost/test/unit_test.hpp>
-#include <boost/foreach.hpp>
 
-#include "../checkpoints.h"
-#include "../util.h"
+#include "checkpoints.h"
+
+#include "uint256.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace std;
 
@@ -14,21 +18,21 @@ BOOST_AUTO_TEST_SUITE(Checkpoints_tests)
 
 BOOST_AUTO_TEST_CASE(sanity)
 {
-    uint256 p1500 = uint256("0x841a2965955dd288cfa707a755d05a54e45f8bd476835ec9af4402a2b59a2967");
-    uint256 p120000 = uint256("0xbd9d26924f05f6daa7f0155f32828ec89e8e29cee9e7121b026a7a3552ac6131");
-    BOOST_CHECK(Checkpoints::CheckBlock(1500, p1500));
-    BOOST_CHECK(Checkpoints::CheckBlock(120000, p120000));
+    uint256 p23021 = uint256("0x0268f4e816aac0874c911c83e263353289854c94a21cf97675652419893e7d8f");
+    uint256 p53600 = uint256("0x327ec569aa2439c16542ed9402884f5ce691d08f49168d672f19f817ace7a06b");
+    BOOST_CHECK(Checkpoints::CheckBlock(23021, p23021));
+    BOOST_CHECK(Checkpoints::CheckBlock(53600, p53600));
 
     
     // Wrong hashes at checkpoints should fail:
-    BOOST_CHECK(!Checkpoints::CheckBlock(1500, p120000));
-    BOOST_CHECK(!Checkpoints::CheckBlock(120000, p1500));
+    BOOST_CHECK(!Checkpoints::CheckBlock(23021, p53600));
+    BOOST_CHECK(!Checkpoints::CheckBlock(53600, p23021));
 
     // ... but any hash not at a checkpoint should succeed:
-    BOOST_CHECK(Checkpoints::CheckBlock(1500+1, p120000));
-    BOOST_CHECK(Checkpoints::CheckBlock(120000+1, p1500));
+    BOOST_CHECK(Checkpoints::CheckBlock(23021+1, p53600));
+    BOOST_CHECK(Checkpoints::CheckBlock(53600+1, p23021));
 
-    BOOST_CHECK(Checkpoints::GetTotalBlocksEstimate() >= 120000);
+    BOOST_CHECK(Checkpoints::GetTotalBlocksEstimate() >= 53600);
 }    
 
 BOOST_AUTO_TEST_SUITE_END()

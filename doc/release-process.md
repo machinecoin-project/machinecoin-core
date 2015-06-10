@@ -1,12 +1,8 @@
 Release Process
 ====================
 
-* * *
-
 ###update (commit) version in sources
 
-
-	machinecoin-qt.pro
 	contrib/verifysfbinaries/verify.sh
 	doc/README*
 	share/setup.nsi
@@ -14,109 +10,134 @@ Release Process
 
 ###tag version in git
 
-	git tag -s v0.8.7
+	git tag -s v(new version, e.g. 0.8.0)
 
 ###write release notes. git shortlog helps a lot, for example:
 
-	git shortlog --no-merges v0.7.2..v0.8.0
+	git shortlog --no-merges v(current version, e.g. 0.7.2)..v(new version, e.g. 0.8.0)
 
 * * *
 
-##perform gitian builds
+###update gitian
 
- From a directory containing the machinecoin source, gitian-builder and gitian.sigs
+ In order to take advantage of the new caching features in gitian, be sure to update to a recent version (e9741525c or higher is recommended)
+
+###perform gitian builds
+
+ From a directory containing the machinecoin source, gitian-builder and gitian.sigs.mac
   
-	export SIGNER=(your gitian key, ie bluematt, sipa, etc)
-	export VERSION=0.8.7
-	cd ./gitian-builder
+	export SIGNER=(your gitian key, ie gitju etc)
+	export VERSION=(new version, e.g. 0.8.0)
+	pushd ./machinecoin
+	git checkout v${VERSION}
+	popd
+	pushd ./gitian-builder
 
- Fetch and build inputs: (first time, or when dependency versions change)
+###fetch and build inputs: (first time, or when dependency versions change)
+ 
+	mkdir -p inputs
 
-	mkdir -p inputs; cd inputs/
-	wget 'http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.9.20140401.tar.gz' -O 'miniupnpc-1.9.20140401.tar.gz'
-	wget 'https://www.openssl.org/source/openssl-1.0.1k.tar.gz'
-	wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
-	wget 'http://zlib.net/zlib-1.2.8.tar.gz'
-	wget 'ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.14.tar.gz'
-	wget 'http://fukuchi.org/works/qrencode/qrencode-3.4.4.tar.bz2'
-	wget 'http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.bz2'
-	wget 'http://download.qt-project.org/official_releases/qt/4.8/4.8.6/qt-everywhere-opensource-src-4.8.6.tar.gz'
-	cd ..
-	./bin/gbuild ../machinecoin/contrib/gitian-descriptors/boost-win32.yml
-	mv build/out/boost-*.zip inputs/
-	./bin/gbuild ../machinecoin/contrib/gitian-descriptors/deps-win32.yml
-	mv build/out/bitcoin*.zip inputs/
-	./bin/gbuild ../machinecoin/contrib/gitian-descriptors/qt-win32.yml
-	mv build/out/qt*.zip inputs/
+ Register and download the Apple SDK: (see OSX Readme for details)
+ 
+ https://developer.apple.com/downloads/download.action?path=Developer_Tools/xcode_4.6.3/xcode4630916281a.dmg
+ 
+ Using a Mac, create a tarball for the 10.7 SDK and copy it to the inputs directory:
+ 
+	tar -C /Volumes/Xcode/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/ -czf MacOSX10.7.sdk.tar.gz MacOSX10.7.sdk
 
- Build machinecoind and machinecoin-qt on Linux32, Linux64, and Win32:
+###Optional: Seed the Gitian sources cache
+
+  By default, gitian will fetch source files as needed. For offline builds, they can be fetched ahead of time:
+
+	make -C ../machinecoin/depends download SOURCES_PATH=`pwd`/cache/common
+
+  Only missing files will be fetched, so this is safe to re-run for each build.
+
+###Build Machinecoin Core for Linux, Windows, and OS X:
   
-	./bin/gbuild --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian.yml
-	./bin/gsign --signer $SIGNER --release ${VERSION} --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian.yml
-	pushd build/out
-	zip -r machinecoin-${VERSION}-linux-gitian.zip *
-	mv machinecoin-${VERSION}-linux-gitian.zip ../../
+	./bin/gbuild --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
+	mv build/out/machinecoin-*.tar.gz build/out/src/machinecoin-*.tar.gz ../
+	./bin/gbuild --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-win --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
+	mv build/out/machinecoin-*.zip build/out/machinecoin-*.exe ../
+	./bin/gbuild --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
+	mv build/out/machinecoin-*-unsigned.tar.gz inputs/machinecoin-osx-unsigned.tar.gz
+	mv build/out/machinecoin-*.tar.gz build/out/machinecoin-*.dmg ../
 	popd
-	./bin/gbuild --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-win32.yml
-	./bin/gsign --signer $SIGNER --release ${VERSION}-win32 --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-win32.yml
-	pushd build/out
-	zip -r machinecoin-${VERSION}-win32-gitian.zip *
-	mv machinecoin-${VERSION}-win32-gitian.zip ../../
-	popd
-
   Build output expected:
 
-  1. linux 32-bit and 64-bit binaries + source (machinecoin-${VERSION}-linux-gitian.zip)
-  2. windows 32-bit binary, installer + source (machinecoin-${VERSION}-win32-gitian.zip)
-  3. Gitian signatures (in gitian.sigs/${VERSION}[-win32]/(your gitian key)/
-
-repackage gitian builds for release as stand-alone zip/tar/installer exe
-
-**Linux .tar.gz:**
-
-	unzip machinecoin-${VERSION}-linux-gitian.zip -d machinecoin-${VERSION}-linux
-	tar czvf machinecoin-${VERSION}-linux.tar.gz machinecoin-${VERSION}-linux
-	rm -rf machinecoin-${VERSION}-linux
-
-**Windows .zip and setup.exe:**
-
-	unzip machinecoin-${VERSION}-win32-gitian.zip -d machinecoin-${VERSION}-win32
-	mv machinecoin-${VERSION}-win32/machinecoin-*-setup.exe .
-	zip -r machinecoin-${VERSION}-win32.zip bitcoin-${VERSION}-win32
-	rm -rf machinecoin-${VERSION}-win32
-
-**Perform Mac build:**
-
-  OSX binaries are created on a dedicated 32-bit, OSX 10.6.8 machine.
-  Machinecoin 0.8.x is built with MacPorts.  0.9.x will be Homebrew only.
-
-	qmake RELEASE=1 USE_UPNP=1 USE_QRCODE=1
-	make
-	export QTDIR=/opt/local/share/qt4  # needed to find translations/qt_*.qm files
-	T=$(contrib/qt_translations.py $QTDIR/translations src/qt/locale)
-	python2.7 share/qt/clean_mac_info_plist.py
-	python2.7 contrib/macdeploy/macdeployqtplus Machinecoin-Qt.app -add-qt-tr $T -dmg -fancy contrib/macdeploy/fancy.plist
-
- Build output expected: Litecoin-Qt.dmg
+  1. source tarball (machinecoin-${VERSION}.tar.gz)
+  2. linux 32-bit and 64-bit binaries dist tarballs (machinecoin-${VERSION}-linux[32|64].tar.gz)
+  3. windows 32-bit and 64-bit installers and dist zips (machinecoin-${VERSION}-win[32|64]-setup.exe, machinecoin-${VERSION}-win[32|64].zip)
+  4. OSX unsigned installer (machinecoin-${VERSION}-osx-unsigned.dmg)
+  5. Gitian signatures (in gitian.sigs/${VERSION}-<linux|win|osx-unsigned>/(your gitian key)/
 
 ###Next steps:
-
-* Code-sign Windows -setup.exe (in a Windows virtual machine) and
-  OSX Machinecoin-Qt.app (Note: only Gavin has the code-signing keys currently)
-
-* update litecoin.org version
-  make sure all OS download links go to the right versions
-
-* update forum version
-
-* update wiki download links
 
 Commit your signature to gitian.sigs:
 
 	pushd gitian.sigs
-	git add ${VERSION}/${SIGNER}
-	git add ${VERSION}-win32/${SIGNER}
+	git add ${VERSION}-linux/${SIGNER}
+	git add ${VERSION}-win/${SIGNER}
+	git add ${VERSION}-osx-unsigned/${SIGNER}
 	git commit -a
 	git push  # Assuming you can push to the gitian.sigs tree
 	popd
 
+  Wait for OSX detached signature:
+	Once the OSX build has 3 matching signatures, Gitju will sign it with the apple App-Store key.
+	He will then upload a detached signature to be combined with the unsigned app to create a signed binary.
+
+  Create the signed OSX binary:
+
+	pushd ./gitian-builder
+	# Fetch the signature as instructed by Gitju
+	cp signature.tar.gz inputs/
+	./bin/gbuild -i ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	mv build/out/machinecoin-osx-signed.dmg ../machinecoin-${VERSION}-osx.dmg
+	popd
+
+Commit your signature for the signed OSX binary:
+
+	pushd gitian.sigs
+	git add ${VERSION}-osx-signed/${SIGNER}
+	git commit -a
+	git push  # Assuming you can push to the gitian.sigs tree
+	popd
+
+-------------------------------------------------------------------------
+
+### After 3 or more people have gitian-built and their results match:
+
+- Perform code-signing.
+
+    - Code-sign Windows -setup.exe (in a Windows virtual machine using signtool)
+
+  Note: only Gitju has the code-signing keys currently.
+
+- Create `SHA256SUMS.asc` for the builds, and GPG-sign it:
+```bash
+sha256sum * > SHA256SUMS
+gpg --digest-algo sha256 --clearsign SHA256SUMS # outputs SHA256SUMS.asc
+rm SHA256SUMS
+```
+(the digest algorithm is forced to sha256 to avoid confusion of the `Hash:` header that GPG adds with the SHA256 used for the files)
+
+- Update machinecoin.org version
+
+- Announce the release:
+
+  - Release sticky on machinecointalk: https://machinecointalk.org/index.php?board=1.0
+
+  - machinecoin-development mailing list
+
+  - Update title of #machinecoin on Freenode IRC
+
+  - Optionally reddit /r/machinecoin, ... but this will usually sort out itself
+
+- Add release notes for the new version to the directory `doc/release-notes` in git master
+
+- Celebrate 
