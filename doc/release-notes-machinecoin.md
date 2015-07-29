@@ -1,13 +1,13 @@
 Machinecoin Core version 0.10.2.2 is now available from:
 
-  <https://github.com/machinecoin-project/machinecoin/>
+  <https://github.com/machinecoin-project/machinecoin-core/archive/master-0.10.zip>
 
 This is a new major version release, bringing bug fixes and translation 
 updates.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin/issues>
+  <https://github.com/machinecoin-project/machinecoin-core/issues>
 
 Upgrading and downgrading
 =========================

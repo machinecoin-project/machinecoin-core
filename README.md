@@ -32,7 +32,7 @@ development team members simply pulls it.
 
 If it is a *more complicated or potentially controversial* change, then the patch
 submitter will be asked to start a discussion (if they haven't already) on
-[Github](https://github.com/machinecoin-project/machinecoin/issues).
+[Github](https://github.com/machinecoin-project/machinecoin-core/issues).
 
 The patch will be accepted if there is broad consensus that it is a good thing.
 Developers should expect to rework and resubmit patches if the code doesn't
@@ -40,7 +40,7 @@ match the project's coding conventions (see [doc/developer-notes.md](doc/develop
 controversial.
 
 The `master-0.10` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/machinecoin-project/machinecoin/tags) are created
+completely stable. [Tags](https://github.com/machinecoin-project/machinecoin-core/tags) are created
 regularly to indicate new official, stable release versions of Machinecoin.
 
 Testing

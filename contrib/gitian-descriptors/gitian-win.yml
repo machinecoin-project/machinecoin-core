@@ -20,7 +20,7 @@ packages:
 - "zip"
 reference_datetime: "2013-06-01 00:00:00"
 remotes:
-- "url": "https://github.com/machinecoin-project/machinecoin.git"
+- "url": "https://github.com/machinecoin-project/machinecoin-core.git"
   "dir": "machinecoin"
 files: []
 script: |
