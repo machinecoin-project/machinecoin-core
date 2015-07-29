@@ -71,7 +71,6 @@ static const Checkpoints::CCheckpointData data = {
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
         (   546, uint256("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70"))
-        ( 35000, uint256("2af959ab4f12111ce947479bfcef16702485f04afd95210aa90fde7d1e4a64ad"))
         ;
 static const Checkpoints::CCheckpointData dataTestnet = {
         &mapCheckpointsTestnet,
@@ -148,7 +147,6 @@ public:
         assert(genesis.hashMerkleRoot == uint256("0x36a9e41063f3e71466299d0ed9e8193c1c802a88b286016fa4a4d0c3bc384a5c"));
 
         vSeeds.push_back(CDNSSeedData("machinecoin.org", "dnsseed.machinecoin.org"));
-        vSeeds.push_back(CDNSSeedData("machinecoin.de", "dnsseed.machinecoin.de"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(50);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
@@ -210,7 +208,6 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("machinecoin.org", "testnet-dnsseed.machinecoin.org"));
-        vSeeds.push_back(CDNSSeedData("machinecoin.de", "testnet-dnsseed.machinecoin.de"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(111);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
