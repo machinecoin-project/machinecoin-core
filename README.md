@@ -55,7 +55,8 @@ lots of money.
 
 Large changes should have a test plan, and should be tested by somebody other
 than the developer who wrote the code.
-See https://github.com/bitcoin/QA/ for how to create a test plan.
+Creating a post in the [Machinecoin Thread](https://bitcointalk.org/index.php?topic=434190.0) will allow the Machinecoin
+development team members to review your proposal and to provide assistance with creating a test plan. 
 
 Translations
 ------------
