@@ -73,7 +73,6 @@ src/qt/test/moc*.cpp
 
 # Compilation and Qt preprocessor part
 *.qm
-Makefile
 machinecoin-qt
 Machinecoin-Qt.app
 
