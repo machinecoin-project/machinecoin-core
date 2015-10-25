@@ -394,5 +394,5 @@ Uploading signatures
 ---------------------
 
 After building and signing you can push your signatures (both the `.assert` and `.assert.sig` files) to the
-[machinecoin/gitian.sigs](https://github.com/Gitju/gitian.sigs.mac/) repository, or if that's not possible create a pull
+[machinecoin/gitian.sigs](https://github.com/machinecoin-project/gitian.sigs.mac/) repository, or if that's not possible create a pull
 request. 

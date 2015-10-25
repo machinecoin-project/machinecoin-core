@@ -13,7 +13,7 @@ out collectively by the network. Machinecoin Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Machinecoin Core software, see http://machinecoin.org
+the Machinecoin Core software, see http://machinecoin-project.github.io/machinecoin.org
 
 License
 -------
