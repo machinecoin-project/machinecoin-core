@@ -1,4 +1,4 @@
-Machinecoin Core version 0.10.2.2 is now available from:
+Machinecoin Core version 0.10.2.3 is now available from:
 
   <https://github.com/machinecoin-project/machinecoin-core/archive/master-0.10.zip>
 
@@ -44,7 +44,7 @@ supported and may break as soon as the older version attempts to reindex.
 This does not affect wallet forward or backward compatibility.
 
 
-Machinecoin 0.10.2.2 Change log
+Machinecoin 0.10.2.3 Change log
 ============================
 This release is based upon Bitcoin Core v0.10.2.  Their upstream changelog applies to us and
 is included in as separate release-notes.  This section describes the Machinecoin-specific differences.
@@ -61,7 +61,7 @@ Protocol:
 - Target Timespan 2.5 minutes      (instead of two weeks)
 - bnProofOfWorkLimit = >> 20    (instead of >> 32)
 - zeitgeist2 protection: Slightly different way to calculate difficulty changes.
-- Machinecoin Core v0.10.2.2 is protocol version 70003 (instead of 70002)
+- Machinecoin Core v0.10.2.3 is protocol version 70003 (instead of 70002)
 
 Relay:
 - Machinecoin Core rounds transaction size up to the nearest 1000 bytes before calculating fees.  This size rounding behavior is to mimic fee calculation of Machinecoin v0.6 and v0.8.
