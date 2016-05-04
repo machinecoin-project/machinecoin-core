@@ -49,7 +49,7 @@ Release Process
 
   By default, gitian will fetch source files as needed. For offline builds, they can be fetched ahead of time:
 
-	make -C ../machinecoin/depends download SOURCES_PATH=`pwd`/cache/common
+	make -C ../machinecoin-core/depends download SOURCES_PATH=`pwd`/cache/common
 
   Only missing files will be fetched, so this is safe to re-run for each build.
 

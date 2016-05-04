@@ -282,7 +282,7 @@ Clone the git repositories for machinecoin and gitian and then checkout the mach
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
 git clone https://github.com/machinecoin-project/machinecoin-core.git
-cd machinecoin
+cd machinecoin-core
 git checkout v${VERSION}
 cd ..
 ```
