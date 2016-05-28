@@ -1,4 +1,4 @@
 # List of Machinecoin IPv4 nodes sorted by 30 day availability, block height and version.
 
-46.101.203.227:40333
+5.230.146.183:40333
 159.203.40.228:40333
