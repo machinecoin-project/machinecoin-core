@@ -1,5 +1,5 @@
 // Copyright (c) 2012-2014 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bignum.h"
@@ -142,7 +142,7 @@ static void RunCreate(const int64_t& num)
 {
     CheckCreateInt(num);
     CScriptNum scriptnum(num);
-    if (scriptnum.getvch().size() <= CScriptNum::nMaxNumSize)
+    if (scriptnum.getvch().size() <= CScriptNum::nDefaultMaxNumSize)
         CheckCreateVch(num);
     else
     {

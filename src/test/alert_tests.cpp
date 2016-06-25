@@ -1,5 +1,5 @@
 // Copyright (c) 2013 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 //
@@ -159,9 +159,8 @@ BOOST_AUTO_TEST_CASE(AlertNotify)
 
     const std::vector<CAlert> &alerts = allAlerts.find(CBaseChainParams::MAIN)->second;
 
-    boost::filesystem::path temp = GetTempPath() / "alertnotify.txt";
-    boost::filesystem::remove(temp);
-
+    boost::filesystem::path temp = GetTempPath() /
+        boost::filesystem::unique_path("alertnotify-%%%%.txt");
     mapArgs["-alertnotify"] = std::string("echo %s >> ") + temp.string();
 
     BOOST_FOREACH(CAlert alert, alerts)

@@ -1,7 +1,7 @@
 Machinecoin Core integration/staging tree
 =====================================
 
-http://www.machinecoin.org
+https://machinecoin.org
 
 What is Machinecoin?
 ----------------
@@ -13,7 +13,7 @@ out collectively by the network. Machinecoin Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Machinecoin Core software, see http://machinecoin-project.github.io/machinecoin.org
+the Machinecoin Core software, see https://machinecoin.org
 
 License
 -------
@@ -36,7 +36,7 @@ submitter will be asked to start a discussion (if they haven't already) on
 
 The patch will be accepted if there is broad consensus that it is a good thing.
 Developers should expect to rework and resubmit patches if the code doesn't
-match the project's coding conventions (see [doc/developer-notes.md](doc/developer-notes.md)) or are
+match the project's coding conventions (see [doc/coding.md](doc/coding.md)) or are
 controversial.
 
 The `master-0.10` branch is regularly built and tested, but is not guaranteed to be

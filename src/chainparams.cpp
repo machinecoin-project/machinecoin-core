@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -71,24 +71,24 @@ static const Checkpoints::CCheckpointData data = {
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
-        (   546, uint256("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70"))
+        (   299, uint256("0x000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70"))
         ;
 static const Checkpoints::CCheckpointData dataTestnet = {
         &mapCheckpointsTestnet,
         1369685559,
-        37581,
-        300
+        0,
+        300.0
     };
 
 static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
         boost::assign::map_list_of
-        ( 0, uint256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"))
+        ( 0, uint256("0x8d9888baa78c14790d6beb64a9cc61ba7541b509953ba1e51b3cd6cbdc245904"))
         ;
 static const Checkpoints::CCheckpointData dataRegtest = {
         &mapCheckpointsRegtest,
         0,
         0,
-        0
+        0.0
     };
 
 class CMainParams : public CChainParams {
@@ -117,6 +117,7 @@ public:
         nTargetSpacing = 2.5 * 60; // 2.5 minutes
         nTargetTimespanV2 = 2.5 * 60; // 2.5 minutes
         nTargetSpacingV2 = 2.5 * 60; // 2.5 minutes
+        nMaxTipAge = 24 * 60 * 60;
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -185,10 +186,10 @@ public:
     CTestNetParams() {
         networkID = CBaseChainParams::TESTNET;
         strNetworkID = "test";
-        pchMessageStart[0] = 0xfa;
-        pchMessageStart[1] = 0xc1;
-        pchMessageStart[2] = 0xb2;
-        pchMessageStart[3] = 0xd3;
+        pchMessageStart[0] = 0xf1;
+        pchMessageStart[1] = 0xc0;
+        pchMessageStart[2] = 0xb1;
+        pchMessageStart[3] = 0xda;
         vAlertPubKey = ParseHex("04888c2ac9a222fbfff9671d4b52beea0584952d1c759d78b125c6810c524b426258ff0838bad8cbc9f0591ab68de2356000bdb9b9cac853477ed606aeb8613304");
         nDefaultPort = 50333;
         nEnforceBlockUpgradeMajority = 51;
@@ -199,6 +200,7 @@ public:
         nTargetSpacing = 2.5 * 60; // 2.5 minutes
         nTargetTimespanV2 = 2.5 * 60; // 2.5 minutes
         nTargetSpacingV2 = 2.5 * 60; // 2.5 minutes
+        nMaxTipAge = 0x7fffffff;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1389040865;
@@ -244,10 +246,10 @@ public:
     CRegTestParams() {
         networkID = CBaseChainParams::REGTEST;
         strNetworkID = "regtest";
-        pchMessageStart[0] = 0xfa;
-        pchMessageStart[1] = 0xc3;
-        pchMessageStart[2] = 0xb5;
-        pchMessageStart[3] = 0xd3;
+        pchMessageStart[0] = 0xf2;
+        pchMessageStart[1] = 0xc1;
+        pchMessageStart[2] = 0xb2;
+        pchMessageStart[3] = 0xd1;
         nSubsidyHalvingInterval = 150;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;

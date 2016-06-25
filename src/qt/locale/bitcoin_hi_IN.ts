@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>Machinecoin</source>
-        <translation>बीटकोइन</translation>
+        <translation>Machinecoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -189,7 +189,7 @@
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Machinecoin network</source>
-        <translation><numerusform>%n सक्रिया संपर्क बीटकोइन नेटवर्क से</numerusform><numerusform>%n सक्रिया संपर्क बीटकोइन नेटवर्क से</numerusform></translation>
+        <translation><numerusform>%n सक्रिया संपर्क Machinecoin नेटवर्क से</numerusform><numerusform>%n सक्रिया संपर्क Machinecoin नेटवर्क से</numerusform></translation>
     </message>
     <message numerus="yes">
         <source>%n hour(s)</source>

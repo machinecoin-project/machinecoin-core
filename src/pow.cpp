@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "pow.h"
@@ -13,23 +13,19 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-
-    // Digishield retargeting
-    if (pindexLast->nHeight+1 >= 76000) 
+    // Standard retargeting for the first blocks
+    if (pindexLast->nHeight+1 < 76000) // Machinecoin: 76000
     {
-    
-        return GetNextWorkRequired_V2(pindexLast, pblock);
-    
-    }
-    // Standard retargeting
-    else
-    {  
         return GetNextWorkRequired_V1(pindexLast, pblock);
     }
-
+    // otherwise, use DigiShield
+    else
+    {  
+        return GetNextWorkRequired_V2(pindexLast, pblock);
+    }
 }
 
-// Standard Retargeting < Block 76000
+// Standard retargeting
 unsigned int GetNextWorkRequired_V1(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
     unsigned int nProofOfWorkLimit = Params().ProofOfWorkLimit().GetCompact();
@@ -106,7 +102,7 @@ unsigned int GetNextWorkRequired_V1(const CBlockIndex* pindexLast, const CBlockH
     return bnNew.GetCompact();
 }
 
-// Digishield Retargeting >= Block 76000
+// DigiShield retargeting
 unsigned int GetNextWorkRequired_V2(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
     unsigned int nProofOfWorkLimit = Params().ProofOfWorkLimit().GetCompact();
@@ -121,7 +117,7 @@ unsigned int GetNextWorkRequired_V2(const CBlockIndex* pindexLast, const CBlockH
         if (Params().AllowMinDifficultyBlocks())
         {
             // Special difficulty rule for testnet:
-            // If the new block's timestamp is more than 2* 2.5 minutes
+            // If the new block's timestamp is more than 2* nTargetSpacing minutes
             // then allow mining of a min-difficulty block.
             if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + Params().TargetSpacingV2()*2)
                 return nProofOfWorkLimit;
@@ -142,7 +138,7 @@ unsigned int GetNextWorkRequired_V2(const CBlockIndex* pindexLast, const CBlockH
     int blockstogoback = Params().IntervalV2()-1;
     if ((pindexLast->nHeight+1) != Params().IntervalV2())
         blockstogoback = Params().IntervalV2();
-        
+
     // Go back by what we want to be 14 days worth of blocks
     const CBlockIndex* pindexFirst = pindexLast;
     for (int i = 0; pindexFirst && i < blockstogoback; i++)

@@ -1,9 +1,10 @@
-Machinecoin Core version 0.10.2.3 is now available from:
+Machinecoin Core version 0.10.4.0 is now available from:
 
-  <https://github.com/machinecoin-project/machinecoin-core/archive/master-0.10.zip>
+  <https://github.com/machinecoin-project/machinecoin-core>
 
-This is a new major version release, bringing bug fixes and translation 
-updates.
+This is a new minor version release, bringing bug fixes, the BIP65
+(CLTV) consensus change, and relay policy preparation for BIP113. It is
+recommended to upgrade to this version as soon as possible.
 
 Please report bugs using the issue tracker at github:
 
@@ -43,179 +44,80 @@ supported and may break as soon as the older version attempts to reindex.
 
 This does not affect wallet forward or backward compatibility.
 
-
-Machinecoin 0.10.2.3 Change log
+Notable changes since 0.10.3
 ============================
-This release is based upon Bitcoin Core v0.10.2.  Their upstream changelog applies to us and
-is included in as separate release-notes.  This section describes the Machinecoin-specific differences.
 
-Protocol:
-- Scrypt Proof-of-Work instead of sha256d, however block hashes are sha256d for performance reasons.
-- Machinecoin TCP port 40333 (instead of 8333)
-- RPC TCP port 40332 (instead of 8332)
-- Testnet TCP port 50333 (instead of 18333)
-- Testnet RPC TCP port 50332 (instead of 18332)
-- 84 million coin limit  (instead of 21 million)
-- Magic 0xfbc0b6db       (instead of 0xf9beb4d9)
-- Target Block Time 2.5 minutes (instead of 10 minutes)
-- Target Timespan 2.5 minutes      (instead of two weeks)
-- bnProofOfWorkLimit = >> 20    (instead of >> 32)
-- zeitgeist2 protection: Slightly different way to calculate difficulty changes.
-- Machinecoin Core v0.10.2.3 is protocol version 70003 (instead of 70002)
+BIP65 soft fork to enforce OP_CHECKLOCKTIMEVERIFY opcode
+--------------------------------------------------------
 
-Relay:
-- Machinecoin Core rounds transaction size up to the nearest 1000 bytes before calculating fees.  This size rounding behavior is to mimic fee calculation of Machinecoin v0.6 and v0.8.
-- Bitcoin's IsDust() is disabled in favor of Machinecoin's fee-based dust penalty.
-- Fee-based Dust Penalty: For each transaction output smaller than DUST_THRESHOLD (currently 0.001 MAC) the default relay/mining policy will expect an additional 1000 bytes of fee.  Otherwise the transaction will be rejected from relay/mining.  Such transactions are also disqualified from the free/high-priority transaction rule.
-- Miners and relays can adjust the expected fee per-KB with the -minrelaytxfee parameter.
+This release includes several changes related to the [BIP65][] soft fork
+which redefines the existing OP_NOP2 opcode as OP_CHECKLOCKTIMEVERIFY
+(CLTV) so that a transaction output can be made unspendable until a
+specified point in the future.
 
-Wallet:
-- Coins smaller than 0.00001 MAC are by default ignored by the wallet.  Use the -mininput parameter if you want to see smaller coins.
+1. This release will only relay and mine transactions spending a CLTV
+   output if they comply with the BIP65 rules as provided in code.
 
-Notable changes since Machinecoin v0.8.7.4
-===================================
+2. This release will produce version 4 blocks by default. Please see the
+   *notice to miners* below.
 
-- The Block data and indexes of v0.10 are incompatible with v0.8.7.4 clients.  You can upgrade from v0.8.7.4 but you downgrading is not possible.  For this reason you may want to make a backup copy of your Data Directory.
-- machinecoind no longer sends RPC commands.  You must use the separate machinecoin-cli command line utility.
-- Watch-Only addresses are now possible.
+3. Once 951 out of a sequence of 1,001 blocks on the local node's best block
+   chain contain version 4 (or higher) blocks, this release will no
+   longer accept new version 3 blocks and it will only accept version 4
+   blocks if they comply with the BIP65 rules for CLTV.
 
+**Notice to miners:** Machinecoin Core’s block templates are now for
+version 4 blocks only, and any mining software relying on its
+getblocktemplate must be updated in parallel to use libblkmaker either
+version v0.4.3 or any version from v0.5.2 onward.
 
-0.8.7.4 changes
-=============
+- If you are solo mining, this will affect you the moment you upgrade
+  Machinecoin Core, which must be done prior to BIP65 achieving its 951/1001
+  status.
 
-- Upgrade OpenSSL to 1.0.1k based on several bugs in prior versions of OpenSSL.
-  Machinecoin patched to work with OpenSSL CVE-2014-8275 which broke 
-  compatibility with Machinecoin.
+- If you are mining with the stratum mining protocol: this does not
+  affect you.
 
-- Added several new checkpoints
+- If you are mining with the getblocktemplate protocol to a pool: this
+  will affect you at the pool operator’s discretion, which must be no
+  later than BIP65 achieving its 951/1001 status.
 
-- Minor fixes:
-  - Fix request of external ip
-  - Fix compiler warnings
-  - Update coin icon sets
-
-- Thanks to all the contributors and sponsors that made this update possible:
-  - Dirk
-  - Ria
-  - Nico
-  - Julia
-  - Michael
-  - Andrea
-  - Anonymous
-
-0.8.7.3 changes
-=============
-
-- Digishield Retarget
-
-0.8.7.2 changes
-=============
-
-- Mac and Windows Official Gitian Builds: upgrade to openssl-1.0.1h for CVE-2014-0224
-                   Linux Gitian build uses Lucid 0.9.8k-7ubuntu8.18
-
-0.8.7.1 changes
-=============
-
-- Mac and Windows Official Gitian Builds: upgrade to openssl-1.0.1g for CVE-2014-0160
-                   Linux was not vulnerable with Lucid openssl-0.9.8k
-                   Older versions were only vulnerable with rarely used RPC SSL
-- If you build from source, be sure that your openssl is patched for CVE-2014-0160.
-- Upgrade openssl, qt, miniupnpc, zlib, libpng, qrencode
-- Many bug fixes from Bitcoin 0.8.7rc stable branch
-    including transaction malleability mitigation backports from 0.9
-- Add testnet checkpoints
-- Add new testnet seed
-
-0.8.6.2 changes
-=============
-
-- Windows only: Fixes issue where network connectivity can fail.
-
-- Cleanup of SSE2 scrypt detection.
-
-- Minor fixes:
-  - s/Bitcoin/Machinecoin/ in the Coin Control example
-  - Fix custom build on MacOS X 10.9
-  - Fix QT5 custom build
-  - Update Debian build instructions
-  - Update Homebrew build 
-
-0.8.6.1 changes
-=============
-
-- Coin Control - experts only GUI selection of inputs before you send a transaction
-
-- Disable Wallet - reduces memory requirements, helpful for miner or relay nodes
-
-- 20x reduction in default mintxfee.
-
-- Up to 50% faster PoW validation, faster sync and reindexing.
-
-- Peers older than protocol version 70002 are disconnected.  0.8.3.7 is the oldest compatible client.
-
-- Internal miner added back to Machinecoin.  setgenerate now works, although it is generally a bad idea as it is significantly slower than external CPU miners.
-
-- New RPC commands: getbestblockhash and verifychain
-
-- Improve fairness of the high priority transaction space per block
-
-- OSX block chain database corruption fixes
-  - Update leveldb to 1.13
-  - Use fcntl with `F_FULLSYNC` instead of fsync on OSX
-  - Use native Darwin memory barriers
-  - Replace use of mmap in leveldb for improved reliability (only on OSX)
-
-- Fix nodes forwarding transactions with empty vins and getting banned
-
-- Network code performance and robustness improvements
-
-- Additional debug.log logging for diagnosis of network problems, log timestamps by default
-
-- Fix rare GUI crash on send
-
-0.8.5.1 changes
-===============
-
-Workaround negative version numbers serialization bug.
-
-Fix out-of-bounds check (Machinecoin currently does not use this codepath, but we apply this
-patch just to match Bitcoin 0.8.5.)
-
-0.8.4.1 changes
-===============
-
-CVE-2013-5700 Bloom: filter crash issue - Machinecoin 0.8.3.7 disabled bloom by default so was 
-unaffected by this issue, but we include their patches anyway just in case folks want to 
-enable bloomfilter=1.
-
-CVE-2013-4165: RPC password timing guess vulnerability
-
-CVE-2013-4627: Better fix for the fill-memory-with-orphaned-tx attack
-
-Fix multi-block reorg transaction resurrection.
-
-Fix non-standard disconnected transactions causing mempool orphans.  This bug could cause 
-nodes running with the -debug flag to crash, although it was lot less likely on Machinecoin 
-as we disabled IsDust() in 0.8.3.x.
-
-Mac OSX: use 'FD_FULLSYNC' with LevelDB, which will (hopefully!) prevent the database 
-corruption issues have experienced on OSX.
-
-Add height parameter to getnetworkhashps.
-
-Fix Norwegian and Swedish translations.
-
-Minor efficiency improvement in block peer request handling.
+[BIP65]: https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki
 
 
-0.8.3.7 changes
-===============
+Windows bug fix for corrupted UTXO database on unclean shutdowns
+----------------------------------------------------------------
 
-Fix CVE-2013-4627 denial of service, a memory exhaustion attack that could crash low-memory nodes.
+Several Windows users reported that they often need to reindex the
+entire blockchain after an unclean shutdown of Machinecoin Core on Windows
+(or an unclean shutdown of Windows itself). Although unclean shutdowns
+remain unsafe, this release no longer relies on memory-mapped files for
+the UTXO database, which significantly reduced the frequency of unclean
+shutdowns leading to required reindexes during testing.
 
-Fix a regression that caused excessive writing of the peers.dat file.
+For more information, see: <https://github.com/bitcoin/bitcoin/pull/6917>
 
-Add option for bloom filtering.
+Other fixes for database corruption on Windows are expected in the
+next major release.
 
-Fix Hebrew translation.
+0.10.4 Change log
+=================
+
+This release is based upon Bitcoin Core v0.10.4.  Their upstream changelog applies to us and
+is included in as separate release-notes, see: [Release Notes](release-notes.md).  
+This section describes the Machinecoin-specific differences.
+
+- Added BIP65 CHECKLOCKTIMEVERIFY softfork.
+- Increased OP_RETURN relay size to 80 bytes.
+
+Credits
+=======
+
+Thanks to everyone who directly contributed to this release:
+
+- Charles Lee
+- pooler
+- Adrian Gallagher
+- Anton Yemelyanov
+- Warren Togami
+- BtcDrak
