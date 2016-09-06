@@ -12,6 +12,8 @@
 #include "consensus/consensus.h"
 #include "consensus/merkle.h"
 #include "consensus/validation.h"
+#include "crypto/hashblock.h"         // Machinecoin: internal miner
+#include "crypto/scrypt.h"            // Machinecoin: internal miner
 #include "hash.h"
 #include "main.h"
 #include "net.h"
@@ -23,6 +25,7 @@
 #include "txmempool.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utilstrencodings.h"         // Machinecoin: internal miner
 #include "validationinterface.h"
 
 #include <algorithm>
@@ -604,4 +607,212 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 
     pblock->vtx[0] = txCoinbase;
     pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Internal miner
+//
+
+//
+// ScanHash scans nonces looking for a hash with at least some zero bits.
+// The nonce is usually preserved between calls, but periodically or if the
+// nonce is 0xffff0000 or above, the block is rebuilt and nNonce starts over at
+// zero.
+//
+bool static ScanHash(CBlockHeader *pblock, uint32_t& nNonce, uint256 *phash) // Machinecoin: internal miner
+{
+    uint256 thash;
+    char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+
+    while(true)
+    {
+        nNonce++;
+        pblock->nNonce = nNonce;
+
+        if(pblock->GetBlockTime() >= 1473444000) // Machinecoin: PoW Hardfork, Friday, 09-Sep-16 18:00:00 UTC
+        {
+            thash = HashX13Evo(BEGIN(pblock->nVersion), END(pblock->nNonce), pblock->GetBlockTime());
+        }
+        else
+        {
+            scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad);
+        }
+
+        phash->SetHex(thash.GetHex());
+
+        // Return the nonce if the hash has at least some zero bits,
+        // caller will check if it has enough to reach the target
+        if (((uint16_t*)phash)[15] == 0)
+            return true;
+
+        // If nothing found after trying for a while, return -1
+        if ((nNonce & 0xfff) == 0)
+            return false;
+    }
+}
+
+static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainparams) // Machinecoin: internal miner
+{
+    LogPrintf("%s\n", pblock->ToString());
+    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
+
+    // Found a solution
+    {
+        LOCK(cs_main);
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("MachinecoinMiner: generated block is stale");
+    }
+
+    // Inform about the new block
+    GetMainSignals().BlockFound(pblock->GetHash());
+
+    // Process this block the same as if we had received it from another node
+    CValidationState state;
+    if (!ProcessNewBlock(state, chainparams, NULL, pblock, true, NULL))
+        return error("MachinecoinMiner: ProcessNewBlock, block not accepted");
+
+    return true;
+}
+
+void static MachinecoinMiner(const CChainParams& chainparams) // Machinecoin: internal miner
+{
+    LogPrintf("MachinecoinMiner started\n");
+    SetThreadPriority(THREAD_PRIORITY_LOWEST);
+    RenameThread("machinecoin-miner");
+
+    unsigned int nExtraNonce = 0;
+
+    boost::shared_ptr<CReserveScript> coinbaseScript;
+    GetMainSignals().ScriptForMining(coinbaseScript);
+
+    try {
+        // Throw an error if no script was provided.  This can happen
+        // due to some internal error but also if the keypool is empty.
+        // In the latter case, already the pointer is NULL.
+        if (!coinbaseScript || coinbaseScript->reserveScript.empty())
+            throw std::runtime_error("No coinbase script available (mining requires a wallet)");
+
+        while (true) {
+            if (chainparams.MiningRequiresPeers()) {
+                // Busy-wait for the network to come online so we don't waste time mining
+                // on an obsolete chain. In regtest mode we expect to fly solo.
+                do {
+                    bool fvNodesEmpty;
+                    {
+                        LOCK(cs_vNodes);
+                        fvNodesEmpty = vNodes.empty();
+                    }
+                    if (!fvNodesEmpty && !IsInitialBlockDownload())
+                        break;
+                    MilliSleep(1000);
+                } while (true);
+            }
+
+            //
+            // Create new block
+            //
+            unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+            CBlockIndex* pindexPrev = chainActive.Tip();
+
+            auto_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(chainparams).CreateNewBlock(coinbaseScript->reserveScript)); // Machinecoin: internal miner
+            if (!pblocktemplate.get())
+            {
+                LogPrintf("Error in MachinecoinMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
+                return;
+            }
+            CBlock *pblock = &pblocktemplate->block;
+            IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+
+            LogPrintf("Running MachinecoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+
+            //
+            // Search
+            //
+            int64_t nStart = GetTime();
+            arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
+            uint256 hash;
+            uint32_t nNonce = 0;
+            while (true) {
+                // Check if something found
+                if (ScanHash(pblock, nNonce, &hash))
+                {
+                    if (UintToArith256(hash) <= hashTarget)
+                    {
+                        // Found a solution
+                        pblock->nNonce = nNonce;
+                        assert(hash == pblock->GetPoWHash());
+
+                        SetThreadPriority(THREAD_PRIORITY_NORMAL);
+                        LogPrintf("MachinecoinMiner:\n");
+                        LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
+                        ProcessBlockFound(pblock, chainparams);
+                        SetThreadPriority(THREAD_PRIORITY_LOWEST);
+                        coinbaseScript->KeepScript();
+
+                        // In regression test mode, stop mining after a block is found.
+                        if (chainparams.MineBlocksOnDemand())
+                            throw boost::thread_interrupted();
+
+                        break;
+                    }
+                }
+
+                // Check for stop or if block needs to be rebuilt
+                boost::this_thread::interruption_point();
+                // Regtest mode doesn't require peers
+                if (vNodes.empty() && chainparams.MiningRequiresPeers())
+                    break;
+                if (nNonce >= 0xffff0000)
+                    break;
+                if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
+                    break;
+                if (pindexPrev != chainActive.Tip())
+                    break;
+
+                // Update nTime every few seconds
+                if (UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev) < 0)
+                    break; // Recreate the block if the clock has run backwards,
+                           // so that we can use the correct time.
+                if (chainparams.GetConsensus().fPowAllowMinDifficultyBlocks)
+                {
+                    // Changing pblock->nTime can change work required on testnet:
+                    hashTarget.SetCompact(pblock->nBits);
+                }
+            }
+        }
+    }
+    catch (const boost::thread_interrupted&)
+    {
+        LogPrintf("MachinecoinMiner terminated\n");
+        throw;
+    }
+    catch (const std::runtime_error &e)
+    {
+        LogPrintf("MachinecoinMiner runtime error: %s\n", e.what());
+        return;
+    }
+}
+
+void GenerateMachinecoins(bool fGenerate, int nThreads, const CChainParams& chainparams) // Machinecoin: internal miner
+{
+    static boost::thread_group* minerThreads = NULL;
+
+    if (nThreads < 0)
+        nThreads = GetNumCores();
+
+    if (minerThreads != NULL)
+    {
+        minerThreads->interrupt_all();
+        delete minerThreads;
+        minerThreads = NULL;
+    }
+
+    if (nThreads == 0 || !fGenerate)
+        return;
+
+    minerThreads = new boost::thread_group();
+    for (int i = 0; i < nThreads; i++)
+        minerThreads->create_thread(boost::bind(&MachinecoinMiner, boost::cref(chainparams)));
 }

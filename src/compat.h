@@ -78,6 +78,17 @@ typedef u_int SOCKET;
 #define MSG_NOSIGNAL 0
 #endif
 
+#ifndef WIN32                                    // Machinecoin: internal miner
+// PRIO_MAX is not defined on Solaris
+#ifndef PRIO_MAX                                 // Machinecoin: internal miner
+#define PRIO_MAX 20                              // Machinecoin: internal miner
+#endif                                           // Machinecoin: internal miner
+#define THREAD_PRIORITY_LOWEST          PRIO_MAX // Machinecoin: internal miner
+#define THREAD_PRIORITY_BELOW_NORMAL    2        // Machinecoin: internal miner
+#define THREAD_PRIORITY_NORMAL          0        // Machinecoin: internal miner
+#define THREAD_PRIORITY_ABOVE_NORMAL    (-2)     // Machinecoin: internal miner
+#endif                                           // Machinecoin: internal miner
+
 #if HAVE_DECL_STRNLEN == 0
 size_t strnlen( const char *start, size_t max_len);
 #endif // HAVE_DECL_STRNLEN

@@ -27,6 +27,8 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "stop", 0 },
     { "setmocktime", 0 },
     { "getaddednodeinfo", 0 },
+    { "setgenerate", 0 }, // Machinecoin: internal miner
+    { "setgenerate", 1 }, // Machinecoin: internal miner
     { "generate", 0 },
     { "generate", 1 },
     { "generatetoaddress", 0 },
