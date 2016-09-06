@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2009-2014 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_SCRIPT_SCRIPT_ERROR_H
-#define BITCOIN_SCRIPT_SCRIPT_ERROR_H
+#ifndef MACHINECOIN_SCRIPT_SCRIPT_ERROR_H
+#define MACHINECOIN_SCRIPT_SCRIPT_ERROR_H
 
 typedef enum ScriptError_t
 {
@@ -35,7 +35,7 @@ typedef enum ScriptError_t
     SCRIPT_ERR_INVALID_ALTSTACK_OPERATION,
     SCRIPT_ERR_UNBALANCED_CONDITIONAL,
 
-    /* OP_CHECKLOCKTIMEVERIFY */
+    /* CHECKLOCKTIMEVERIFY and CHECKSEQUENCEVERIFY */
     SCRIPT_ERR_NEGATIVE_LOCKTIME,
     SCRIPT_ERR_UNSATISFIED_LOCKTIME,
 
@@ -47,9 +47,19 @@ typedef enum ScriptError_t
     SCRIPT_ERR_SIG_HIGH_S,
     SCRIPT_ERR_SIG_NULLDUMMY,
     SCRIPT_ERR_PUBKEYTYPE,
+    SCRIPT_ERR_CLEANSTACK,
 
     /* softfork safeness */
     SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS,
+    SCRIPT_ERR_DISCOURAGE_UPGRADABLE_WITNESS_PROGRAM,
+
+    /* segregated witness */
+    SCRIPT_ERR_WITNESS_PROGRAM_WRONG_LENGTH,
+    SCRIPT_ERR_WITNESS_PROGRAM_WITNESS_EMPTY,
+    SCRIPT_ERR_WITNESS_PROGRAM_MISMATCH,
+    SCRIPT_ERR_WITNESS_MALLEATED,
+    SCRIPT_ERR_WITNESS_MALLEATED_P2SH,
+    SCRIPT_ERR_WITNESS_UNEXPECTED,
 
     SCRIPT_ERR_ERROR_COUNT
 } ScriptError;
@@ -58,4 +68,4 @@ typedef enum ScriptError_t
 
 const char* ScriptErrorString(const ScriptError error);
 
-#endif // BITCOIN_SCRIPT_SCRIPT_ERROR_H
+#endif // MACHINECOIN_SCRIPT_SCRIPT_ERROR_H

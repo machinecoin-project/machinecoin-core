@@ -1,0 +1,33 @@
+# /etc/conf.d/machinecoind: config file for /etc/init.d/machinecoind
+
+# Config file location
+#MACHINECOIND_CONFIGFILE="/etc/machinecoin/machinecoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $MACHINECOIND_USER)
+#MACHINECOIND_PIDDIR="/var/run/machinecoind"
+
+# What filename to give the pidfile
+#MACHINECOIND_PIDFILE="${MACHINECOIND_PIDDIR}/machinecoind.pid"
+
+# Where to write machinecoind data (be mindful that the blockchain is large)
+#MACHINECOIND_DATADIR="/var/lib/machinecoind"
+
+# User and group to own machinecoind process
+#MACHINECOIND_USER="machinecoin"
+#MACHINECOIND_GROUP="machinecoin"
+
+# Path to machinecoind executable
+#MACHINECOIND_BIN="/usr/bin/machinecoind"
+
+# Nice value to run machinecoind under
+#MACHINECOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+MACHINECOIND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for machinecoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+MACHINECOIND_SIGTERM_TIMEOUT=60

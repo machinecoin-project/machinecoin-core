@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2009-2014 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_COMPRESSOR_H
-#define BITCOIN_COMPRESSOR_H
+#ifndef MACHINECOIN_COMPRESSOR_H
+#define MACHINECOIN_COMPRESSOR_H
 
 #include "primitives/transaction.h"
 #include "script/script.h"
@@ -86,8 +86,14 @@ public:
             return;
         }
         nSize -= nSpecialScripts;
-        script.resize(nSize);
-        s >> REF(CFlatData(script));
+        if (nSize > MAX_SCRIPT_SIZE) {
+            // Overly long script, replace with a short invalid one
+            script << OP_RETURN;
+            s.ignore(nSize);
+        } else {
+            script.resize(nSize);
+            s >> REF(CFlatData(script));
+        }
     }
 };
 
@@ -120,4 +126,4 @@ public:
     }
 };
 
-#endif // BITCOIN_COMPRESSOR_H
+#endif // MACHINECOIN_COMPRESSOR_H

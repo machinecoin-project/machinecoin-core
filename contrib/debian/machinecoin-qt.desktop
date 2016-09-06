@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Machinecoin
+Comment=Machinecoin P2P Cryptocurrency
+Comment[fr]=Machinecoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Machinecoin, eşten eşe kriptografik sanal para birimi
+Exec=machinecoin-qt %u
+Terminal=false
+Type=Application
+Icon=machinecoin128
+MimeType=x-scheme-handler/machinecoin;
+Categories=Office;Finance;

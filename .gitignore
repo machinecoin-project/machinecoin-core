@@ -29,8 +29,8 @@ config.log
 config.status
 configure
 libtool
-src/config/bitcoin-config.h
-src/config/bitcoin-config.h.in
+src/config/machinecoin-config.h
+src/config/machinecoin-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -55,7 +55,7 @@ src/qt/test/moc*.cpp
 *.o
 *.o-*
 *.patch
-.bitcoin
+.machinecoin
 *.a
 *.pb.cc
 *.pb.h
@@ -85,17 +85,15 @@ src/test/buildenv.py
 # Resources cpp
 qrc_*.cpp
 
-# Qt creator
-*.pro.user
-
 # Mac specific
 .DS_Store
 build
 
 #lcov
 *.gcno
+*.gcda
 /*.info
-test_bitcoin.coverage/
+test_machinecoin.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -103,11 +101,17 @@ coverage_percent.txt
 linux-coverage-build
 linux-build
 win32-build
-qa/pull-tester/run-bitcoind-for-test.sh
-qa/pull-tester/tests-config.sh
+qa/pull-tester/run-machinecoind-for-test.sh
+qa/pull-tester/tests_config.py
 qa/pull-tester/cache/*
 qa/pull-tester/test.*/*
+qa/tmp
+cache/
+share/MachinecoindComparisonTool.jar
 
 !src/leveldb*/Makefile
 
 /doc/doxygen/
+
+libmachinecoinconsensus.pc
+contrib/devtools/split-debug.sh

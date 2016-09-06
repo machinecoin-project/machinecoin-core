@@ -1,9 +1,9 @@
-// Copyright (c) 2012-2014 The Bitcoin developers
+// Copyright (c) 2012-2015 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CHECKQUEUE_H
-#define BITCOIN_CHECKQUEUE_H
+#ifndef MACHINECOIN_CHECKQUEUE_H
+#define MACHINECOIN_CHECKQUEUE_H
 
 #include <algorithm>
 #include <vector>
@@ -54,7 +54,7 @@ private:
 
     /**
      * Number of verifications that haven't completed yet.
-     * This includes elements that are not anymore in queue, but still in
+     * This includes elements that are no longer queued, but still in the
      * worker's own batches.
      */
     unsigned int nTodo;
@@ -81,7 +81,7 @@ private:
                     fAllOk &= fOk;
                     nTodo -= nNow;
                     if (nTodo == 0 && !fMaster)
-                        // We processed the last element; inform the master he can exit and return the result
+                        // We processed the last element; inform the master it can exit and return the result
                         condMaster.notify_one();
                 } else {
                     // first iteration
@@ -136,7 +136,7 @@ public:
         Loop();
     }
 
-    //! Wait until execution finishes, and return whether all evaluations where successful.
+    //! Wait until execution finishes, and return whether all evaluations were successful.
     bool Wait()
     {
         return Loop(true);
@@ -212,4 +212,4 @@ public:
     }
 };
 
-#endif // BITCOIN_CHECKQUEUE_H
+#endif // MACHINECOIN_CHECKQUEUE_H

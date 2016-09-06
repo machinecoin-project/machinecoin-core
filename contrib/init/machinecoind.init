@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  machinecoind The machinecoin core server.
+#
+#
+# chkconfig: 345 80 20
+# description: machinecoind
+# processname: machinecoind
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/machinecoind, see below
+if [ -f /etc/sysconfig/machinecoind ]; then
+        . /etc/sysconfig/machinecoind
+fi
+
+RETVAL=0
+
+prog=machinecoind
+# you can override the lockfile via MACHINECOIND_LOCKFILE in /etc/sysconfig/machinecoind
+lockfile=${MACHINECOIND_LOCKFILE-/var/lock/subsys/machinecoind}
+
+# machinecoind defaults to /usr/bin/machinecoind, override with MACHINECOIND_BIN
+machinecoind=${MACHINECOIND_BIN-/usr/bin/machinecoind}
+
+# machinecoind opts default to -disablewallet, override with MACHINECOIND_OPTS
+machinecoind_opts=${MACHINECOIND_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $machinecoind $machinecoind_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

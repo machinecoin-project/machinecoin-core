@@ -1,0 +1,6 @@
+usr/local/bin/machinecoin-qt usr/bin
+share/pixmaps/machinecoin32.xpm usr/share/pixmaps
+share/pixmaps/machinecoin16.xpm usr/share/pixmaps
+share/pixmaps/machinecoin128.png usr/share/pixmaps
+debian/machinecoin-qt.desktop usr/share/applications
+debian/machinecoin-qt.protocol usr/share/kde4/services/
