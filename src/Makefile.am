@@ -92,6 +92,22 @@ MACHINECOIN_CORE_H = \
   consensus/consensus.h \
   core_io.h \
   core_memusage.h \
+  crypto/scrypt.h \
+  crypto/sph_types.h \
+  crypto/sph_blake.h \
+  crypto/sph_bmw.h \
+  crypto/sph_groestl.h \
+  crypto/sph_skein.h \
+  crypto/sph_jh.h \
+  crypto/sph_keccak.h \
+  crypto/sph_luffa.h \
+  crypto/sph_cubehash.h \
+  crypto/sph_shavite.h \
+  crypto/sph_simd.h \
+  crypto/sph_echo.h \
+  crypto/sph_hamsi.h \
+  crypto/sph_fugue.h \
+  crypto/hashblock.h \
   httprpc.h \
   httpserver.h \
   indirectmap.h \
@@ -253,6 +269,7 @@ libmachinecoin_consensus_a_SOURCES = \
   consensus/params.h \
   consensus/validation.h \
   crypto/scrypt.cpp \
+  crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
   crypto/groestl.c \
@@ -265,7 +282,24 @@ libmachinecoin_consensus_a_SOURCES = \
   crypto/simd.c \
   crypto/echo.c \
   crypto/hamsi.c \
+  crypto/hamsi_helper.c \
   crypto/fugue.c \
+  crypto/scrypt.h \
+  crypto/sph_types.h \
+  crypto/sph_blake.h \
+  crypto/sph_bmw.h \
+  crypto/sph_groestl.h \
+  crypto/sph_skein.h \
+  crypto/sph_jh.h \
+  crypto/sph_keccak.h \
+  crypto/sph_luffa.h \
+  crypto/sph_cubehash.h \
+  crypto/sph_shavite.h \
+  crypto/sph_simd.h \
+  crypto/sph_echo.h \
+  crypto/sph_hamsi.h \
+  crypto/sph_fugue.h \
+  crypto/hashblock.h \
   hash.cpp \
   hash.h \
   prevector.h \
@@ -301,6 +335,7 @@ libmachinecoin_common_a_SOURCES = \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
+  crypto/scrypt.cpp \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -436,7 +471,7 @@ if GLIBC_BACK_COMPAT
 endif
 
 libmachinecoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libmachinecoinconsensus_la_LIBADD = $(LIBSECP256K1)
+libmachinecoinconsensus_la_LIBADD = $(LIBSECP256K1) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS)
 libmachinecoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_MACHINECOIN_INTERNAL
 libmachinecoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
