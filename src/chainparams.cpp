@@ -122,7 +122,6 @@ public:
 
         vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.org", "dnsseed1.machinecoin.org", true)); // Machinecoin: dnsseed1
         vSeeds.push_back(CDNSSeedData("dnsseed2.machinecoin.org", "dnsseed2.machinecoin.org")); // Machinecoin: dnsseed2
-        vSeeds.push_back(CDNSSeedData("dnsseed.machinecoin.org", "dnsseed.machinecoin.org")); // Machinecoin: obsolete dnsseed from older versions
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 50); // Machinecoin: M
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,  5); // Machinecoin: 3
@@ -209,7 +208,6 @@ public:
         // nodes with support for servicebits filtering should be at the top
         vSeeds.push_back(CDNSSeedData("testnetdnsseed1.machinecoin.org", "testnetdnsseed1.machinecoin.org", true)); // Machinecoin: testnetdnsseed1
         vSeeds.push_back(CDNSSeedData("testnetdnsseed2.machinecoin.org", "testnetdnsseed2.machinecoin.org")); // Machinecoin: testnetdnsseed2
-        vSeeds.push_back(CDNSSeedData("testnetdnsseed.machinecoin.org", "testnetdnsseed.machinecoin.org")); // Machinecoin: obsolete testnetdnsseed from older versions
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
