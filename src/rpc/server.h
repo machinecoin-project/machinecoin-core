@@ -190,9 +190,6 @@ extern std::string HelpExampleRpc(const std::string& methodname, const std::stri
 
 extern void EnsureWalletIsUnlocked();
 
-extern UniValue getgenerate(const UniValue& params, bool fHelp); // Machinecoin: internal miner
-extern UniValue setgenerate(const UniValue& params, bool fHelp); // Machinecoin: internal miner
-
 bool StartRPC();
 void InterruptRPC();
 void StopRPC();
