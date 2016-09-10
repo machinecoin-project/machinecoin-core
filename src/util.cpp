@@ -801,11 +801,10 @@ int GetNumCores()
 
 std::string CopyrightHolders(const std::string& strPrefix)
 {
-    std::string strCopyrightHolders = strPrefix + _(COPYRIGHT_HOLDERS);
-    if (strCopyrightHolders.find("%s") != strCopyrightHolders.npos) {
-        strCopyrightHolders = strprintf(strCopyrightHolders, _(COPYRIGHT_HOLDERS_SUBSTITUTION));
-    }
-    if (strCopyrightHolders.find("Machinecoin Core developers") == strCopyrightHolders.npos) {
+    std::string strCopyrightHolders = strPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
+
+    // Check for untranslated substitution to make sure Machinecoin Core copyright is not removed by accident
+    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Machinecoin Core") == std::string::npos) {
         strCopyrightHolders += "\n" + strPrefix + "The Machinecoin Core developers";
     }
     return strCopyrightHolders;
