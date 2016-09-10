@@ -13,7 +13,7 @@
 #include "consensus/merkle.h"
 #include "consensus/validation.h"
 #include "crypto/hashblock.h"         // Machinecoin: internal miner
-#include "crypto/scrypt.h"            // Machinecoin: internal miner
+//#include "crypto/scrypt.h"            // Machinecoin: internal miner
 #include "hash.h"
 #include "main.h"
 #include "net.h"
@@ -622,22 +622,22 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 //
 bool static ScanHash(CBlockHeader *pblock, uint32_t& nNonce, uint256 *phash) // Machinecoin: internal miner
 {
-    uint256 thash;
-    char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+    // uint256 thash;
+    //char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
 
     while(true)
     {
         nNonce++;
         pblock->nNonce = nNonce;
 
-        if(pblock->GetBlockTime() >= 1473444000) // Machinecoin: PoW Hardfork, Friday, 09-Sep-16 18:00:00 UTC
-        {
-            thash = HashX13Evo(BEGIN(pblock->nVersion), END(pblock->nNonce), pblock->GetBlockTime());
-        }
-        else
-        {
-            scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad);
-        }
+        // if(pblock->GetBlockTime() >= 1473444000) // Machinecoin: PoW Hardfork, Friday, 09-Sep-16 18:00:00 UTC
+        // {
+        uint256 thash = HashX13Evo(BEGIN(pblock->nVersion), END(pblock->nNonce), pblock->GetBlockTime());
+        // }
+        //else
+        //{
+        //    scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad);
+        //}
 
         phash->SetHex(thash.GetHex());
 
