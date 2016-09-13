@@ -85,6 +85,8 @@ public:
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin: 2 1/2 minutes
         consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin: 2 1/2 minutes
         consensus.nPowTargetSpacingV2 = 2.5 * 60; // Machinecoin: 2 1/2 minutes
+        //consensus.nPowTargetTimespanV3
+        //consensus.nPowTargetSpacingV3
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1916; // Machinecoin: 95% of 2016
@@ -173,6 +175,8 @@ public:
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin: 2 1/2 minutes
         consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin: 2 1/2 minutes
         consensus.nPowTargetSpacingV2 = 2.5 * 60; // Machinecoin: 2 1/2 minutes
+        //consensus.nPowTargetTimespanV3
+        //consensus.nPowTargetSpacingV3
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
@@ -225,10 +229,10 @@ public:
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            ( 299, uint256S("0x000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")),
-            1369685559,
+            ( 0, uint256S("0x6a1f879bcea5471cbfdee1fd0cb2ddcc4fed569a500e352d41de967703e83172")),
+            1389040865,
             0,
-            300.0
+            1
         };
 
     }
@@ -253,6 +257,8 @@ public:
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin: 2 1/2 minutes
         consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin: 2 1/2 minutes
         consensus.nPowTargetSpacingV2 = 2.5 * 60; // Machinecoin: 2 1/2 minutes
+        //consensus.nPowTargetTimespanV3
+        //consensus.nPowTargetSpacingV3
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains

@@ -20,7 +20,7 @@ class ImportPrunedFundsTest(MachinecoinTestFramework):
         self.is_network_split=False
         self.sync_all()
 
-    def run_test (self):
+    def run_test(self):
         print("Mining blocks...")
         self.nodes[0].generate(101)
 

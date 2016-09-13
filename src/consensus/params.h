@@ -64,6 +64,9 @@ struct Params {
     int64_t nPowTargetSpacingV2;
     int64_t nPowTargetTimespanV2;
     int64_t DifficultyAdjustmentIntervalV2() const { return nPowTargetTimespanV2 / nPowTargetSpacingV2; }
+    //int64_t nPowTargetSpacingV3;
+    //int64_t nPowTargetTimespanV3;
+    //int64_t DifficultyAdjustmentIntervalV3() const { return nPowTargetTimespanV3 / nPowTargetSpacingV3; }
 };
 } // namespace Consensus
 

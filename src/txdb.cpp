@@ -205,7 +205,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
                 // While it is technically feasible to verify the PoW, doing so takes several minutes as it
                 // requires recomputing every PoW hash during every Machinecoin startup.
                 // We opt instead to simply trust the data that is on your local disk.
-                // if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params().GetConsensus()))
+                //if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params().GetConsensus()))
                 //    return error("LoadBlockIndex(): CheckProofOfWork failed: %s", pindexNew->ToString());
 
                 pcursor->Next();

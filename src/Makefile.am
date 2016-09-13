@@ -105,8 +105,6 @@ MACHINECOIN_CORE_H = \
   crypto/sph_shavite.h \
   crypto/sph_simd.h \
   crypto/sph_echo.h \
-  crypto/sph_hamsi.h \
-  crypto/sph_fugue.h \
   crypto/hashblock.h \
   httprpc.h \
   httpserver.h \
@@ -281,9 +279,6 @@ libmachinecoin_consensus_a_SOURCES = \
   crypto/shavite.c \
   crypto/simd.c \
   crypto/echo.c \
-  crypto/hamsi.c \
-  crypto/hamsi_helper.c \
-  crypto/fugue.c \
   crypto/scrypt.h \
   crypto/sph_types.h \
   crypto/sph_blake.h \
@@ -297,8 +292,6 @@ libmachinecoin_consensus_a_SOURCES = \
   crypto/sph_shavite.h \
   crypto/sph_simd.h \
   crypto/sph_echo.h \
-  crypto/sph_hamsi.h \
-  crypto/sph_fugue.h \
   crypto/hashblock.h \
   hash.cpp \
   hash.h \
@@ -348,9 +341,6 @@ libmachinecoin_common_a_SOURCES = \
   crypto/shavite.c \
   crypto/simd.c \
   crypto/echo.c \
-  crypto/hamsi.c \
-  crypto/hamsi_helper.c \
-  crypto/fugue.c \
   key.cpp \
   keystore.cpp \
   netbase.cpp \

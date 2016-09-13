@@ -10,15 +10,24 @@
 #include "primitives/block.h"
 #include "uint256.h"
 
+// Machinecoin: Select retargeting
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
     if (pindexLast->nHeight+1 < 76000)
     {
-        return GetNextWorkRequired_V1(pindexLast, pblock, params); // Machinecoin: Standard retargeting
+        return GetNextWorkRequired_V1(pindexLast, pblock, params); // Machinecoin: Standard retargeting (V1)
+    }
+    else if (pindexLast->nHeight+1 < 329529)
+    {  
+        return GetNextWorkRequired_V2(pindexLast, pblock, params); // Machinecoin: Digishield retargeting (V2)
+    }
+    else if (pindexLast->nHeight+1 < 330000)
+    {  
+        return UintToArith256(params.powLimit).GetCompact();       // Machinecoin: Retargeting to support the PoW change phase (V3)
     }
     else
     {  
-        return GetNextWorkRequired_V2(pindexLast, pblock, params); // Machinecoin: DigiShield
+        return GetNextWorkRequired_V2(pindexLast, pblock, params); // Machinecoin: Digishield retargeting (V2)
     }
 }
 
@@ -114,20 +123,34 @@ unsigned int GetNextWorkRequired_V2(const CBlockIndex* pindexLast, const CBlockH
     return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
 }
 
+// Retargeting to support the PoW change phase (V3)
+// unsigned int GetNextWorkRequired_V3(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
+// {
+//    return UintToArith256(params.powLimit).GetCompact();
+// }
+
+// Machinecoin: Select retargeting
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
 {
-    // Standard retargeting for the first blocks
-    if (pindexLast->nHeight+1 < 76000) // Machinecoin: 76000
+    if (pindexLast->nHeight+1 < 76000) // Machinecoin: Standard retargeting (V1)
     {
         return CalculateNextWorkRequired_V1(pindexLast, nFirstBlockTime, params);
     }
-    // otherwise, use DigiShield
+    else if (pindexLast->nHeight+1 < 329529) // Machinecoin: Digishield retargeting (V2)
+    {
+        return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params); 
+    }
+    else if (pindexLast->nHeight+1 < 330000) // Machinecoin: Retargeting to support the PoW change phase (V3)
+    {
+        return UintToArith256(params.powLimit).GetCompact();
+    }
     else
     {  
-        return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params);
+        return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params); // Machinecoin: Digishield retargeting (V2)
     }
 }
 
+// Standard retargeting
 unsigned int CalculateNextWorkRequired_V1(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
 {
     if (params.fPowNoRetargeting)
@@ -160,6 +183,7 @@ unsigned int CalculateNextWorkRequired_V1(const CBlockIndex* pindexLast, int64_t
     return bnNew.GetCompact();
 }
 
+// DigiShield retargeting
 unsigned int CalculateNextWorkRequired_V2(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
 {
     if (params.fPowNoRetargeting)
@@ -191,6 +215,12 @@ unsigned int CalculateNextWorkRequired_V2(const CBlockIndex* pindexLast, int64_t
 
     return bnNew.GetCompact();
 }
+
+// Retargeting to support the PoW change phase (V3)
+// unsigned int CalculateNextWorkRequired_V3(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
+// {
+//    return UintToArith256(params.powLimit).GetCompact();
+// }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params& params)
 {

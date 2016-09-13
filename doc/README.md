@@ -1,4 +1,4 @@
-Machinecoin Core 0.13.0.1
+Machinecoin Core 0.13.1
 =====================
 
 Setup

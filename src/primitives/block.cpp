@@ -6,7 +6,7 @@
 #include "primitives/block.h"
 
 #include "hash.h"
-#include "crypto/hashblock.h" // Machinecoin: X13evo
+#include "crypto/hashblock.h" // Machinecoin: TimeTravel
 #include "crypto/scrypt.h" // Machinecoin: Scrypt
 #include "tinyformat.h"
 #include "utilstrencodings.h"
@@ -22,7 +22,7 @@ uint256 CBlockHeader::GetPoWHash() const
 {
     if(GetBlockTime() >= 1473444000) // Machinecoin: PoW Hardfork, Friday, 09-Sep-16 18:00:00 UTC
     {
-        return HashX13Evo(BEGIN(nVersion), END(nNonce), GetBlockTime()); // Machinecoin: X13evo
+        return HashTimeTravel(BEGIN(nVersion), END(nNonce), GetBlockTime()); // Machinecoin: TimeTravel
     }
     else
     {
