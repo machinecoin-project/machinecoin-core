@@ -55,7 +55,7 @@ src/qt/test/moc*.cpp
 *.pyc
 *.o
 *.o-*
-*.patch
+!*.patch
 *.a
 *.pb.cc
 *.pb.h
