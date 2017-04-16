@@ -1,0 +1,67 @@
+Source: machinecoin
+Section: utils
+Priority: optional
+Maintainer: Jonas Smedegaard +ADw-dr+AEA-jones.dk+AD4-
+Uploaders: Micah Anderson +ADw-micah+AEA-debian.org+AD4-
+Build-Depends: debhelper,
+ devscripts,
+ automake,
+ libtool,
+ bash-completion,
+ libboost-system-dev (+AD4APg- 1.35) +AHw- libboost-system1.35-dev,
+ libdb4.8dev,
+ libssl-dev,
+ pkg-config,
+ libminiupnpc8-dev +AHw- libminiupnpc-dev (+AD4APg- 1.6),
+ libboost-filesystem-dev (+AD4APg- 1.35) +AHw- libboost-filesystem1.35-dev,
+ libboost-program-options-dev (+AD4APg- 1.35) +AHw- libboost-program-options1.35-dev,
+ libboost-thread-dev (+AD4APg- 1.35) +AHw- libboost-thread1.35-dev,
+ libboost-test-dev (+AD4APg- 1.35) +AHw- libboost-test1.35-dev,
+ qt4-qmake,
+ libqt4-dev,
+ libqrencode-dev,
+ libprotobuf-dev, protobuf-compiler,
+ python
+Standards-Version: 3.9.2
+Homepage: https://machinecoincore.org/
+Vcs-Git: git://github.com/machinecoin/machinecoin.git
+Vcs-Browser: https://github.com/machinecoin-project/machinecoin-core
+
+Package: machinecoind
+Architecture: any
+Depends: +ACQAew-shlibs:Depends+AH0-, +ACQAew-misc:Depends+AH0-
+Description: peer-to-peer network based digital currency - daemon
+ Machinecoin is an experimental new digital currency that enables instant
+ payments to anyone, anywhere in the world. Machinecoin uses peer-to-peer
+ technology to operate with no central authority: managing transactions
+ and issuing money are carried out collectively by the network. Machinecoin Core
+ is the name of the open source software which enables the use of this currency.
+ .
+ This package provides the daemon, machinecoind, and the CLI tool
+ machinecoin-cli to interact with the daemon.
+
+Package: machinecoin-qt
+Architecture: any
+Depends: +ACQAew-shlibs:Depends+AH0-, +ACQAew-misc:Depends+AH0-
+Description: peer-to-peer network based digital currency - Qt GUI
+ Machinecoin is an experimental new digital currency that enables instant
+ payments to anyone, anywhere in the world. Machinecoin uses peer-to-peer
+ technology to operate with no central authority: managing transactions
+ and issuing money are carried out collectively by the network. Machinecoin Core
+ is the name of the open source software which enables the use of this currency.
+ .
+ This package provides Machinecoin-Qt, a GUI for Machinecoin based on Qt.
+
+Package: machinecoin-tx
+Architecture: any
+Depends: +ACQAew-shlibs:Depends+AH0-, +ACQAew-misc:Depends+AH0-
+Description: peer-to-peer digital currency - standalone transaction tool
+ Machinecoin is an experimental new digital currency that enables instant
+ payments to anyone, anywhere in the world. Machinecoin uses peer-to-peer
+ technology to operate with no central authority: managing transactions
+ and issuing money are carried out collectively by the network. Machinecoin Core
+ is the name of the open source software which enables the use of this currency.
+ .
+ This package provides machinecoin-tx, a command-line transaction creation
+ tool which can be used without a machinecoin daemon.  Some means of
+ exchanging minimal transaction data with peers is still required.

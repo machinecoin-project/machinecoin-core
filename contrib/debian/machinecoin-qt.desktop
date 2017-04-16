@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Machinecoin Core
+Comment=Connect to the Machinecoin P2P Network
+Comment[de]=Verbinde mit dem Machinecoin peer-to-peer Netzwerk
+Comment[fr]=Machinecoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Machinecoin, eşten eşe kriptografik sanal para birimi
+Exec=machinecoin-qt %u
+Terminal=false
+Type=Application
+Icon=machinecoin128
+MimeType=x-scheme-handler/machinecoin;
+Categories=Office;Finance;
