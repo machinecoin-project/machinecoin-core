@@ -1,6 +1,6 @@
-Machinecoin Core version 0.14.0 is now available from:
+Machinecoin Core version 0.14.1 is now available from:
 
-  <https://download.machinecoin.org/machinecoin-0.14.0/>
+  <https://download.machinecoin.org/machinecoin-0.14.1/>
 
 This is a new major version release, including new features, various bugfixes and performance improvements, as well as updated translations.
 It is recommended to upgrade to this version.
