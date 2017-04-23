@@ -945,13 +945,6 @@ void CTxMemPool::PrioritiseTransaction(const uint256 hash, const std::string str
             BOOST_FOREACH(txiter descendantIt, setDescendants) {
                 mapTx.modify(descendantIt, update_ancestor_state(0, nFeeDelta, 0, 0));
             }
-						// Now update all descendants' modified fees with ancestors
-            setEntries setDescendants;
-            CalculateDescendants(it, setDescendants);
-            setDescendants.erase(it);
-            BOOST_FOREACH(txiter descendantIt, setDescendants) {
-                mapTx.modify(descendantIt, update_ancestor_state(0, nFeeDelta, 0, 0));
-            }
         }
     }
     LogPrintf("PrioritiseTransaction: %s priority += %f, fee += %d\n", strHash, dPriorityDelta, FormatMoney(nFeeDelta));
