@@ -172,7 +172,7 @@ public:
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 350000; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
         consensus.BIP34Height = 0; // Machinecoin BIP34 height
-        consensus.BIP34Hash = uint256S("5b77f70e30731bbf8c4b6c44cf62170cc559b6015aa9b7988d8d44a30c4a4614"); // Machinecoin BIP34 Hash
+        consensus.BIP34Hash = uint256S("f12c6f3eb865b363d4cfb8ab5c28571bb29ca112d08dabc6a02fe7f5def63cec"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 0; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
         consensus.BIP66Height = 0; // 83703951207fcf9e22516f97603f8621299de483e85d85e8a86f7b0fd32717dc
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Machinecoin PoW Limit
@@ -204,7 +204,7 @@ public:
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x3fb29d925e130390dc458d78f2bad1c77291531dac846ccf99178a276f22a968"); //0
+        consensus.defaultAssumeValid = uint256S("0xf12c6f3eb865b363d4cfb8ab5c28571bb29ca112d08dabc6a02fe7f5def63cec"); //0
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
