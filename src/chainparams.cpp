@@ -241,8 +241,8 @@ public:
         fMineBlocksOnDemand = false;
 
         checkpointData = (CCheckpointData) {
-            //boost::assign::map_list_of
-            //( 0, uint256S("0xf12c6f3eb865b363d4cfb8ab5c28571bb29ca112d08dabc6a02fe7f5def63cec"))  // Machinecoin: checkpoint at 0
+            boost::assign::map_list_of
+            ( 0, uint256S("0xf12c6f3eb865b363d4cfb8ab5c28571bb29ca112d08dabc6a02fe7f5def63cec"))  // Machinecoin: checkpoint at 0
         };
 
         chainTxData = ChainTxData{
