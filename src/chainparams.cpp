@@ -220,8 +220,8 @@ public:
 
         genesis = CreateGenesisBlock(1493246045, 373105, 0x1e0ffff0, 1, 50 * COIN); // Machinecoin 1389040865, 3716037
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x3fb29d925e130390dc458d78f2bad1c77291531dac846ccf99178a276f22a968"));
-        assert(genesis.hashMerkleRoot == uint256S("0x6e61b5ffb07529f616477091af79d81a3273a3c5cdde1c219d8896ab0ff003f4"));
+        assert(consensus.hashGenesisBlock == uint256S("0xf12c6f3eb865b363d4cfb8ab5c28571bb29ca112d08dabc6a02fe7f5def63cec"));
+        assert(genesis.hashMerkleRoot == uint256S("0x36a9e41063f3e71466299d0ed9e8193c1c802a88b286016fa4a4d0c3bc384a5c"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
         vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.org", "dnsseed1.machinecoin.org", true));
