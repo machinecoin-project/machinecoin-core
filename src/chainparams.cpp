@@ -172,10 +172,10 @@ public:
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 350000; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
         consensus.BIP34Height = 0; // Machinecoin BIP34 height
-        consensus.BIP34Hash = uint256S("dd67ccdf9fe3e0b91fbc819b046d8b675c142dca6599b8907e2c2acd361fcbae"); // Machinecoin BIP34 Hash
+        consensus.BIP34Hash = uint256S("72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 0; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
         consensus.BIP66Height = 0; // 83703951207fcf9e22516f97603f8621299de483e85d85e8a86f7b0fd32717dc
-        consensus.powLimit = uint256S("dd67ccdf9fe3e0b91fbc819b046d8b675c142dca6599b8907e2c2acd361fcbae"); // Machinecoin PoW Limit
+        consensus.powLimit = uint256S("72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); // Machinecoin PoW Limit
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // Machinecoin 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin 2.5 minutes
 				consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin 2.5 minutes
@@ -204,7 +204,7 @@ public:
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xdd67ccdf9fe3e0b91fbc819b046d8b675c142dca6599b8907e2c2acd361fcbae"); //0
+        consensus.defaultAssumeValid = uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); //0
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -218,9 +218,9 @@ public:
         nDefaultPort = 50333;
         nPruneAfterHeight = 100000;
 
-        genesis = CreateGenesisBlock(1493742078, 360562, 0x1e0ffff0, 1, 50 * COIN); // Machinecoin 1389040865, 3716037
+        genesis = CreateGenesisBlock(1473357600, 5653466, 0x1e0ffff0, 1, 50 * COIN); // Machinecoin Testnet 1473357600, 5653466
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0xdd67ccdf9fe3e0b91fbc819b046d8b675c142dca6599b8907e2c2acd361fcbae"));
+        assert(consensus.hashGenesisBlock == uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"));
         assert(genesis.hashMerkleRoot == uint256S("0x36a9e41063f3e71466299d0ed9e8193c1c802a88b286016fa4a4d0c3bc384a5c"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
@@ -242,11 +242,11 @@ public:
 
         checkpointData = (CCheckpointData) {
           boost::assign::map_list_of
-          ( 0, uint256S("0xdd67ccdf9fe3e0b91fbc819b046d8b675c142dca6599b8907e2c2acd361fcbae"))  // Machinecoin Testnet: checkpoint at 0
+          ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"))  // Machinecoin Testnet: checkpoint at 0
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x8da1c7f79018fac8acac69a57b2f8b5d2743af67976a4525fdedc8c85a3a1418 (height 410476).
+            // Data as of block 0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f (height 0).
             1493742078, // * UNIX timestamp of last known number of transactions
             0,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
