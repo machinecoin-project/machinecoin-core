@@ -193,12 +193,12 @@ public:
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1493164800; // April 26, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1493798930; // May 3, 2017
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1493833879; // May 3, 2017
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1493164800; // April 26, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1493798930; // May 3, 2017
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1493833879; // May 3, 2017
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
@@ -243,13 +243,12 @@ public:
         checkpointData = (CCheckpointData) {
           boost::assign::map_list_of
           ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"))  // Machinecoin Testnet: checkpoint at 0
-          ( 15, uint256S("0xe70fbe8a577d80b50c159082ea3703c2f4efccbcc45cbdd3b61fc01d433143aa"))  // Machinecoin Testnet: checkpoint at 15
         };
 
         chainTxData = ChainTxData{
             // Data as of block e70fbe8a577d80b50c159082ea3703c2f4efccbcc45cbdd3b61fc01d433143aa (height 15).
-            1493761986, // * UNIX timestamp of last known number of transactions
-            16,  // * total number of transactions between genesis and that timestamp
+            1473357600, // * UNIX timestamp of last known number of transactions
+            0,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
             500.0         // * estimated number of transactions per second after that timestamp
         };
