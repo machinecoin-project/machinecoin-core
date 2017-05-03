@@ -184,8 +184,8 @@ public:
 				// consensus.nPowTargetSpacingV3
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1916; // Machinecoin 95% of 2016
-        consensus.nMinerConfirmationWindow = 2016; // Machinecoin nPowTargetTimespan / nPowTargetSpacing
+        consensus.nRuleChangeActivationThreshold = 108; // Machinecoin 95% of 2016
+        consensus.nMinerConfirmationWindow = 2; // Machinecoin nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
@@ -242,13 +242,14 @@ public:
 
         checkpointData = (CCheckpointData) {
           boost::assign::map_list_of
-          ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"))  // Machinecoin Testnet: checkpoint at 0
+          ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f")),  // Machinecoin Testnet: checkpoint at 0
+          ( 15, uint256S("0xe70fbe8a577d80b50c159082ea3703c2f4efccbcc45cbdd3b61fc01d433143aa"))  // Machinecoin Testnet: checkpoint at 15
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f (height 0).
-            1493742078, // * UNIX timestamp of last known number of transactions
-            0,  // * total number of transactions between genesis and that timestamp
+            // Data as of block e70fbe8a577d80b50c159082ea3703c2f4efccbcc45cbdd3b61fc01d433143aa (height 15).
+            1493761986, // * UNIX timestamp of last known number of transactions
+            16,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
             500.0         // * estimated number of transactions per second after that timestamp
         };
