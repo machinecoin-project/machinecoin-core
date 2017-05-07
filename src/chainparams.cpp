@@ -268,7 +268,7 @@ public:
         consensus.BIP34Hash = uint256S("3207e1f8ce7e59208d3b389383fac61444c5099492687e8237fa30c824cc1bc3"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 0; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
         consensus.BIP66Height = 0; // 83703951207fcf9e22516f97603f8621299de483e85d85e8a86f7b0fd32717dc
-        consensus.powLimit = uint256S("3207e1f8ce7e59208d3b389383fac61444c5099492687e8237fa30c824cc1bc3"); // Machinecoin PoW Limit
+        consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Machinecoin PoW Limit
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // Machinecoin 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin 2.5 minutes
         consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin 2.5 minutes
@@ -326,7 +326,8 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
+        vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
+        vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds
 
         fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = true;
@@ -339,11 +340,9 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block e70fbe8a577d80b50c159082ea3703c2f4efccbcc45cbdd3b61fc01d433143aa (height 15).
-            1473357660, // * UNIX timestamp of last known number of transactions
-            0,  // * total number of transactions between genesis and that timestamp
-                        //   (the tx=... number in the SetBestChain debug.log lines)
-            500.0         // * estimated number of transactions per second after that timestamp
+            0,
+            0,
+            0
         };
     }
 
