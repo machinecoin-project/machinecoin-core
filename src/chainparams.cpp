@@ -243,12 +243,13 @@ public:
         checkpointData = (CCheckpointData) {
           boost::assign::map_list_of
           ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"))  // Machinecoin Testnet: checkpoint at 0
+          ( 209, uint256S("0x3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3"))  // Machinecoin Testnet: checkpoint at 209
         };
 
         chainTxData = ChainTxData{
-            // Data as of block e70fbe8a577d80b50c159082ea3703c2f4efccbcc45cbdd3b61fc01d433143aa (height 15).
-            1473357600, // * UNIX timestamp of last known number of transactions
-            0,  // * total number of transactions between genesis and that timestamp
+            // Data as of block 3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3 (height 209).
+            1494605858, // * UNIX timestamp of last known number of transactions
+            211,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
             500.0         // * estimated number of transactions per second after that timestamp
         };
