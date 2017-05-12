@@ -264,11 +264,11 @@ class CRegTestParams : public CChainParams {
 public:
     CRegTestParams() {
         strNetworkID = "regtest";
-        consensus.nSubsidyHalvingInterval = 350000; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
-        consensus.BIP34Height = 0; // Machinecoin BIP34 height
-        consensus.BIP34Hash = uint256S("3207e1f8ce7e59208d3b389383fac61444c5099492687e8237fa30c824cc1bc3"); // Machinecoin BIP34 Hash
-        consensus.BIP65Height = 0; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
-        consensus.BIP66Height = 0; // 83703951207fcf9e22516f97603f8621299de483e85d85e8a86f7b0fd32717dc
+        consensus.nSubsidyHalvingInterval = 150; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
+        consensus.BIP34Height = 100000000; // BIP34 has not activated on regtest (far in the future so block v1 are not rejected in tests)
+        consensus.BIP34Hash = uint256S(); // Machinecoin BIP34 Hash
+        consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
+        consensus.BIP66Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Machinecoin PoW Limit
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // Machinecoin 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin 2.5 minutes
@@ -312,20 +312,10 @@ public:
         nDefaultPort = 60333;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1473357660, 268945, 0x1e0ffff0, 1, 50 * COIN); // Machinecoin Testnet 1473357600, 5653466
+        genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 50 * COIN); // Machinecoin Regtest 1296688602, 0
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x3207e1f8ce7e59208d3b389383fac61444c5099492687e8237fa30c824cc1bc3"));
+        assert(consensus.hashGenesisBlock == uint256S("0x62214f698865bf3308a4cddec2a18c1e9a98f272189f696e0f99d5d1b137912b"));
         assert(genesis.hashMerkleRoot == uint256S("0x36a9e41063f3e71466299d0ed9e8193c1c802a88b286016fa4a4d0c3bc384a5c"));
-
-        // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.org", "dnsseed1.machinecoin.org", true));
-        vSeeds.push_back(CDNSSeedData("dnsseed2.machinecoin.org", "dnsseed2.machinecoin.org"));
-
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55); // Machinecoin N
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds
@@ -337,7 +327,7 @@ public:
 
         checkpointData = (CCheckpointData) {
           boost::assign::map_list_of
-          ( 0, uint256S("0x3207e1f8ce7e59208d3b389383fac61444c5099492687e8237fa30c824cc1bc3"))  // Machinecoin Regnet: checkpoint at 0
+          ( 0, uint256S("0x62214f698865bf3308a4cddec2a18c1e9a98f272189f696e0f99d5d1b137912b"))  // Machinecoin Regtest: checkpoint at 0
         };
 
         chainTxData = ChainTxData{
@@ -345,6 +335,12 @@ public:
             0,
             0
         };
+
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55); // Machinecoin N
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
+        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
     }
 
     void UpdateBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
