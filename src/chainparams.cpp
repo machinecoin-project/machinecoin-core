@@ -175,7 +175,7 @@ public:
         consensus.BIP34Hash = uint256S("72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 0; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
         consensus.BIP66Height = 0; // 83703951207fcf9e22516f97603f8621299de483e85d85e8a86f7b0fd32717dc
-        consensus.powLimit = uint256S("72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); // Machinecoin PoW Limit
+        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Machinecoin PoW Limit
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // Machinecoin 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin 2.5 minutes
 				consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin 2.5 minutes
