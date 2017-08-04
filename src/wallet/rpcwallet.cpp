@@ -236,8 +236,8 @@ UniValue setaccount(const JSONRPCRequest& request)
             "1. \"address\"         (string, required) The machinecoin address to be associated with an account.\n"
             "2. \"account\"         (string, required) The account to assign the address to.\n"
             "\nExamples:\n"
-            + HelpExampleCli("setaccount", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\" \"tabby\"")
-            + HelpExampleRpc("setaccount", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\", \"tabby\"")
+            + HelpExampleCli("setaccount", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" \"tabby\"")
+            + HelpExampleRpc("setaccount", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\", \"tabby\"")
         );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -283,8 +283,8 @@ UniValue getaccount(const JSONRPCRequest& request)
             "\nResult:\n"
             "\"accountname\"        (string) the account address\n"
             "\nExamples:\n"
-            + HelpExampleCli("getaccount", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\"")
-            + HelpExampleRpc("getaccount", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\"")
+            + HelpExampleCli("getaccount", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\"")
+            + HelpExampleRpc("getaccount", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\"")
         );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -398,10 +398,10 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
             "\nResult:\n"
             "\"txid\"                  (string) The transaction id.\n"
             "\nExamples:\n"
-            + HelpExampleCli("sendtoaddress", "\"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\" 0.1")
-            + HelpExampleCli("sendtoaddress", "\"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\" 0.1 \"donation\" \"seans outpost\"")
-            + HelpExampleCli("sendtoaddress", "\"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\" 0.1 \"\" \"\" true")
-            + HelpExampleRpc("sendtoaddress", "\"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\", 0.1, \"donation\", \"seans outpost\"")
+            + HelpExampleCli("sendtoaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 0.1")
+            + HelpExampleCli("sendtoaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 0.1 \"donation\" \"seans outpost\"")
+            + HelpExampleCli("sendtoaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 0.1 \"\" \"\" true")
+            + HelpExampleRpc("sendtoaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\", 0.1, \"donation\", \"seans outpost\"")
         );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -503,11 +503,11 @@ UniValue signmessage(const JSONRPCRequest& request)
             "\nUnlock the wallet for 30 seconds\n"
             + HelpExampleCli("walletpassphrase", "\"mypassphrase\" 30") +
             "\nCreate the signature\n"
-            + HelpExampleCli("signmessage", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\" \"my message\"") +
+            + HelpExampleCli("signmessage", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" \"my message\"") +
             "\nVerify the signature\n"
-            + HelpExampleCli("verifymessage", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\" \"signature\" \"my message\"") +
+            + HelpExampleCli("verifymessage", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" \"signature\" \"my message\"") +
             "\nAs json rpc\n"
-            + HelpExampleRpc("signmessage", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\", \"my message\"")
+            + HelpExampleRpc("signmessage", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\", \"my message\"")
         );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -556,13 +556,13 @@ UniValue getreceivedbyaddress(const JSONRPCRequest& request)
             "amount   (numeric) The total amount in " + CURRENCY_UNIT + " received at this address.\n"
             "\nExamples:\n"
             "\nThe amount from transactions with at least 1 confirmation\n"
-            + HelpExampleCli("getreceivedbyaddress", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\"") +
+            + HelpExampleCli("getreceivedbyaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\"") +
             "\nThe amount including unconfirmed transactions, zero confirmations\n"
-            + HelpExampleCli("getreceivedbyaddress", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\" 0") +
+            + HelpExampleCli("getreceivedbyaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 0") +
             "\nThe amount with at least 6 confirmation, very safe\n"
-            + HelpExampleCli("getreceivedbyaddress", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\" 6") +
+            + HelpExampleCli("getreceivedbyaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 6") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("getreceivedbyaddress", "\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\", 6")
+            + HelpExampleRpc("getreceivedbyaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\", 6")
        );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -834,11 +834,11 @@ UniValue sendfrom(const JSONRPCRequest& request)
             "\"txid\"                 (string) The transaction id.\n"
             "\nExamples:\n"
             "\nSend 0.01 " + CURRENCY_UNIT + " from the default account to the address, must have at least 1 confirmation\n"
-            + HelpExampleCli("sendfrom", "\"\" \"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\" 0.01") +
+            + HelpExampleCli("sendfrom", "\"\" \"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 0.01") +
             "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n"
-            + HelpExampleCli("sendfrom", "\"tabby\" \"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\" 0.01 6 \"donation\" \"seans outpost\"") +
+            + HelpExampleCli("sendfrom", "\"tabby\" \"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 0.01 6 \"donation\" \"seans outpost\"") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("sendfrom", "\"tabby\", \"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\", 0.01, 6, \"donation\", \"seans outpost\"")
+            + HelpExampleRpc("sendfrom", "\"tabby\", \"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\", 0.01, 6, \"donation\", \"seans outpost\"")
         );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -906,13 +906,13 @@ UniValue sendmany(const JSONRPCRequest& request)
             "                                    the number of addresses.\n"
             "\nExamples:\n"
             "\nSend two amounts to two different addresses:\n"
-            + HelpExampleCli("sendmany", "\"\" \"{\\\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\\\":0.01,\\\"LbhhnrHHVFP1eUjP1tdNIYeEVsNHfN9FCw\\\":0.02}\"") +
+            + HelpExampleCli("sendmany", "\"\" \"{\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.01,\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.02}\"") +
             "\nSend two amounts to two different addresses setting the confirmation and comment:\n"
-            + HelpExampleCli("sendmany", "\"\" \"{\\\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\\\":0.01,\\\"LbhhnrHHVFP1eUjP1tdNIYeEVsNHfN9FCw\\\":0.02}\" 6 \"testing\"") +
+            + HelpExampleCli("sendmany", "\"\" \"{\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.01,\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.02}\" 6 \"testing\"") +
             "\nSend two amounts to two different addresses, subtract fee from amount:\n"
-            + HelpExampleCli("sendmany", "\"\" \"{\\\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\\\":0.01,\\\"LbhhnrHHVFP1eUjP1tdNIYeEVsNHfN9FCw\\\":0.02}\" 1 \"\" \"[\\\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\\\",\\\"LbhhnrHHVFP1eUjP1tdNIYeEVsNHfN9FCw\\\"]\"") +
+            + HelpExampleCli("sendmany", "\"\" \"{\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.01,\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.02}\" 1 \"\" \"[\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\",\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\"]\"") +
             "\nAs a json rpc call\n"
-            + HelpExampleRpc("sendmany", "\"\", \"{\\\"LEr4hNAefWYhBMgxCFP2Po1NPrUeiK8kM2\\\":0.01,\\\"LbhhnrHHVFP1eUjP1tdNIYeEVsNHfN9FCw\\\":0.02}\", 6, \"testing\"")
+            + HelpExampleRpc("sendmany", "\"\", \"{\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.01,\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\":0.02}\", 6, \"testing\"")
         );
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -1020,9 +1020,9 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
 
             "\nExamples:\n"
             "\nAdd a multisig address from 2 addresses\n"
-            + HelpExampleCli("addmultisigaddress", "2 \"[\\\"LEr4hnAefwYhBmGxcFP2Po1NPrUEIk8KM2\\\",\\\"LYKr1oaPSqShthukmLDhdZsqUJgzVnQiAQ\\\"]\"") +
+            + HelpExampleCli("addmultisigaddress", "2 \"[\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\",\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\"]\"") +
             "\nAs json rpc call\n"
-            + HelpExampleRpc("addmultisigaddress", "2, \"[\\\"LEr4hnAefwYhBmGxcFP2Po1NPrUEIk8KM2\\\",\\\"LYKr1oaPSqShthukmLDhdZsqUJgzVnQiAQ\\\"]\"")
+            + HelpExampleRpc("addmultisigaddress", "2, \"[\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\",\\\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\\\"]\"")
         ;
         throw runtime_error(msg);
     }
@@ -2068,7 +2068,7 @@ UniValue walletlock(const JSONRPCRequest& request)
             "\nSet the passphrase for 2 minutes to perform a transaction\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\" 120") +
             "\nPerform a send (requires passphrase set)\n"
-            + HelpExampleCli("sendtoaddress", "\"LEr4HnaefWYHbMGXcFp2Po1NPRUeIk8km2\" 1.0") +
+            + HelpExampleCli("sendtoaddress", "\"MSnWX92pkmSby4mzXtTeBAwzBaMFWzVS2q\" 1.0") +
             "\nClear the passphrase since we are done before 2 minutes is up\n"
             + HelpExampleCli("walletlock", "") +
             "\nAs json rpc call\n"
@@ -2603,7 +2603,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
             CMachinecoinAddress address(options["changeAddress"].get_str());
 
             if (!address.IsValid())
-                throw JSONRPCError(RPC_INVALID_PARAMETER, "changeAddress must be a valid machinecoin address");
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "changeAddress must be a valid machinecoin address");
 
             changeAddress = address.Get();
         }
@@ -2657,7 +2657,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
     string strFailReason;
 
     if(!pwalletMain->FundTransaction(tx, nFeeOut, overrideEstimatedFeerate, feeRate, changePosition, strFailReason, includeWatching, lockUnspents, setSubtractFeeFromOutputs, reserveChangeKey, changeAddress))
-        throw JSONRPCError(RPC_INTERNAL_ERROR, strFailReason);
+        throw JSONRPCError(RPC_WALLET_ERROR, strFailReason);
 
     UniValue result(UniValue::VOBJ);
     result.push_back(Pair("hex", EncodeHexTx(tx)));
@@ -2756,33 +2756,33 @@ UniValue bumpfee(const JSONRPCRequest& request)
     CWalletTx& wtx = pwalletMain->mapWallet[hash];
 
     if (pwalletMain->HasWalletSpend(hash)) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Transaction has descendants in the wallet");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Transaction has descendants in the wallet");
     }
 
     {
         LOCK(mempool.cs);
         auto it = mempool.mapTx.find(hash);
         if (it != mempool.mapTx.end() && it->GetCountWithDescendants() > 1) {
-            throw JSONRPCError(RPC_MISC_ERROR, "Transaction has descendants in the mempool");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Transaction has descendants in the mempool");
         }
     }
 
     if (wtx.GetDepthInMainChain() != 0) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction has been mined, or is conflicted with a mined transaction");
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction has been mined, or is conflicted with a mined transaction");
     }
 
     if (!SignalsOptInRBF(wtx)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction is not BIP 125 replaceable");
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction is not BIP 125 replaceable");
     }
 
     if (wtx.mapValue.count("replaced_by_txid")) {
-        throw JSONRPCError(RPC_INVALID_REQUEST, strprintf("Cannot bump transaction %s which was already bumped by transaction %s", hash.ToString(), wtx.mapValue.at("replaced_by_txid")));
+        throw JSONRPCError(RPC_WALLET_ERROR, strprintf("Cannot bump transaction %s which was already bumped by transaction %s", hash.ToString(), wtx.mapValue.at("replaced_by_txid")));
     }
 
     // check that original tx consists entirely of our inputs
     // if not, we can't bump the fee, because the wallet has no way of knowing the value of the other inputs (thus the fee)
     if (!pwalletMain->IsAllFromMe(wtx, ISMINE_SPENDABLE)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction contains inputs that don't belong to this wallet");
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction contains inputs that don't belong to this wallet");
     }
 
     // figure out which output was change
@@ -2791,13 +2791,13 @@ UniValue bumpfee(const JSONRPCRequest& request)
     for (size_t i = 0; i < wtx.tx->vout.size(); ++i) {
         if (pwalletMain->IsChange(wtx.tx->vout[i])) {
             if (nOutput != -1) {
-                throw JSONRPCError(RPC_MISC_ERROR, "Transaction has multiple change outputs");
+                throw JSONRPCError(RPC_WALLET_ERROR, "Transaction has multiple change outputs");
             }
             nOutput = i;
         }
     }
     if (nOutput == -1) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Transaction does not have a change output");
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction does not have a change output");
     }
 
     // Calculate the expected size of the new transaction.
@@ -2888,7 +2888,7 @@ UniValue bumpfee(const JSONRPCRequest& request)
 
     // Check that in all cases the new fee doesn't violate maxTxFee
      if (nNewFee > maxTxFee) {
-         throw JSONRPCError(RPC_MISC_ERROR,
+         throw JSONRPCError(RPC_WALLET_ERROR,
                             strprintf("Specified or calculated fee %s is too high (cannot be higher than maxTxFee %s)",
                                       FormatMoney(nNewFee), FormatMoney(maxTxFee)));
      }
@@ -2900,7 +2900,7 @@ UniValue bumpfee(const JSONRPCRequest& request)
     // moment earlier. In this case, we report an error to the user, who may use totalFee to make an adjustment.
     CFeeRate minMempoolFeeRate = mempool.GetMinFee(GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000);
     if (nNewFeeRate.GetFeePerK() < minMempoolFeeRate.GetFeePerK()) {
-        throw JSONRPCError(RPC_MISC_ERROR, strprintf("New fee rate (%s) is less than the minimum fee rate (%s) to get into the mempool. totalFee value should to be at least %s or settxfee value should be at least %s to add transaction.", FormatMoney(nNewFeeRate.GetFeePerK()), FormatMoney(minMempoolFeeRate.GetFeePerK()), FormatMoney(minMempoolFeeRate.GetFee(maxNewTxSize)), FormatMoney(minMempoolFeeRate.GetFeePerK())));
+        throw JSONRPCError(RPC_WALLET_ERROR, strprintf("New fee rate (%s) is less than the minimum fee rate (%s) to get into the mempool. totalFee value should to be at least %s or settxfee value should be at least %s to add transaction.", FormatMoney(nNewFeeRate.GetFeePerK()), FormatMoney(minMempoolFeeRate.GetFeePerK()), FormatMoney(minMempoolFeeRate.GetFee(maxNewTxSize)), FormatMoney(minMempoolFeeRate.GetFeePerK())));
     }
 
     // Now modify the output to increase the fee.
@@ -2910,7 +2910,7 @@ UniValue bumpfee(const JSONRPCRequest& request)
     CMutableTransaction tx(*(wtx.tx));
     CTxOut* poutput = &(tx.vout[nOutput]);
     if (poutput->nValue < nDelta) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Change output is too small to bump the fee");
+        throw JSONRPCError(RPC_WALLET_ERROR, "Change output is too small to bump the fee");
     }
 
     // If the output would become dust, discard it (converting the dust to fee)
