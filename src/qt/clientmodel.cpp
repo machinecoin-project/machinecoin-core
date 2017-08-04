@@ -74,7 +74,7 @@ int ClientModel::getNumBlocks() const
     return chainActive.Height();
 }
 
-int ClientModel::getHeaderTipHeight()
+int ClientModel::getHeaderTipHeight() const
 {
     if (cachedBestHeaderHeight == -1) {
 				// make sure we initially populate the cache via a cs_main lock
@@ -82,16 +82,18 @@ int ClientModel::getHeaderTipHeight()
 				LOCK(cs_main);
 				if (pindexBestHeader) {
 						cachedBestHeaderHeight = pindexBestHeader->nHeight;
+						cachedBestHeaderTime = pindexBestHeader->GetBlockTime();
 				}
 		}
 		return cachedBestHeaderHeight;
 }
 
-int64_t ClientModel::getHeaderTipTime()
+int64_t ClientModel::getHeaderTipTime() const
 {
     if (cachedBestHeaderTime == -1) {
 				LOCK(cs_main);
 				if (pindexBestHeader) {
+						cachedBestHeaderHeight = pindexBestHeader->nHeight;
 						cachedBestHeaderTime = pindexBestHeader->GetBlockTime();
 				}
 		}
@@ -295,8 +297,8 @@ static void BlockTipChanged(ClientModel *clientmodel, bool initialSync, const CB
 
 		if (fHeader) {
 				// cache best headers time and height to reduce future cs_main locks
-				clientmodel->cachedBestHeaderHeight = pindex->nHeight;
-				clientmodel->cachedBestHeaderTime = pindex->GetBlockTime();
+				clientmodel->cachedBestHeaderHeight = pIndex->nHeight;
+				clientmodel->cachedBestHeaderTime = pIndex->GetBlockTime();
 		}
     // if we are in-sync, update the UI regardless of last update time
     if (!initialSync || now - nLastUpdateNotification > MODEL_UPDATE_DELAY) {
