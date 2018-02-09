@@ -77,10 +77,13 @@ endif
 # machinecoin core #
 MACHINECOIN_CORE_H = \
   addrdb.h \
+  activemasternode.h \
   addrman.h \
   base58.h \
   bloom.h \
   blockencodings.h \
+  cachemap.h \
+  cachemultimap.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -97,7 +100,7 @@ MACHINECOIN_CORE_H = \
   consensus/consensus.h \
   core_io.h \
   core_memusage.h \
-	crypto/scrypt.h \
+	 crypto/scrypt.h \
   crypto/sph_types.h \
   crypto/sph_blake.h \
   crypto/sph_bmw.h \
@@ -112,6 +115,15 @@ MACHINECOIN_CORE_H = \
   crypto/sph_echo.h \
   crypto/hashblock.h \
   cuckoocache.h \
+  dsnotificationinterface.h \
+  governance.h \
+  governance-classes.h \
+  governance-exceptions.h \
+  governance-object.h \
+  governance-validators.h \
+  governance-vote.h \
+  governance-votedb.h \
+  flat-database.h \
   httprpc.h \
   httpserver.h \
   indirectmap.h \
@@ -120,13 +132,20 @@ MACHINECOIN_CORE_H = \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
+  masternode.h \
+  masternode-payments.h \
+  masternode-sync.h \
+  masternodeman.h \
+  masternodeconfig.h \
   memusage.h \
   merkleblock.h \
+  messagesigner.h \
   miner.h \
   net.h \
   net_processing.h \
   netaddress.h \
   netbase.h \
+  netfulfilledman.h \
   netmessagemaker.h \
   noui.h \
   policy/fees.h \
@@ -145,6 +164,7 @@ MACHINECOIN_CORE_H = \
   script/sign.h \
   script/standard.h \
   script/ismine.h \
+  spork.h \
   streams.h \
   support/allocators/secure.h \
   support/allocators/zeroafterfree.h \
@@ -189,26 +209,43 @@ libmachinecoin_util_a-clientversion.$(OBJEXT): obj/build.h
 libmachinecoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libmachinecoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmachinecoin_server_a_SOURCES = \
+  activemasternode.cpp \
   addrman.cpp \
   addrdb.cpp \
   bloom.cpp \
   blockencodings.cpp \
   chain.cpp \
   checkpoints.cpp \
+  dsnotificationinterface.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
   dbwrapper.cpp \
+  governance.cpp \
+  governance-classes.cpp \
+  governance-object.cpp \
+  governance-validators.cpp \
+  governance-vote.cpp \
+  governance-votedb.cpp \
+  masternode.cpp \
+  masternode-payments.cpp \
+  masternode-sync.cpp \
+  masternodeconfig.cpp \
+  masternodeman.cpp \
   merkleblock.cpp \
+  messagesigner.cpp \
   miner.cpp \
   net.cpp \
+  netfulfilledman.cpp \
   net_processing.cpp \
   noui.cpp \
   policy/fees.cpp \
   policy/policy.cpp \
   pow.cpp \
   rest.cpp \
-  rpc/blockchain.cpp \
+#   rpc/blockchain.cpp \
+#   rpc/masternode.cpp \
+  rpc/governance.cpp \
   rpc/mining.cpp \
   rpc/misc.cpp \
   rpc/net.cpp \
@@ -216,6 +253,7 @@ libmachinecoin_server_a_SOURCES = \
   rpc/server.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
+  spork.cpp \
   timedata.cpp \
   torcontrol.cpp \
   txdb.cpp \
