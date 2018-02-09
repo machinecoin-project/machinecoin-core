@@ -7,10 +7,10 @@
 
 //#define ENABLE_DASH_DEBUG
 
-// TODO #include "cachemultimap.h"
-// TODO #include "governance-exceptions.h"
+#include "cachemultimap.h"
+#include "governance-exceptions.h"
 #include "governance-vote.h"
-// TODO #include "governance-votedb.h"
+#include "governance-votedb.h"
 #include "key.h"
 #include "net.h"
 #include "sync.h"

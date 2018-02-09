@@ -4,7 +4,7 @@
 
 #include "governance-vote.h"
 #include "governance-object.h"
-// TODO #include "masternode-sync.h"
+#include "masternode-sync.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
 #include "util.h"

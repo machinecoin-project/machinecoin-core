@@ -11,7 +11,7 @@
 #include "cachemap.h"
 #include "cachemultimap.h"
 #include "chain.h"
-// TODO #include "governance-exceptions.h"
+#include "governance-exceptions.h"
 #include "governance-object.h"
 #include "governance-vote.h"
 #include "net.h"
