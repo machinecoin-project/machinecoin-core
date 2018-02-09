@@ -7,7 +7,7 @@
 
 #include "key.h"
 #include "validation.h"
-//TODO #include "spork.h"
+#include "spork.h"
 
 class CMasternode;
 class CMasternodeBroadcast;
