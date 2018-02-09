@@ -19,6 +19,7 @@
 #include "streams.h"
 #include "sync.h"
 #include "uint256.h"
+#include "util.h"
 #include "threadinterrupt.h"
 
 #include <atomic>
@@ -60,6 +61,8 @@ static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 4 * 1000 * 1000;
 static const unsigned int MAX_SUBVERSION_LENGTH = 256;
 /** Maximum number of automatic outgoing nodes */
 static const int MAX_OUTBOUND_CONNECTIONS = 8;
+/** Maximum number if outgoing masternodes */
+static const int MAX_OUTBOUND_MASTERNODE_CONNECTIONS = 20;
 /** Maximum number of addnode outgoing nodes */
 static const int MAX_ADDNODE_CONNECTIONS = 8;
 /** -listen default */
@@ -156,6 +159,26 @@ public:
     void SetNetworkActive(bool active);
     bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false, bool fFeeler = false, bool fAddnode = false);
     bool CheckIncomingNonce(uint64_t nonce);
+    
+    // fConnectToMasternode should be 'true' only if you want this node to allow to connect to itself
+    // and/or you want it to be disconnected on CMasternodeMan::ProcessMasternodeConnections()
+    // Unfortunately, can't make this method private like in Bitcoin,
+    // because it's used in many Dash-specific places (masternode, privatesend).
+    CNode* ConnectNode(CAddress addrConnect, const char *pszDest = NULL, bool fCountFailure = false, bool fConnectToMasternode = false);
+
+    struct CFullyConnectedOnly {
+        bool operator() (const CNode* pnode) const {
+            return NodeFullyConnected(pnode);
+        }
+    };
+
+    constexpr static const CFullyConnectedOnly FullyConnectedOnly{};
+
+    struct CAllNodes {
+        bool operator() (const CNode*) const {return true;}
+    };
+
+    constexpr static const CAllNodes AllNodes{};
 
     bool ForNode(NodeId id, std::function<bool(CNode* pnode)> func);
 
@@ -202,6 +225,10 @@ public:
         }
         post();
     };
+    
+    void RelayTransaction(const CTransaction& tx);
+    void RelayTransaction(const CTransaction& tx, const CDataStream& ss);
+    void RelayInv(CInv &inv, const int minProtoVersion = MIN_PEER_PROTO_VERSION);
 
     // Addrman functions
     size_t GetAddressCount() const;
@@ -301,6 +328,7 @@ private:
     void AcceptConnection(const ListenSocket& hListenSocket);
     void ThreadSocketHandler();
     void ThreadDNSAddressSeed();
+    void ThreadMnbRequestConnections();
 
     uint64_t CalculateKeyedNetGroup(const CAddress& ad) const;
 
@@ -378,6 +406,7 @@ private:
     ServiceFlags nRelevantServices;
 
     CSemaphore *semOutbound;
+    CSemaphore *semMasternodeOutbound;
     CSemaphore *semAddnode;
     int nMaxConnections;
     int nMaxOutbound;
@@ -402,6 +431,7 @@ private:
     std::thread threadSocketHandler;
     std::thread threadOpenAddedConnections;
     std::thread threadOpenConnections;
+    std::thread threadMnbRequestConnections;
     std::thread threadMessageHandler;
 };
 extern std::unique_ptr<CConnman> g_connman;
@@ -469,6 +499,9 @@ extern bool fDiscover;
 extern bool fListen;
 extern bool fRelayTxes;
 
+extern std::map<CInv, CDataStream> mapRelay;
+extern std::deque<std::pair<int64_t, CInv> > vRelayExpiration;
+extern CCriticalSection cs_mapRelay;
 extern limitedmap<uint256, int64_t> mapAlreadyAskedFor;
 
 /** Subversion as sent to the P2P network in `version` messages */
@@ -610,8 +643,11 @@ public:
     // b) the peer may tell us in its version message that we should not relay tx invs
     //    unless it loads a bloom filter.
     bool fRelayTxes; //protected by cs_filter
+    // If 'true' this node will be disconnected on CMasternodeMan::ProcessMasternodeConnections()
+    bool fMasternode;
     bool fSentAddr;
     CSemaphoreGrant grantOutbound;
+    CSemaphoreGrant grantMasternodeOutbound;
     CCriticalSection cs_filter;
     CBloomFilter* pfilter;
     std::atomic<int> nRefCount;
