@@ -8,7 +8,7 @@
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
-// TODO #include "netfulfilledman.h"
+#include "netfulfilledman.h"
 #include "spork.h"
 #include "util.h"
 

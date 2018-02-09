@@ -10,7 +10,7 @@
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
-// TODO #include "netfulfilledman.h"
+#include "netfulfilledman.h"
 #include "spork.h"
 #include "ui_interface.h"
 #include "util.h"
