@@ -39,6 +39,27 @@ const char *SENDCMPCT="sendcmpct";
 const char *CMPCTBLOCK="cmpctblock";
 const char *GETBLOCKTXN="getblocktxn";
 const char *BLOCKTXN="blocktxn";
+// Machinecoin message types
+const char *SPORK="spork";
+const char *GETSPORKS="getsporks";
+const char *MASTERNODEPAYMENTVOTE="mnw";
+const char *MASTERNODEPAYMENTBLOCK="mnwb";
+const char *MASTERNODEPAYMENTSYNC="mnget";
+const char *MNANNOUNCE="mnb";
+const char *MNPING="mnp";
+const char *DSACCEPT="dsa";
+const char *DSVIN="dsi";
+const char *DSFINALTX="dsf";
+const char *DSSIGNFINALTX="dss";
+const char *DSCOMPLETE="dsc";
+const char *DSSTATUSUPDATE="dssu";
+const char *DSQUEUE="dsq";
+const char *DSEG="dseg";
+const char *SYNCSTATUSCOUNT="ssc";
+const char *MNGOVERNANCESYNC="govsync";
+const char *MNGOVERNANCEOBJECT="govobj";
+const char *MNGOVERNANCEOBJECTVOTE="govobjvote";
+const char *MNVERIFY="mnv";
 };
 
 /** All known message types. Keep this in the same order as the list of
@@ -71,6 +92,28 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::CMPCTBLOCK,
     NetMsgType::GETBLOCKTXN,
     NetMsgType::BLOCKTXN,
+    // Machinecoin message types
+    // NOTE: do NOT include non-implmented here, we want them to be "Unknown command" in ProcessMessage()
+    NetMsgType::SPORK,
+    NetMsgType::GETSPORKS,
+    NetMsgType::MASTERNODEPAYMENTVOTE,
+    // NetMsgType::MASTERNODEPAYMENTBLOCK, // there is no message for this, only inventory
+    NetMsgType::MASTERNODEPAYMENTSYNC,
+    NetMsgType::MNANNOUNCE,
+    NetMsgType::MNPING,
+    NetMsgType::DSACCEPT,
+    NetMsgType::DSVIN,
+    NetMsgType::DSFINALTX,
+    NetMsgType::DSSIGNFINALTX,
+    NetMsgType::DSCOMPLETE,
+    NetMsgType::DSSTATUSUPDATE,
+    NetMsgType::DSQUEUE,
+    NetMsgType::DSEG,
+    NetMsgType::SYNCSTATUSCOUNT,
+    NetMsgType::MNGOVERNANCESYNC,
+    NetMsgType::MNGOVERNANCEOBJECT,
+    NetMsgType::MNGOVERNANCEOBJECTVOTE,
+    NetMsgType::MNVERIFY,
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 

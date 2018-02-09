@@ -240,6 +240,29 @@ extern const char *GETBLOCKTXN;
  * @since protocol version 70014 as described by BIP 152
  */
 extern const char *BLOCKTXN;
+  
+// Machinecoin message types
+// NOTE: do NOT declare non-implmented here, we don't want them to be exposed to the outside
+// TODO: add description
+extern const char *SPORK;
+extern const char *GETSPORKS;
+extern const char *MASTERNODEPAYMENTVOTE;
+extern const char *MASTERNODEPAYMENTSYNC;
+extern const char *MNANNOUNCE;
+extern const char *MNPING;
+extern const char *DSACCEPT;
+extern const char *DSVIN;
+extern const char *DSFINALTX;
+extern const char *DSSIGNFINALTX;
+extern const char *DSCOMPLETE;
+extern const char *DSSTATUSUPDATE;
+extern const char *DSQUEUE;
+extern const char *DSEG;
+extern const char *SYNCSTATUSCOUNT;
+extern const char *MNGOVERNANCESYNC;
+extern const char *MNGOVERNANCEOBJECT;
+extern const char *MNGOVERNANCEOBJECTVOTE;
+extern const char *MNVERIFY;
 };
 
 /* Get a vector of all valid message types (see above) */
