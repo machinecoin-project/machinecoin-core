@@ -9,7 +9,7 @@
 #include "masternode.h"
 // TODO #include "masternode-payments.h"
 // TODO #include "masternode-sync.h"
-// TODO #include "masternodeman.h"
+#include "masternodeman.h"
 #include "messagesigner.h"
 #include "script/standard.h"
 #include "util.h"

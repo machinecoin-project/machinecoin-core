@@ -5,7 +5,7 @@
 #include "activemasternode.h"
 #include "masternode.h"
 // TODO #include "masternode-sync.h"
-// TODO #include "masternodeman.h"
+#include "masternodeman.h"
 #include "protocol.h"
 
 // Keep track of the active Masternode
