@@ -30,6 +30,12 @@
 #include "utilstrencodings.h"
 #include "validationinterface.h"
 
+#include "spork.h"
+#include "governance.h"
+#include "masternode-payments.h"
+#include "masternode-sync.h"
+#include "masternodeman.h"
+
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
@@ -915,6 +921,43 @@ bool static AlreadyHave(const CInv& inv) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
     case MSG_WITNESS_BLOCK:
         return mapBlockIndex.count(inv.hash);
     }
+  
+    /* 
+        Machinecoin Related Inventory Messages
+
+        --
+
+        We shouldn't update the sync times for each of the messages when we already have it. 
+        We're going to be asking many nodes upfront for the full inventory list, so we'll get duplicates of these.
+        We want to only update the time on new hits, so that we can time out appropriately if needed.
+    */
+
+    case MSG_SPORK:
+        return mapSporks.count(inv.hash);
+
+    case MSG_MASTERNODE_PAYMENT_VOTE:
+        return mnpayments.mapMasternodePaymentVotes.count(inv.hash);
+
+    case MSG_MASTERNODE_PAYMENT_BLOCK:
+        {
+            BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
+            return mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.find(mi->second->nHeight) != mnpayments.mapMasternodeBlocks.end();
+        }
+
+    case MSG_MASTERNODE_ANNOUNCE:
+        return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash) && !mnodeman.IsMnbRecoveryRequested(inv.hash);
+
+    case MSG_MASTERNODE_PING:
+        return mnodeman.mapSeenMasternodePing.count(inv.hash);
+
+    case MSG_GOVERNANCE_OBJECT:
+    case MSG_GOVERNANCE_OBJECT_VOTE:
+        return ! governance.ConfirmInventoryRequest(inv);
+
+    case MSG_MASTERNODE_VERIFY:
+        return mnodeman.mapSeenMasternodeVerification.count(inv.hash);
+    }
+
     // Don't know what it is, just say we already got one
     return true;
 }
@@ -1114,6 +1157,124 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         push = true;
                     }
                 }
+              
+                if (!push && inv.type == MSG_TX) {
+                    CTransaction tx;
+                    if (mempool.lookup(inv.hash, tx)) {
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << tx;
+                        connman.PushMessage(pfrom, NetMsgType::TX, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_SPORK) {
+                    if(mapSporks.count(inv.hash)) {
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << mapSporks[inv.hash];
+                        connman.PushMessage(pfrom, NetMsgType::SPORK, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_MASTERNODE_PAYMENT_VOTE) {
+                    if(mnpayments.HasVerifiedPaymentVote(inv.hash)) {
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << mnpayments.mapMasternodePaymentVotes[inv.hash];
+                        connman.PushMessage(pfrom, NetMsgType::MASTERNODEPAYMENTVOTE, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_MASTERNODE_PAYMENT_BLOCK) {
+                    BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
+                    LOCK(cs_mapMasternodeBlocks);
+                    if (mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.count(mi->second->nHeight)) {
+                        BOOST_FOREACH(CMasternodePayee& payee, mnpayments.mapMasternodeBlocks[mi->second->nHeight].vecPayees) {
+                            std::vector<uint256> vecVoteHashes = payee.GetVoteHashes();
+                            BOOST_FOREACH(uint256& hash, vecVoteHashes) {
+                                if(mnpayments.HasVerifiedPaymentVote(hash)) {
+                                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                                    ss.reserve(1000);
+                                    ss << mnpayments.mapMasternodePaymentVotes[hash];
+                                    connman.PushMessage(pfrom, NetMsgType::MASTERNODEPAYMENTVOTE, ss);
+                                }
+                            }
+                        }
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_MASTERNODE_ANNOUNCE) {
+                    if(mnodeman.mapSeenMasternodeBroadcast.count(inv.hash)){
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << mnodeman.mapSeenMasternodeBroadcast[inv.hash].second;
+                        connman.PushMessage(pfrom, NetMsgType::MNANNOUNCE, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_MASTERNODE_PING) {
+                    if(mnodeman.mapSeenMasternodePing.count(inv.hash)) {
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << mnodeman.mapSeenMasternodePing[inv.hash];
+                        connman.PushMessage(pfrom, NetMsgType::MNPING, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_GOVERNANCE_OBJECT) {
+                    LogPrint("net", "ProcessGetData -- MSG_GOVERNANCE_OBJECT: inv = %s\n", inv.ToString());
+                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                    bool topush = false;
+                    {
+                        if(governance.HaveObjectForHash(inv.hash)) {
+                            ss.reserve(1000);
+                            if(governance.SerializeObjectForHash(inv.hash, ss)) {
+                                topush = true;
+                            }
+                        }
+                    }
+                    LogPrint("net", "ProcessGetData -- MSG_GOVERNANCE_OBJECT: topush = %d, inv = %s\n", topush, inv.ToString());
+                    if(topush) {
+                        connman.PushMessage(pfrom, NetMsgType::MNGOVERNANCEOBJECT, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_GOVERNANCE_OBJECT_VOTE) {
+                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                    bool topush = false;
+                    {
+                        if(governance.HaveVoteForHash(inv.hash)) {
+                            ss.reserve(1000);
+                            if(governance.SerializeVoteForHash(inv.hash, ss)) {
+                                topush = true;
+                            }
+                        }
+                    }
+                    if(topush) {
+                        LogPrint("net", "ProcessGetData -- pushing: inv = %s\n", inv.ToString());
+                        connman.PushMessage(pfrom, NetMsgType::MNGOVERNANCEOBJECTVOTE, ss);
+                        pushed = true;
+                    }
+                }
+
+                if (!push && inv.type == MSG_MASTERNODE_VERIFY) {
+                    if(mnodeman.mapSeenMasternodeVerification.count(inv.hash)) {
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << mnodeman.mapSeenMasternodeVerification[inv.hash];
+                        connman.PushMessage(pfrom, NetMsgType::MNVERIFY, ss);
+                        pushed = true;
+                    }
+                }
+              
                 if (!push) {
                     vNotFound.push_back(inv);
                 }
@@ -2595,13 +2756,33 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         // We do not care about the NOTFOUND message, but logging an Unknown Command
         // message would be undesirable as we transmit it ourselves.
     }
+  
+    else
+    {
+        bool found = false;
 
-    else {
-        // Ignore unknown commands for extensibility
-        LogPrint("net", "Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->id);
+        const std::vector<std::string> &allMessages = getAllNetMessageTypes();
+        BOOST_FOREACH(const std::string msg, allMessages) {
+            if(msg == strCommand) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            mnodeman.ProcessMessage(pfrom, strCommand, vRecv, connman);
+            mnpayments.ProcessMessage(pfrom, strCommand, vRecv, connman);
+            sporkManager.ProcessSpork(pfrom, strCommand, vRecv, connman);
+            masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+            governance.ProcessMessage(pfrom, strCommand, vRecv, connman);
+        }
+        else
+        {
+            // Ignore unknown commands for extensibility
+            LogPrint("net", "Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->id);
+        }
     }
-
-
 
     return true;
 }
