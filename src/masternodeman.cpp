@@ -4,7 +4,7 @@
 
 #include "activemasternode.h"
 #include "addrman.h"
-// TODO #include "governance.h"
+#include "governance.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
