@@ -607,6 +607,9 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     UniValue aux(UniValue::VOBJ);
     aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
 
+    // Octopus retargetting
+    pblock->nBits = CalculateNextWorkRequired_V3(pindexPrev, pblock, pindexPrev->GetBlockTime(), pblock->GetBlockTime(), Params().GetConsensus());
+
     arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
 
     UniValue aMutable(UniValue::VARR);
@@ -659,6 +662,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             }
         }
     }
+
     result.push_back(Pair("version", pblock->nVersion));
     result.push_back(Pair("rules", aRules));
     result.push_back(Pair("vbavailable", vbavailable));
