@@ -142,11 +142,17 @@ unsigned int GetNextWorkRequired_V3(const CBlockIndex* pindexLast, const CBlockH
         {
             if (i == 0) continue;
             if (bnNew.bits() > 235)
-                fShift = true; bnNew >>= 1;
+            {
+                fShift = true;
+                bnNew >>= 1;
+            }
             bnNew *= 190 + i * 3;
             bnNew /= 173;
             if (fShift)
-                fShift = false; bnNew <<= 1;
+            {
+                fShift = false;
+                bnNew <<= 1;
+            }
         }
 
         const arith_uint256 nPowLimit  = UintToArith256(params.powLimit);
@@ -264,11 +270,17 @@ unsigned int CalculateNextWorkRequired_V3(const CBlockIndex* pindexLast, const C
         {
             if (i == 0) continue;
             if (bnNew.bits() > 235)
-                fShift = true; bnNew >>= 1;
+            {
+                fShift = true;
+                bnNew >>= 1; 
+            }
             bnNew *= 190 + i * 3;
             bnNew /= 173;
             if (fShift)
-                fShift = false; bnNew <<= 1;
+            {
+                fShift = false;
+                bnNew <<= 1;
+            }
         }
 
         const arith_uint256 nPowLimit = UintToArith256(params.powLimit);
