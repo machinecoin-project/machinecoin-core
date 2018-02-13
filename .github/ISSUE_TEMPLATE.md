@@ -4,7 +4,7 @@ This issue tracker is only for technical issues related to machinecoin-core.
 
 General machinecoin questions and/or support requests and are best directed to the [machinecointalk.io forums](https://machinecointalk.io/).
 
-For reporting security issues, please contact the Machinecoin developers on the #machinecoin-dev Freenode IRC channel or alternatively you can email us at contact@machinecoin.org.
+For reporting security issues, please contact the Machinecoin developers on the #machinecoin-dev Freenode IRC channel or alternatively you can email us at contact@machinecoin.io.
 
 ### Describe the issue
 

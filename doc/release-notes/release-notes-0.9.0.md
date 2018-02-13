@@ -1,6 +1,6 @@
 Machinecoin Core version 0.9.0 is now available from:
 
-  https://machinecoin.org/bin/0.9.0/
+  https://machinecoin.io/bin/0.9.0/
 
 This is a new major version release, bringing both new features and
 bug fixes.

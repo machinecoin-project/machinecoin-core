@@ -20,8 +20,8 @@ Summary:	Peer to Peer Cryptographic Currency
 
 Group:		Applications/System
 License:	MIT
-URL:		https://machinecoin.org/
-Source0:	https://machinecoin.org/bin/machinecoin-core-%{version}/machinecoin-%{version}.tar.gz
+URL:		https://machinecoin.io/
+Source0:	https://machinecoin.io/bin/machinecoin-core-%{version}/machinecoin-%{version}.tar.gz
 Source1:	http://download.oracle.com/berkeley-db/db-%{bdbv}.NC.tar.gz
 
 Source10:	https://raw.githubusercontent.com/machinecoin/machinecoin/v%{version}/contrib/debian/examples/machinecoin.conf

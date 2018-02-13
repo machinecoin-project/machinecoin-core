@@ -1,6 +1,6 @@
 Machinecoin Core version 0.10.2 is now available from:
 
-  <https://machinecoin.org/bin/machinecoin-core-0.10.2/>
+  <https://machinecoin.io/bin/machinecoin-core-0.10.2/>
 
 This is a new minor version release, bringing minor bug fixes and translation 
 updates. It is recommended to upgrade to this version.
