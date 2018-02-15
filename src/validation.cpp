@@ -2998,10 +2998,6 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
             return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
-    if (block.nVersion < VERSIONBITS_TOP_BITS && IsWitnessEnabled(pindexPrev, consensusParams))
-        return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
-                                 strprintf("rejected nVersion=0x%08x block", block.nVersion));
-
     return true;
 }
 

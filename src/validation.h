@@ -135,7 +135,7 @@ static const bool DEFAULT_TXINDEX = false;
 static const unsigned int DEFAULT_BANSCORE_THRESHOLD = 100;
 
 /** Default for -mempoolreplacement */
-static const bool DEFAULT_ENABLE_REPLACEMENT = false;
+static const bool DEFAULT_ENABLE_REPLACEMENT = true;
 /** Default for using fee filter */
 static const bool DEFAULT_FEEFILTER = true;
 
