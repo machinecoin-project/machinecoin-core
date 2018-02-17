@@ -27,7 +27,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     {
         return UintToArith256(params.powLimit).GetCompact();       // Machinecoin: Retargeting to support the PoW change phase (V3)
     }
-    else if (pindexLast->nHeight+1 < 468000)
+    else if (pindexLast->nHeight+1 < 468500)
     {
         return GetNextWorkRequired_V2(pindexLast, pblock, params); // Machinecoin: Digishield retargeting (V2)
     }
@@ -180,7 +180,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     {
         return UintToArith256(params.powLimit).GetCompact();
     }
-    else if (pindexLast->nHeight+1 < 468000) // Machinecoin: Digishield retargeting (V2)
+    else if (pindexLast->nHeight+1 < 468500) // Machinecoin: Digishield retargeting (V2)
     {
         return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params);
     }

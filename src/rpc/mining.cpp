@@ -608,7 +608,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
 
     // Octopus retargetting
-    if (pindexPrev->nHeight+1 < 468005) // +5 to ensure block is "high" enough
+    if (pindexPrev->nHeight+1 < 468505) // +5 to ensure block is "high" enough
         pblock->nBits = CalculateNextWorkRequired_V3(pindexPrev, pblock, pindexPrev->GetBlockTime(), pblock->GetBlockTime(), Params().GetConsensus());
 
     arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
