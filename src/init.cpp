@@ -1672,13 +1672,12 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
             if(!CMessageSigner::GetKeysFromSecret(strMasterNodePrivKey, activeMasternode.keyMasternode, activeMasternode.pubKeyMasternode))
                 return InitError(_("Invalid masternodeprivkey. Please see documenation."));
 
-            LogPrintf("  pubKeyMasternode: %s\n", CBitcoinAddress(activeMasternode.pubKeyMasternode.GetID()).ToString());
+            LogPrintf("  pubKeyMasternode: %s\n", CMachinecoinAddress(activeMasternode.pubKeyMasternode.GetID()).ToString());
         } else {
             return InitError(_("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
         }
     }
-  
-#ifdef ENABLE_WALLET
+
     LogPrintf("Using masternode config file %s\n", GetMasternodeConfigFile().string());
   
     if(GetBoolArg("-mnconflock", true) && pwalletMain && (masternodeConfig.getCount() > 0)) {
