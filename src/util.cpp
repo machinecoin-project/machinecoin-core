@@ -561,6 +561,15 @@ boost::filesystem::path GetConfigFile(const std::string& confPath)
     return pathConfigFile;
 }
 
+// TODO use const std::string& confPath instead of CLI argument
+boost::filesystem::path GetMasternodeConfigFile()
+{
+    boost::filesystem::path pathConfigFile(GetArg("-mnconf", "masternode.conf"));
+    if (!pathConfigFile.is_complete())
+        pathConfigFile = GetDataDir() / pathConfigFile;
+    return pathConfigFile;
+}
+
 void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
