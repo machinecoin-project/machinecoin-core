@@ -101,6 +101,10 @@ namespace boost {
 
 } // namespace boost
 
+// Machinecoin only features
+bool fMasterNode = false;
+bool fLiteMode = false;
+
 using namespace std;
 
 const char * const MACHINECOIN_CONF_FILENAME = "machinecoin.conf";
