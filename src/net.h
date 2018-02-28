@@ -313,6 +313,45 @@ public:
     unsigned int GetReceiveFloodSize() const;
 
     void WakeMessageHandler();
+    
+    
+    
+    // Masternodes
+    
+    template<typename Condition, typename Callable>
+    bool ForEachNodeContinueIf(const Condition& cond, Callable&& func)
+    {
+        LOCK(cs_vNodes);
+        for (auto&& node : vNodes)
+            if (cond(node))
+                if(!func(node))
+                    return false;
+        return true;
+    };
+
+    template<typename Callable>
+    bool ForEachNodeContinueIf(Callable&& func)
+    {
+        return ForEachNodeContinueIf(FullyConnectedOnly, func);
+    }
+
+    template<typename Condition, typename Callable>
+    bool ForEachNodeContinueIf(const Condition& cond, Callable&& func) const
+    {
+        LOCK(cs_vNodes);
+        for (const auto& node : vNodes)
+            if (cond(node))
+                if(!func(node))
+                    return false;
+        return true;
+    };
+
+    template<typename Callable>
+    bool ForEachNodeContinueIf(Callable&& func) const
+    {
+        return ForEachNodeContinueIf(FullyConnectedOnly, func);
+    }
+    
 private:
     struct ListenSocket {
         SOCKET socket;
