@@ -846,6 +846,39 @@ void Unserialize(Stream& is, std::shared_ptr<const T>& p)
 }
 
 
+/**
+ * list
+ */
+template<typename T, typename A>
+unsigned int GetSerializeSize(const std::list<T, A>& l)
+{
+    unsigned int nSize = GetSizeOfCompactSize(l.size());
+    for (typename std::list<T, A>::const_iterator it = l.begin(); it != l.end(); ++it)
+        nSize += GetSerializeSize((*it));
+    return nSize;
+}
+
+template<typename Stream, typename T, typename A>
+void Serialize(Stream& os, const std::list<T, A>& l)
+{
+    WriteCompactSize(os, l.size());
+    for (typename std::list<T, A>::const_iterator it = l.begin(); it != l.end(); ++it)
+        Serialize(os, (*it));
+}
+
+template<typename Stream, typename T, typename A>
+void Unserialize(Stream& is, std::list<T, A>& l)
+{
+    l.clear();
+    unsigned int nSize = ReadCompactSize(is);
+    for (unsigned int i = 0; i < nSize; i++)
+    {
+        T val;
+        Unserialize(is, val);
+        l.push_back(val);
+    }
+}
+
 
 /**
  * Support for ADD_SERIALIZE_METHODS and READWRITE macro
@@ -995,27 +1028,6 @@ template <typename S, typename T>
 size_t GetSerializeSize(const S& s, const T& t)
 {
     return (CSizeComputer(s.GetType(), s.GetVersion()) << t).size();
-}
-
-template<typename Stream, typename T, typename A>
-void Serialize(Stream& os, const std::list<T, A>& l)
-{
-    WriteCompactSize(os, l.size());
-    for (typename std::list<T, A>::const_iterator it = l.begin(); it != l.end(); ++it)
-        Serialize(os, (*it));
-}
-
-template<typename Stream, typename T, typename A>
-void Unserialize(Stream& is, std::list<T, A>& l)
-{
-    l.clear();
-    unsigned int nSize = ReadCompactSize(is);
-    for (unsigned int i = 0; i < nSize; i++)
-    {
-        T val;
-        Unserialize(is, val);
-        l.push_back(val);
-    }
 }
 
 #endif // MACHINECOIN_SERIALIZE_H
