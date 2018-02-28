@@ -74,7 +74,7 @@ struct vote_instance_t {
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         int nOutcome = int(eOutcome);
         READWRITE(nOutcome);
@@ -98,7 +98,7 @@ struct vote_rec_t {
     ADD_SERIALIZE_METHODS;
 
      template <typename Stream, typename Operation>
-     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+     inline void SerializationOp(Stream& s, Operation ser_action)
      {
          READWRITE(mapInstances);
      }
@@ -305,7 +305,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         // SERIALIZE DATA FOR SAVING/LOADING OR NETWORK FUNCTIONS
 
