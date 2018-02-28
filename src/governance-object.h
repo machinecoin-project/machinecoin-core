@@ -317,7 +317,7 @@ public:
         READWRITE(nObjectType);
         READWRITE(vinMasternode);
         READWRITE(vchSig);
-        if(nType & SER_DISK) {
+        if(SER_DISK) {
             // Only include these for the disk file format
             LogPrint("gobject", "CGovernanceObject::SerializationOp Reading/writing votes from/to disk\n");
             READWRITE(nDeletionTime);
