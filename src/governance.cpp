@@ -301,8 +301,6 @@ void CGovernanceManager::CheckOrphanVotes(CGovernanceObject& govobj, CGovernance
 
 void CGovernanceManager::AddGovernanceObject(CGovernanceObject& govobj, CConnman& connman, CNode* pfrom)
 {
-    DBG( cout << "CGovernanceManager::AddGovernanceObject START" << endl; );
-
     uint256 nHash = govobj.GetHash();
     std::string strHash = nHash.ToString();
 
@@ -352,18 +350,9 @@ void CGovernanceManager::AddGovernanceObject(CGovernanceObject& govobj, CConnman
     // INSERT INTO OUR GOVERNANCE OBJECT MEMORY
     mapObjects.insert(std::make_pair(nHash, govobj));
 
-    // SHOULD WE ADD THIS OBJECT TO ANY OTHER MANANGERS?
-
-    DBG( cout << "CGovernanceManager::AddGovernanceObject Before trigger block, strData = "
-              << govobj.GetDataAsString()
-              << ", nObjectType = " << govobj.nObjectType
-              << endl; );
-
     switch(govobj.nObjectType) {
     case GOVERNANCE_OBJECT_TRIGGER:
-        DBG( cout << "CGovernanceManager::AddGovernanceObject Before AddNewTrigger" << endl; );
         triggerman.AddNewTrigger(nHash);
-        DBG( cout << "CGovernanceManager::AddGovernanceObject After AddNewTrigger" << endl; );
         break;
     case GOVERNANCE_OBJECT_WATCHDOG:
         mapWatchdogObjects[nHash] = govobj.GetCreationTime() + GOVERNANCE_WATCHDOG_EXPIRATION_TIME;
@@ -385,8 +374,6 @@ void CGovernanceManager::AddGovernanceObject(CGovernanceObject& govobj, CConnman
 
     CGovernanceException exception;
     CheckOrphanVotes(govobj, exception, connman);
-
-    DBG( cout << "CGovernanceManager::AddGovernanceObject END" << endl; );
 }
 
 bool CGovernanceManager::UpdateCurrentWatchdog(CGovernanceObject& watchdogNew)
