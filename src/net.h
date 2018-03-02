@@ -770,11 +770,14 @@ private:
     std::list<CNetMessage> vRecvMsg;  // Used only by SocketHandler thread
 
     mutable CCriticalSection cs_addrName;
-    std::string addrName;
+    // Moved to public for governance compatibility
+    // std::string addrName;
 
     CService addrLocal;
     mutable CCriticalSection cs_addrLocal;
 public:
+    // Moved from private
+    std::string addrName;
 
     NodeId GetId() const {
       return id;
