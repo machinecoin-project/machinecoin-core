@@ -421,6 +421,11 @@ private:
     void DumpAddresses();
     void DumpData();
     void DumpBanlist();
+    
+    // Masternodes
+    CDataStream BeginMessage(CNode* node, int nVersion, int flags, const std::string& sCommand);
+    void PushMessage(CNode* pnode, CDataStream& strm, const std::string& sCommand);
+    void EndMessage(CDataStream& strm);
 
     // Network stats
     void RecordBytesRecv(uint64_t bytes);
