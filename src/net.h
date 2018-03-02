@@ -183,6 +183,34 @@ public:
     bool ForNode(NodeId id, std::function<bool(CNode* pnode)> func);
 
     void PushMessage(CNode* pnode, CSerializedNetMsg&& msg);
+    
+    // Masternodes
+    template <typename... Args>
+    void PushMessageWithVersionAndFlag(CNode* pnode, int nVersion, int flag, const std::string& sCommand, Args&&... args)
+    {
+        auto msg(BeginMessage(pnode, nVersion, flag, sCommand));
+        ::SerializeMany(msg, std::forward<Args>(args)...);
+        EndMessage(msg);
+        PushMessage(pnode, msg, sCommand);
+    }
+
+    template <typename... Args>
+    void PushMessageWithFlag(CNode* pnode, int flag, const std::string& sCommand, Args&&... args)
+    {
+        PushMessageWithVersionAndFlag(pnode, 0, flag, sCommand, std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    void PushMessageWithVersion(CNode* pnode, int nVersion, const std::string& sCommand, Args&&... args)
+    {
+        PushMessageWithVersionAndFlag(pnode, nVersion, 0, sCommand, std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    void PushMessage(CNode* pnode, const std::string& sCommand, Args&&... args)
+    {
+        PushMessageWithVersionAndFlag(pnode, 0, 0, sCommand, std::forward<Args>(args)...);
+    }
 
     template<typename Callable>
     void ForEachNode(Callable&& func)
