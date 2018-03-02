@@ -2978,6 +2978,30 @@ int64_t PoissonNextSend(int64_t nNow, int average_interval_seconds) {
     return nNow + (int64_t)(log1p(GetRand(1ULL << 48) * -0.0000000000000035527136788 /* -1/2^48 */) * average_interval_seconds * -1000000.0 + 0.5);
 }
 
+// Masternodes
+// TODO replaced by newer function/inline solution in 0.14, recheck and rework if needed
+// See line #1324 in net.cpp
+std::vector<CNode*> CConnman::CopyNodeVector()
+{
+    std::vector<CNode*> vecNodesCopy;
+    LOCK(cs_vNodes);
+    for(size_t i = 0; i < vNodes.size(); ++i) {
+        CNode* pnode = vNodes[i];
+        pnode->AddRef();
+        vecNodesCopy.push_back(pnode);
+    }
+    return vecNodesCopy;
+}
+
+void CConnman::ReleaseNodeVector(const std::vector<CNode*>& vecNodes)
+{
+    LOCK(cs_vNodes);
+    for(size_t i = 0; i < vecNodes.size(); ++i) {
+        CNode* pnode = vecNodes[i];
+        pnode->Release();
+    }
+}
+
 CSipHasher CConnman::GetDeterministicRandomizer(uint64_t id) const
 {
     return CSipHasher(nSeed0, nSeed1).Write(id);
