@@ -504,7 +504,7 @@ bool CGovernanceObject::IsCollateralValid(std::string& strError, bool& fMissingC
     // RETRIEVE TRANSACTION IN QUESTION
 
     if(!GetTransaction(nCollateralHash, txCollateral, Params().GetConsensus(), nBlockHash, true)){
-        strError = strprintf("Can't find collateral tx %s", txCollateral.GetHash().ToString());
+        //strError = strprintf("Can't find collateral tx %s", txCollateral.GetHash().ToString());
         LogPrintf("CGovernanceObject::IsCollateralValid -- %s\n", strError);
         return false;
     }
@@ -524,7 +524,7 @@ bool CGovernanceObject::IsCollateralValid(std::string& strError, bool& fMissingC
     bool foundOpReturn = false;
     BOOST_FOREACH(const CTxOut o, txCollateral->vout) {
         if(!o.scriptPubKey.IsPayToPublicKeyHash() && !o.scriptPubKey.IsUnspendable()) {
-            strError = strprintf("Invalid Script %s", txCollateral.GetHash().ToString());
+            //strError = strprintf("Invalid Script %s", txCollateral.GetHash().ToString());
             LogPrintf ("CGovernanceObject::IsCollateralValid -- %s\n", strError);
             return false;
         }
@@ -535,7 +535,7 @@ bool CGovernanceObject::IsCollateralValid(std::string& strError, bool& fMissingC
     }
 
     if(!foundOpReturn){
-        strError = strprintf("Couldn't find opReturn %s in %s", nExpectedHash.ToString(), txCollateral.GetHash().ToString());
+        //strError = strprintf("Couldn't find opReturn %s in %s", nExpectedHash.ToString(), txCollateral.GetHash().ToString());
         LogPrintf ("CGovernanceObject::IsCollateralValid -- %s\n", strError);
         return false;
     }
