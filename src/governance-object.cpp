@@ -290,8 +290,6 @@ uint256 CGovernanceObject::GetHash() const
     // fee_tx is left out on purpose
     uint256 h1 = ss.GetHash();
 
-    DBG( printf("CGovernanceObject::GetHash %i %li %s\n", nRevision, nTime, strData.c_str()); );
-
     return h1;
 }
 
@@ -339,10 +337,6 @@ void CGovernanceObject::LoadData()
         UniValue objResult(UniValue::VOBJ);
         GetData(objResult);
 
-        DBG( cout << "CGovernanceObject::LoadData strData = "
-             << GetDataAsString()
-             << endl; );
-
         UniValue obj = GetJSONObject();
         nObjectType = obj["type"].get_int();
     }
@@ -351,7 +345,6 @@ void CGovernanceObject::LoadData()
         std::ostringstream ostr;
         ostr << "CGovernanceObject::LoadData Error parsing JSON"
              << ", e.what() = " << e.what();
-        DBG( cout << ostr.str() << endl; );
         LogPrintf("%s\n", ostr.str());
         return;
     }
@@ -359,7 +352,6 @@ void CGovernanceObject::LoadData()
         fUnparsable = true;
         std::ostringstream ostr;
         ostr << "CGovernanceObject::LoadData Unknown Error parsing JSON";
-        DBG( cout << ostr.str() << endl; );
         LogPrintf("%s\n", ostr.str());
         return;
     }
@@ -528,30 +520,16 @@ bool CGovernanceObject::IsCollateralValid(std::string& strError, bool& fMissingC
     CScript findScript;
     findScript << OP_RETURN << ToByteVector(nExpectedHash);
 
-    DBG( cout << "IsCollateralValid: txCollateral.vout.size() = " << txCollateral.vout.size() << endl; );
-
-    DBG( cout << "IsCollateralValid: findScript = " << ScriptToAsmStr( findScript, false ) << endl; );
-
-    DBG( cout << "IsCollateralValid: nMinFee = " << nMinFee << endl; );
-
 
     bool foundOpReturn = false;
     BOOST_FOREACH(const CTxOut o, txCollateral.vout) {
-        DBG( cout << "IsCollateralValid txout : " << o.ToString()
-             << ", o.nValue = " << o.nValue
-             << ", o.scriptPubKey = " << ScriptToAsmStr( o.scriptPubKey, false )
-             << endl; );
         if(!o.scriptPubKey.IsPayToPublicKeyHash() && !o.scriptPubKey.IsUnspendable()) {
             strError = strprintf("Invalid Script %s", txCollateral.ToString());
             LogPrintf ("CGovernanceObject::IsCollateralValid -- %s\n", strError);
             return false;
         }
         if(o.scriptPubKey == findScript && o.nValue >= nMinFee) {
-            DBG( cout << "IsCollateralValid foundOpReturn = true" << endl; );
             foundOpReturn = true;
-        }
-        else  {
-            DBG( cout << "IsCollateralValid No match, continuing" << endl; );
         }
 
     }
