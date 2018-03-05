@@ -958,18 +958,6 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman& co
             ++it;
             continue;
         }
-        // DEBUG
-        DBG (
-            // Let's see why this failed
-            BOOST_FOREACH(CMasternodePayee& payee, it->second.vecPayees) {
-                CTxDestination address1;
-                ExtractDestination(payee.GetPayee(), address1);
-                CMachinecoinAddress address2(address1);
-                printf("payee %s votes %d\n", address2.ToString().c_str(), payee.GetVoteCount());
-            }
-            printf("block %d votes total %d\n", it->first, nTotalVotes);
-        )
-        // END DEBUG
         // Low data block found, let's try to sync it
         uint256 hash;
         if(GetBlockHash(hash, it->first)) {
