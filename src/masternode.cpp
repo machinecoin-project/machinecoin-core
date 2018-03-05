@@ -610,7 +610,7 @@ bool CMasternodeBroadcast::Sign(const CKey& keyCollateralAddress)
 
     sigTime = GetAdjustedTime();
 
-    strMessage = addr.ToString(false) + boost::lexical_cast<std::string>(sigTime) +
+    strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) +
                     pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
                     boost::lexical_cast<std::string>(nProtocolVersion);
 
@@ -633,7 +633,7 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos)
     std::string strError = "";
     nDos = 0;
 
-    strMessage = addr.ToString(false) + boost::lexical_cast<std::string>(sigTime) +
+    strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) +
                     pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
                     boost::lexical_cast<std::string>(nProtocolVersion);
 
