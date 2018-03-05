@@ -1156,17 +1156,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         push = true;
                     }
                 }
-              
-                if (!push && inv.type == MSG_TX) {
-                    CTransactionRef tx;
-                    if (mempool.lookup(inv.hash, tx)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << tx;
-                        connman.PushMessage(pfrom, NetMsgType::TX, ss);
-                        push = true;
-                    }
-                }
 
                 if (!push && inv.type == MSG_SPORK) {
                     if(mapSporks.count(inv.hash)) {
