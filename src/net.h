@@ -730,6 +730,7 @@ public:
     bool fOneShot;
     bool fAddnode;
     bool fClient;
+    bool fNetworkNode;
     const bool fInbound;
     std::atomic_bool fSuccessfullyConnected;
     std::atomic_bool fDisconnect;
