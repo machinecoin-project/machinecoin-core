@@ -244,10 +244,10 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     CScript payee;
     payee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
 
-    CTransaction tx;
+    CTransactionRef tx;
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
-        BOOST_FOREACH(CTxOut out, tx.vout)
+        BOOST_FOREACH(CTxOut out, tx->vout)
             if(out.nValue == 1000*COIN && out.scriptPubKey == payee) return true;
     }
 
@@ -584,7 +584,7 @@ bool CMasternodeBroadcast::CheckOutpoint(int& nDos)
     // verify that sig time is legit in past
     // should be at least not earlier than block when 1000 DASH tx got nMasternodeMinimumConfirmations
     uint256 hashBlock = uint256();
-    CTransaction tx2;
+    CTransactionRef tx2;
     GetTransaction(vin.prevout.hash, tx2, Params().GetConsensus(), hashBlock, true);
     {
         LOCK(cs_main);
