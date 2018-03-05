@@ -112,7 +112,7 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
         return COLLATERAL_UTXO_NOT_FOUND;
     }
 
-    if(coins.out.nValue != 1000 * COIN) {
+    if(coins->vout.nValue != 1000 * COIN) {
         return COLLATERAL_INVALID_AMOUNT;
     }
 
@@ -322,7 +322,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0].GetValueOut());
 
-            BOOST_FOREACH(CTxOut txout, block.vtx[0].vout)
+            BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout)
                 if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
                     nBlockLastPaid = BlockReading->nHeight;
                     nTimeLastPaid = BlockReading->nTime;
