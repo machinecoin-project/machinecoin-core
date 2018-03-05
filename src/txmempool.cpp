@@ -865,6 +865,15 @@ TxMempoolInfo CTxMemPool::info(const uint256& hash) const
     return GetInfo(i);
 }
 
+bool CTxMemPool::lookup(uint256 hash, CTransactionRef& result) const
+{
+    LOCK(cs);
+    indexed_transaction_set::const_iterator i = mapTx.find(hash);
+    if (i == mapTx.end()) return false;
+    result = i->GetTx();
+    return true;
+}
+
 CFeeRate CTxMemPool::estimateFee(int nBlocks) const
 {
     LOCK(cs);
