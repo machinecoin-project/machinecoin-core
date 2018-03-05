@@ -2434,7 +2434,7 @@ bool CWallet::GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAm
 {
     CWalletTx wtx;
     if(GetBudgetSystemCollateralTX(wtx, hash, amount)){
-        tx = (CTransactionRef)wtx;
+        // tx = (CTransactionRef)wtx;
         return true;
     }
     return false;
