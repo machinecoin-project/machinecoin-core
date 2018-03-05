@@ -725,6 +725,8 @@ public:
     // Masternodes
     // Get 1000MAC output and keys which can be used for the Masternode
     bool GetMasternodeOutpointAndKeys(COutPoint& outpointRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash = "", std::string strOutputIndex = "");
+    /// Extract txin information and keys from output
+    bool GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpointRet, CPubKey& pubKeyRet, CKey& keyRet);
 
     bool IsSpent(const uint256& hash, unsigned int n) const;
 

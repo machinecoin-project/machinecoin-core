@@ -2401,11 +2401,40 @@ bool CWallet::GetMasternodeOutpointAndKeys(COutPoint& outpointRet, CPubKey& pubK
     return false;
 }
 
-bool CWallet::GetBudgetSystemCollateralTX(CTransaction& tx, uint256 hash, CAmount amount)
+bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpointRet, CPubKey& pubKeyRet, CKey& keyRet)
+{
+    // wait for reindex and/or import to finish
+    if (fImporting || fReindex) return false;
+
+    CScript pubScript;
+
+    outpointRet = COutPoint(out.tx->GetHash(), out.i);
+    pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
+
+    CTxDestination address1;
+    ExtractDestination(pubScript, address1);
+    CMachinecoinAddress address2(address1);
+
+    CKeyID keyID;
+    if (!address2.GetKeyID(keyID)) {
+        LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Address does not refer to a key\n");
+        return false;
+    }
+
+    if (!GetKey(keyID, keyRet)) {
+        LogPrintf ("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
+        return false;
+    }
+
+    pubKeyRet = keyRet.GetPubKey();
+    return true;
+}
+
+bool CWallet::GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAmount amount)
 {
     CWalletTx wtx;
     if(GetBudgetSystemCollateralTX(wtx, hash, amount)){
-        tx = (CTransaction)wtx;
+        tx = (CTransactionRef)wtx;
         return true;
     }
     return false;
