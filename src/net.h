@@ -231,14 +231,34 @@ public:
                 func(node);
         }
     };
+    
+    template<typename Condition, typename Callable>
+    void ForEachNode(const Condition& cond, Callable&& func) const
+    {
+        LOCK(cs_vNodes);
+        for (auto&& node : vNodes) {
+            if (cond(node))
+                func(node);
+        }
+    };
+    template<typename Condition, typename Callable, typename CallableAfter>
+    void ForEachNodeThen(const Condition& cond, Callable&& func, CallableAfter&& post)
+    {
+        LOCK(cs_vNodes);
+        for (auto&& node : vNodes) {
+            if (cond(node))
+                func(node);
+        }
+        post();
+    };
 
     template<typename Callable, typename CallableAfter>
-    void ForEachNodeThen(Callable&& pre, CallableAfter&& post)
+    void ForEachNodeThen(Callable&& func, CallableAfter&& post)
     {
         LOCK(cs_vNodes);
         for (auto&& node : vNodes) {
             if (NodeFullyConnected(node))
-                pre(node);
+                func(node);
         }
         post();
     };
