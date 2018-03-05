@@ -815,6 +815,9 @@ public:
     ~CNode();
 
 private:
+    // Secret key for computing keyed net groups
+    static std::vector<unsigned char> vchSecretKey;
+
     CNode(const CNode&);
     void operator=(const CNode&);
 
