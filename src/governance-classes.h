@@ -75,7 +75,7 @@ public:
     static void CreateSuperblock(CMutableTransaction& txNewRet, int nBlockHeight, std::vector<CTxOut>& voutSuperblockRet);
 
     static std::string GetRequiredPaymentsString(int nBlockHeight);
-    static bool IsValid(const CTransaction& txNew, int nBlockHeight, CAmount blockReward);
+    static bool IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
 };
 
 /**
