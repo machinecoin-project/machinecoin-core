@@ -807,7 +807,7 @@ public:
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
     
-    bool GetBudgetSystemCollateralTX(CTransaction& tx, uint256 hash, CAmount amount);
+    bool GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAmount amount);
     bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount amount);
 
     /**
