@@ -180,6 +180,8 @@ extern CAmount maxTxFee;
 extern int64_t nMaxTipAge;
 extern bool fEnableReplacement;
 
+extern std::map<uint256, int64_t> mapRejectedBlocks;
+
 /** Block hash whose ancestors we will assume to have valid scripts without checking them. */
 extern uint256 hashAssumeValid;
 

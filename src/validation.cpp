@@ -471,9 +471,9 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& in
 bool GetUTXOCoin(const COutPoint& outpoint, CCoins& coins)
 {
     LOCK(cs_main);
-    if (!pcoinsTip->GetCoin(outpoint, coins))
+    if (!pcoinsTip->GetCoins(outpoint, coins))
         return false;
-    if (coins.IsSpent())
+    if (coins.IsPruned())
         return false;
     return true;
 }
@@ -2366,7 +2366,7 @@ bool DisconnectBlocks(int blocks)
 
     LogPrintf("DisconnectBlocks -- Got command to replay %d blocks\n", blocks);
     for(int i = 0; i < blocks; i++) {
-        if(!DisconnectTip(state, chainparams.GetConsensus()) || !state.IsValid()) {
+        if(!DisconnectTip(state, chainparams) || !state.IsValid()) {
             return false;
         }
     }
@@ -2389,7 +2389,7 @@ void ReprocessBlocks(int nBlocks)
                 LogPrintf("ReprocessBlocks -- %s\n", (*it).first.ToString());
 
                 CValidationState state;
-                ReconsiderBlock(state, pindex);
+                ResetBlockFailureFlags(pindex);
             }
         }
         ++it;
