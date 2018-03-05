@@ -471,7 +471,7 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& in
 bool GetUTXOCoin(const COutPoint& outpoint, CCoins& coins)
 {
     LOCK(cs_main);
-    if (!pcoinsTip->GetCoins(outpoint, coins))
+    if (!pcoinsTip->GetCoins(outpoint.hash, coins))
         return false;
     if (coins.IsPruned())
         return false;
