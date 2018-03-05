@@ -715,7 +715,7 @@ public:
 
     std::atomic<int64_t> nLastSend;
     std::atomic<int64_t> nLastRecv;
-    const int64_t nTimeConnected;
+    std::atomic<int64_t> nTimeConnected;
     std::atomic<int64_t> nTimeOffset;
     const CAddress addr;
     std::atomic<int> nVersion;
