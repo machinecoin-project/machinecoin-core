@@ -2401,6 +2401,40 @@ bool CWallet::GetMasternodeOutpointAndKeys(COutPoint& outpointRet, CPubKey& pubK
     return false;
 }
 
+bool CWallet::GetBudgetSystemCollateralTX(CTransaction& tx, uint256 hash, CAmount amount)
+{
+    CWalletTx wtx;
+    if(GetBudgetSystemCollateralTX(wtx, hash, amount)){
+        tx = (CTransaction)wtx;
+        return true;
+    }
+    return false;
+}
+
+bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount amount)
+{
+    // make our change address
+    CReserveKey reservekey(this);
+
+    CScript scriptChange;
+    scriptChange << OP_RETURN << ToByteVector(hash);
+
+    CAmount nFeeRet = 0;
+    int nChangePosRet = -1;
+    std::string strFail = "";
+    vector< CRecipient > vecSend;
+    vecSend.push_back((CRecipient){scriptChange, amount, false});
+
+    CCoinControl *coinControl=NULL;
+    bool success = CreateTransaction(vecSend, tx, reservekey, nFeeRet, nChangePosRet, strFail, coinControl, true);
+    if(!success){
+        LogPrintf("CWallet::GetBudgetSystemCollateralTX -- Error: %s\n", strFail);
+        return false;
+    }
+
+    return true;
+}
+
 bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet,
                                 int& nChangePosInOut, std::string& strFailReason, const CCoinControl* coinControl, bool sign)
 {

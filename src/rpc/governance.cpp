@@ -171,14 +171,16 @@ UniValue gobject(const UniValue& params, bool fHelp)
         }
 
         CWalletTx wtx;
-        if(!pwalletMain->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee(), false)) {
+        if(!pwalletMain->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee())) {
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Error making collateral transaction for governance object. Please check your wallet balance and make sure your wallet is unlocked.");
         }
 
         // -- make our change address
         CReserveKey reservekey(pwalletMain);
         // -- send the tx to the network
-        pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), NetMsgType::TX);
+        // pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), NetMsgType::TX);
+        CValidationState state;
+        pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), state);
 
         return wtx.GetHash().ToString();
     }
