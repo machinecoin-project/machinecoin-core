@@ -1980,7 +1980,7 @@ void CConnman::ThreadOpenAddedConnections()
 void CConnman::ThreadMnbRequestConnections()
 {
     // Connecting to specific addresses, no masternode connections available
-    if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
+    if (IsArgSet("-connect"))
         return;
 
     while (!interruptNet)
@@ -2805,7 +2805,7 @@ int CConnman::GetBestHeight() const
 unsigned int CConnman::GetReceiveFloodSize() const { return nReceiveFloodSize; }
 unsigned int CConnman::GetSendBufferSize() const{ return nSendBufferMaxSize; }
 
-CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress& addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const std::string& addrNameIn, bool fInboundIn) :
+CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress& addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const std::string& addrNameIn, bool fInboundIn, bool fNetworkNodeIn) :
     nTimeConnected(GetSystemTimeInSeconds()),
     addr(addrIn),
     fInbound(fInboundIn),
@@ -2834,6 +2834,7 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     fOneShot = false;
     fAddnode = false;
     fClient = false; // set by version message
+    fNetworkNode = fNetworkNodeIn;
     fFeeler = false;
     fSuccessfullyConnected = false;
     fDisconnect = false;
