@@ -565,7 +565,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
 
     // CONFIGURE SUPERBLOCK OUTPUTS
 
-    int nOutputs = txNew.vout.size();
+    int nOutputs = txNew->vout.size();
     int nPayments = CountPayments();
     int nMinerPayments = nOutputs - nPayments;
 
@@ -592,7 +592,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
     }
 
     // miner should not get more than he would usually get
-    CAmount nBlockValue = txNew.GetValueOut();
+    CAmount nBlockValue = txNew->GetValueOut();
     if(nBlockValue > blockReward + nPaymentsTotalAmount) {
         LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, block value limit exceeded: block %lld, limit %lld\n", nBlockValue, blockReward + nPaymentsTotalAmount);
         return false;
@@ -611,8 +611,8 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
 
         for (int j = nVoutIndex; j < nOutputs; j++) {
             // Find superblock payment
-            fPaymentMatch = ((payment.script == txNew.vout[j].scriptPubKey) &&
-                             (payment.nAmount == txNew.vout[j].nValue));
+            fPaymentMatch = ((payment.script == txNew->vout[j].scriptPubKey) &&
+                             (payment.nAmount == txNew->vout[j].nValue));
 
             if (fPaymentMatch) {
                 nVoutIndex = j;
