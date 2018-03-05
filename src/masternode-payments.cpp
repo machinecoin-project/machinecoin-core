@@ -536,7 +536,7 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payeeIn, int nVote
     return false;
 }
 
-bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
+bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
 {
     LOCK(cs_vecPayees);
 
@@ -614,7 +614,7 @@ std::string CMasternodePayments::GetRequiredPaymentsString(int nBlockHeight)
     return "Unknown";
 }
 
-bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlockHeight)
+bool CMasternodePayments::IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight)
 {
     LOCK(cs_mapMasternodeBlocks);
 
