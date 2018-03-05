@@ -4,6 +4,7 @@
 
 //#define ENABLE_DASH_DEBUG
 
+#include "consensus/validation.h"
 #include "activemasternode.h"
 #include "governance.h"
 #include "governance-vote.h"
