@@ -180,12 +180,6 @@ UniValue gobject(const UniValue& params, bool fHelp)
         // -- send the tx to the network
         pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), NetMsgType::TX);
 
-        DBG( cout << "gobject: prepare "
-             << " strData = " << govobj.GetDataAsString()
-             << ", hash = " << govobj.GetHash().GetHex()
-             << ", txidFee = " << wtx.GetHash().GetHex()
-             << endl; );
-
         return wtx.GetHash().ToString();
     }
 #endif // ENABLE_WALLET
@@ -202,11 +196,6 @@ UniValue gobject(const UniValue& params, bool fHelp)
         }
 
         bool fMnFound = mnodeman.Has(activeMasternode.outpoint);
-
-        DBG( cout << "gobject: submit activeMasternode.pubKeyMasternode = " << activeMasternode.pubKeyMasternode.GetHash().ToString()
-             << ", outpoint = " << activeMasternode.outpoint.ToStringShort()
-             << ", params.size() = " << params.size()
-             << ", fMnFound = " << fMnFound << endl; );
 
         // ASSEMBLE NEW GOVERNANCE OBJECT FROM USER PARAMETERS
 
@@ -231,12 +220,6 @@ UniValue gobject(const UniValue& params, bool fHelp)
         std::string strData = params[4].get_str();
 
         CGovernanceObject govobj(hashParent, nRevision, nTime, txidFee, strData);
-
-        DBG( cout << "gobject: submit "
-             << " strData = " << govobj.GetDataAsString()
-             << ", hash = " << govobj.GetHash().GetHex()
-             << ", txidFee = " << txidFee.GetHex()
-             << endl; );
 
         if(govobj.GetObjectType() == GOVERNANCE_OBJECT_PROPOSAL) {
             CProposalValidator validator(strData);
