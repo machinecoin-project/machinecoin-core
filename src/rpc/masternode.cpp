@@ -31,10 +31,6 @@ UniValue getpoolinfo(const UniValue& params, bool fHelp)
     obj.push_back(Pair("mixing_mode",       (!fMasterNode) ? "multi-session" : "normal"));
 
     masternode_info_t mnInfo;
-
-    if (pwalletMain) {
-        obj.push_back(Pair("keys_left",     pwalletMain->nKeysLeftSinceAutoBackup));
-    }
 #endif // ENABLE_WALLET
 
     return obj;
@@ -302,7 +298,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
     if (strCommand == "outputs") {
         // Find possible candidates
         std::vector<COutput> vPossibleCoins;
-        pwalletMain->AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_1000);
+        pwalletMain->AvailableCoins(vPossibleCoins, true, NULL, false);
 
         UniValue obj(UniValue::VOBJ);
         BOOST_FOREACH(COutput& out, vPossibleCoins) {
