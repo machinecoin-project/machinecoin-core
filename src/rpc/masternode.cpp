@@ -158,7 +158,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
         obj.push_back(Pair("IP:port",       mnInfo.addr.ToString()));
         obj.push_back(Pair("protocol",      (int64_t)mnInfo.nProtocolVersion));
         obj.push_back(Pair("outpoint",      mnInfo.vin.prevout.ToStringShort()));
-        obj.push_back(Pair("payee",         CBitcoinAddress(mnInfo.pubKeyCollateralAddress.GetID()).ToString()));
+        obj.push_back(Pair("payee",         CMachinecoinAddress(mnInfo.pubKeyCollateralAddress.GetID()).ToString()));
         obj.push_back(Pair("lastseen",      mnInfo.nTimeLastPing));
         obj.push_back(Pair("activeseconds", mnInfo.nTimeLastPing - mnInfo.sigTime));
         return obj;
@@ -324,7 +324,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
 
         CMasternode mn;
         if(mnodeman.Get(activeMasternode.outpoint, mn)) {
-            mnObj.push_back(Pair("payee", CBitcoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString()));
+            mnObj.push_back(Pair("payee", CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString()));
         }
 
         mnObj.push_back(Pair("status", activeMasternode.GetStatus()));
@@ -448,7 +448,7 @@ UniValue masternodelist(const UniValue& params, bool fHelp)
                 streamFull << std::setw(18) <<
                                mn.GetStatus() << " " <<
                                mn.nProtocolVersion << " " <<
-                               CBitcoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString() << " " <<
+                               CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString() << " " <<
                                (int64_t)mn.lastPing.sigTime << " " << std::setw(8) <<
                                (int64_t)(mn.lastPing.sigTime - mn.sigTime) << " " << std::setw(10) <<
                                mn.GetLastPaidTime() << " "  << std::setw(6) <<
@@ -463,7 +463,7 @@ UniValue masternodelist(const UniValue& params, bool fHelp)
                 streamInfo << std::setw(18) <<
                                mn.GetStatus() << " " <<
                                mn.nProtocolVersion << " " <<
-                               CBitcoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString() << " " <<
+                               CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString() << " " <<
                                (int64_t)mn.lastPing.sigTime << " " << std::setw(8) <<
                                (int64_t)(mn.lastPing.sigTime - mn.sigTime) << " " <<
                                SafeIntVersionToString(mn.lastPing.nSentinelVersion) << " "  <<
@@ -483,7 +483,7 @@ UniValue masternodelist(const UniValue& params, bool fHelp)
                 if (strFilter !="" && strOutpoint.find(strFilter) == std::string::npos) continue;
                 obj.push_back(Pair(strOutpoint, (int64_t)mn.lastPing.sigTime));
             } else if (strMode == "payee") {
-                CBitcoinAddress address(mn.pubKeyCollateralAddress.GetID());
+                CMachinecoinAddress address(mn.pubKeyCollateralAddress.GetID());
                 std::string strPayee = address.ToString();
                 if (strFilter !="" && strPayee.find(strFilter) == std::string::npos &&
                     strOutpoint.find(strFilter) == std::string::npos) continue;
@@ -676,8 +676,8 @@ UniValue masternodebroadcast(const UniValue& params, bool fHelp)
                 nSuccessful++;
                 resultObj.push_back(Pair("outpoint", mnb.vin.prevout.ToStringShort()));
                 resultObj.push_back(Pair("addr", mnb.addr.ToString()));
-                resultObj.push_back(Pair("pubKeyCollateralAddress", CBitcoinAddress(mnb.pubKeyCollateralAddress.GetID()).ToString()));
-                resultObj.push_back(Pair("pubKeyMasternode", CBitcoinAddress(mnb.pubKeyMasternode.GetID()).ToString()));
+                resultObj.push_back(Pair("pubKeyCollateralAddress", CMachinecoinAddress(mnb.pubKeyCollateralAddress.GetID()).ToString()));
+                resultObj.push_back(Pair("pubKeyMasternode", CMachinecoinAddress(mnb.pubKeyMasternode.GetID()).ToString()));
                 resultObj.push_back(Pair("vchSig", EncodeBase64(&mnb.vchSig[0], mnb.vchSig.size())));
                 resultObj.push_back(Pair("sigTime", mnb.sigTime));
                 resultObj.push_back(Pair("protocolVersion", mnb.nProtocolVersion));
