@@ -913,9 +913,6 @@ void MachinecoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double 
 
 void MachinecoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
 {
-    if(!_clientModel)
-        return;
-
     // No additional data sync should be happening while blockchain is not synced, nothing to update
     if(!masternodeSync.IsBlockchainSynced())
         return;
