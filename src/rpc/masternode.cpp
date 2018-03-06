@@ -86,14 +86,10 @@ UniValue masternode(const JSONRPCRequest& request)
     {
         UniValue newParams(UniValue::VARR);
         // forward params but skip "list"
-        for (unsigned int i = 1; i < request.params.size(); i++) {
-            newParams.push_back(request.params[i]);
-        }
-        bool help = false;
-        if (request.fHelp) {
-            help = true;
-        }
-        return masternodelist(newParams, help);
+        // for (unsigned int i = 1; i < request.params.size(); i++) {
+        //     newParams.push_back(request.params[i]);
+        // }
+        return masternodelist(request);
     }
 
     if(strCommand == "connect")
@@ -372,15 +368,15 @@ UniValue masternode(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue masternodelist(const UniValue& params, bool fHelp)
+UniValue masternodelist(const JSONRPCRequest& request)
 {
     std::string strMode = "status";
     std::string strFilter = "";
 
-    if (params.size() >= 1) strMode = params[0].get_str();
-    if (params.size() == 2) strFilter = params[1].get_str();
+    if (request.params.size() >= 1) strMode = request.params[0].get_str();
+    if (request.params.size() == 2) strFilter = request.params[1].get_str();
 
-    if (fHelp || (
+    if (request.fHelp || (
                 strMode != "activeseconds" && strMode != "addr" && strMode != "full" && strMode != "info" &&
                 strMode != "lastseen" && strMode != "lastpaidtime" && strMode != "lastpaidblock" &&
                 strMode != "protocol" && strMode != "payee" && strMode != "pubkey" &&
