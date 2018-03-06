@@ -28,5 +28,6 @@ void SetMockTime(int64_t nMockTimeIn);
 void MilliSleep(int64_t n);
 
 std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime);
+std::string DurationToDHMS(int64_t nDurationTime);
 
 #endif // MACHINECOIN_UTILTIME_H
