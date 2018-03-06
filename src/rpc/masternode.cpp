@@ -89,7 +89,11 @@ UniValue masternode(const JSONRPCRequest& request)
         for (unsigned int i = 1; i < request.params.size(); i++) {
             newParams.push_back(request.params[i]);
         }
-        return masternodelist(newParams, request.fHelp);
+        bool help = false;
+        if (request.fHelp) {
+            help = true;
+        }
+        return masternodelist(newParams, help);
     }
 
     if(strCommand == "connect")
