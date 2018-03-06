@@ -84,7 +84,7 @@ UniValue masternode(const JSONRPCRequest& request)
 
     if (strCommand == "list")
     {
-        UniValue newParams(UniValue::VARR);
+        // UniValue newParams(UniValue::VARR);
         // forward params but skip "list"
         // for (unsigned int i = 1; i < request.params.size(); i++) {
         //     newParams.push_back(request.params[i]);

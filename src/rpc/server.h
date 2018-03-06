@@ -200,6 +200,11 @@ extern std::string HelpExampleRpc(const std::string& methodname, const std::stri
 
 extern void EnsureWalletIsUnlocked();
 
+extern UniValue getpoolinfo(const JSONRPCRequest &request);
+extern UniValue masternode(const JSONRPCRequest &request);
+extern UniValue masternodelist(const JSONRPCRequest &request);
+extern UniValue masternodebroadcast(const JSONRPCRequest &request);
+
 bool StartRPC();
 void InterruptRPC();
 void StopRPC();
