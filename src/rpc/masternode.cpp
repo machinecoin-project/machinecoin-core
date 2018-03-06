@@ -788,7 +788,7 @@ static const CRPCCommand commands[] =
     { "masternodes",        "sentinelping",           &sentinelping,           true,  {"args"} },
 };
 
-void RegisterMiscRPCCommands(CRPCTable &t)
+void RegisterMNRPCCommands(CRPCTable &t)
 {
     for (unsigned int vcidx = 0; vcidx < ARRAYLEN(commands); vcidx++)
         t.appendCommand(commands[vcidx].name, &commands[vcidx]);
