@@ -168,7 +168,6 @@ UniValue masternode(const UniValue& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Please specify an alias");
 
         {
-            LOCK(pwalletMain->cs_wallet);
             EnsureWalletIsUnlocked();
         }
 
@@ -211,7 +210,6 @@ UniValue masternode(const UniValue& params, bool fHelp)
     if (strCommand == "start-all" || strCommand == "start-missing" || strCommand == "start-disabled")
     {
         {
-            LOCK(pwalletMain->cs_wallet);
             EnsureWalletIsUnlocked();
         }
 
@@ -298,7 +296,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
     if (strCommand == "outputs") {
         // Find possible candidates
         std::vector<COutput> vPossibleCoins;
-        pwalletMain->AvailableCoins(vPossibleCoins, true, NULL, false);
+        wallet->AvailableCoins(vPossibleCoins, true, NULL, false);
 
         UniValue obj(UniValue::VOBJ);
         BOOST_FOREACH(COutput& out, vPossibleCoins) {
