@@ -7,6 +7,7 @@
 #include "config/machinecoin-config.h"
 #endif
 
+#include "tinyformat.h"
 #include "utiltime.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
