@@ -82,7 +82,7 @@ CFeeRate minRelayTxFee = CFeeRate(DEFAULT_MIN_RELAY_TX_FEE);
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);
-map<uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
+std::map<uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
 
 static void CheckBlockIndex(const Consensus::Params& consensusParams);
 
