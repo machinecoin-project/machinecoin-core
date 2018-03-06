@@ -89,8 +89,7 @@ UniValue masternode(const JSONRPCRequest& request)
         for (unsigned int i = 1; i < request.params.size(); i++) {
             newParams.push_back(request.params[i]);
         }
-        // TODO uncomment after QT files are merged
-        // return masternodelist(newParams, request.fHelp);
+        return masternodelist(newParams, request.fHelp);
     }
 
     if(strCommand == "connect")
