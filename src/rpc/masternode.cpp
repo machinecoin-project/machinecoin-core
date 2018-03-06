@@ -35,6 +35,7 @@ UniValue getpoolinfo(const UniValue& params, bool fHelp)
     if (pwalletMain) {
         obj.push_back(Pair("keys_left",     pwalletMain->nKeysLeftSinceAutoBackup));
     }
+#endif // ENABLE_WALLET
 
     return obj;
 }
@@ -270,7 +271,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
         CKey secret;
         secret.MakeNewKey(false);
 
-        return CBitcoinSecret(secret).ToString();
+        return CMachinecoinSecret(secret).ToString();
     }
 
     if (strCommand == "list-conf")
