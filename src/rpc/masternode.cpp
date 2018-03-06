@@ -14,7 +14,9 @@
 #include "rpc/server.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
+#endif
 
 #include <fstream>
 #include <iomanip>
@@ -298,8 +300,7 @@ UniValue masternode(const JSONRPCRequest& request)
     if (strCommand == "outputs") {
         // Find possible candidates
         std::vector<COutput> vPossibleCoins;
-        // TODO get a instance of wallet here
-        // wallet->AvailableCoins(vPossibleCoins, true, NULL, false);
+        pwalletMain->AvailableCoins(vPossibleCoins, true, NULL, false);
 
         UniValue obj(UniValue::VOBJ);
         BOOST_FOREACH(COutput& out, vPossibleCoins) {
