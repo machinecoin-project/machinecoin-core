@@ -87,7 +87,8 @@ UniValue masternode(const UniValue& params, bool fHelp)
         for (unsigned int i = 1; i < params.size(); i++) {
             newParams.push_back(params[i]);
         }
-        return masternodelist(newParams, fHelp);
+        // TODO uncomment after QT files are merged
+        // return masternodelist(newParams, fHelp);
     }
 
     if(strCommand == "connect")
@@ -297,7 +298,8 @@ UniValue masternode(const UniValue& params, bool fHelp)
     if (strCommand == "outputs") {
         // Find possible candidates
         std::vector<COutput> vPossibleCoins;
-        wallet->AvailableCoins(vPossibleCoins, true, NULL, false);
+        // TODO get a instance of wallet here
+        // wallet->AvailableCoins(vPossibleCoins, true, NULL, false);
 
         UniValue obj(UniValue::VOBJ);
         BOOST_FOREACH(COutput& out, vPossibleCoins) {
