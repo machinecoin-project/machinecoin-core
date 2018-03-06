@@ -35,6 +35,8 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "masternode-sync.h"
+#include "masternodelist.h"
 
 #include <iostream>
 
@@ -94,6 +96,7 @@ MachinecoinGUI::MachinecoinGUI(const PlatformStyle *_platformStyle, const Networ
     appMenuBar(0),
     overviewAction(0),
     historyAction(0),
+    masternodeAction(0),
     quitAction(0),
     sendCoinsAction(0),
     sendCoinsMenuAction(0),
@@ -313,6 +316,21 @@ void MachinecoinGUI::createActions()
     tabGroup->addAction(historyAction);
 
 #ifdef ENABLE_WALLET
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool()) {
+        masternodeAction = new QAction(QIcon(":/icons/masternodes"), tr("&Masternodes"), this);
+        masternodeAction->setStatusTip(tr("Browse masternodes"));
+        masternodeAction->setToolTip(masternodeAction->statusTip());
+        masternodeAction->setCheckable(true);
+#ifdef Q_OS_MAC
+        masternodeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_5));
+#else
+        masternodeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+#endif
+        tabGroup->addAction(masternodeAction);
+        connect(masternodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+        connect(masternodeAction, SIGNAL(triggered()), this, SLOT(gotoMasternodePage()));
+    }
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -460,6 +478,11 @@ void MachinecoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
+        QSettings settings;
+        if (settings.value("fShowMasternodesTab").toBool())
+        {
+            toolbar->addAction(masternodeAction);
+        }
         overviewAction->setChecked(true);
     }
 }
@@ -480,6 +503,8 @@ void MachinecoinGUI::setClientModel(ClientModel *_clientModel)
 
         setNumBlocks(_clientModel->getNumBlocks(), _clientModel->getLastBlockDate(), _clientModel->getVerificationProgress(NULL), false);
         connect(_clientModel, SIGNAL(numBlocksChanged(int,QDateTime,double,bool)), this, SLOT(setNumBlocks(int,QDateTime,double,bool)));
+        
+        connect(_clientModel, SIGNAL(additionalDataSyncProgressChanged(double)), this, SLOT(setAdditionalDataSyncProgress(double)));
 
         // Receive and report messages from client model
         connect(_clientModel, SIGNAL(message(QString,QString,unsigned int)), this, SLOT(message(QString,QString,unsigned int)));
@@ -560,6 +585,10 @@ void MachinecoinGUI::setWalletActionsEnabled(bool enabled)
     receiveCoinsAction->setEnabled(enabled);
     receiveCoinsMenuAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool() && masternodeAction) {
+        masternodeAction->setEnabled(enabled);
+    }
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
@@ -688,6 +717,15 @@ void MachinecoinGUI::gotoHistoryPage()
 {
     historyAction->setChecked(true);
     if (walletFrame) walletFrame->gotoHistoryPage();
+}
+
+void MachinecoinGUI::gotoMasternodePage()
+{
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool()) {
+        masternodeAction->setChecked(true);
+        if (walletFrame) walletFrame->gotoMasternodePage();
+    }
 }
 
 void MachinecoinGUI::gotoReceiveCoinsPage()
@@ -829,6 +867,8 @@ void MachinecoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double 
         progressBarLabel->setVisible(false);
         progressBar->setVisible(false);
     }
+    // TODO check how to implement this
+    // if(!masternodeSync.IsBlockchainSynced())
     else
     {
         QString timeBehindText = GUIUtil::formatNiceTimeOffset(secs);
@@ -862,6 +902,56 @@ void MachinecoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double 
         tooltip += QString("<br>");
         tooltip += tr("Transactions after this will not yet be visible.");
     }
+
+    // Don't word-wrap this (fixed-width) tooltip
+    tooltip = QString("<nobr>") + tooltip + QString("</nobr>");
+
+    labelBlocksIcon->setToolTip(tooltip);
+    progressBarLabel->setToolTip(tooltip);
+    progressBar->setToolTip(tooltip);
+}
+
+void MachinecoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
+{
+    if(!_clientModel)
+        return;
+
+    // No additional data sync should be happening while blockchain is not synced, nothing to update
+    if(!masternodeSync.IsBlockchainSynced())
+        return;
+
+    // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
+    statusBar()->clearMessage();
+
+    QString tooltip;
+
+    QString strSyncStatus;
+    tooltip = tr("Up to date") + QString(".<br>") + tooltip;
+
+    if(masternodeSync.IsSynced()) {
+        progressBarLabel->setVisible(false);
+        progressBar->setVisible(false);
+        labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    } else {
+
+        labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
+            ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
+            .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+        spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
+
+#ifdef ENABLE_WALLET
+        if(walletFrame)
+            walletFrame->showOutOfSyncWarning(false);
+#endif // ENABLE_WALLET
+
+        progressBar->setFormat(tr("Synchronizing additional data: %p%"));
+        progressBar->setMaximum(1000000000);
+        progressBar->setValue(nSyncProgress * 1000000000.0 + 0.5);
+    }
+
+    strSyncStatus = QString(masternodeSync.GetSyncStatus().c_str());
+    progressBarLabel->setText(strSyncStatus);
+    tooltip = strSyncStatus + QString("<br>") + tooltip;
 
     // Don't word-wrap this (fixed-width) tooltip
     tooltip = QString("<nobr>") + tooltip + QString("</nobr>");

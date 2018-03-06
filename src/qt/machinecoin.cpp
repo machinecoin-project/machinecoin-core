@@ -13,6 +13,7 @@
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "intro.h"
+#include "net.h"
 #include "networkstyle.h"
 #include "optionsmodel.h"
 #include "platformstyle.h"
@@ -24,6 +25,7 @@
 #include "paymentserver.h"
 #include "walletmodel.h"
 #endif
+#include "masternodeconfig.h"
 
 #include "init.h"
 #include "rpc/server.h"
@@ -46,6 +48,7 @@
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QMessageBox>
+#include <QProcess>
 #include <QSettings>
 #include <QThread>
 #include <QTimer>
@@ -643,6 +646,13 @@ int main(int argc, char *argv[])
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
 #ifdef ENABLE_WALLET
+    /// 7a. parse masternode.conf
+    std::string strErr;
+    if(!masternodeConfig.read(strErr)) {
+        QMessageBox::critical(0, QObject::tr("Machinecoin Core"),
+                              QObject::tr("Error reading masternode configuration file: %1").arg(strErr.c_str()));
+        return EXIT_FAILURE;
+    }
     /// 8. URI IPC sending
     // - Do this early as we don't want to bother initializing if we are just calling IPC
     // - Do this *after* setting up the data directory, as the data directory hash is used in the name

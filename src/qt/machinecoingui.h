@@ -16,6 +16,7 @@
 #include <QMap>
 #include <QMenu>
 #include <QPoint>
+#include <QPushButton>
 #include <QSystemTrayIcon>
 
 class ClientModel;
@@ -30,6 +31,7 @@ class WalletFrame;
 class WalletModel;
 class HelpMessageDialog;
 class ModalOverlay;
+class MasternodeList;
 
 class CWallet;
 
@@ -94,6 +96,7 @@ private:
     QMenuBar *appMenuBar;
     QAction *overviewAction;
     QAction *historyAction;
+    QAction *masternodeAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
     QAction *sendCoinsMenuAction;
@@ -162,6 +165,8 @@ public Q_SLOTS:
     void setNetworkActive(bool networkActive);
     /** Set number of blocks and last block date shown in the UI */
     void setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool headers);
+    /** Set additional data sync status shown in the UI */
+    void setAdditionalDataSyncProgress(double nSyncProgress);
 
     /** Notify the user of an event from the core network or transaction handling code.
        @param[in] title     the message box / notification title
@@ -197,6 +202,8 @@ private Q_SLOTS:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
+    /** Switch to masternode page */
+    void gotoMasternodePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */

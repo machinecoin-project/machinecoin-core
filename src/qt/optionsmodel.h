@@ -45,6 +45,7 @@ public:
         ThreadsScriptVerif,     // int
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
+        ShowMasternodesTab,     // bool
         Listen,                 // bool
         OptionIDRowCount,
     };

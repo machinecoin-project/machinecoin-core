@@ -52,6 +52,7 @@ public:
 
     //! Return number of connections, default is in- and outbound (total)
     int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
+    QString getMasternodeCountString() const;
     int getNumBlocks() const;
     int getHeaderTipHeight() const;
     int64_t getHeaderTipTime() const;
@@ -90,16 +91,20 @@ public:
 private:
     OptionsModel *optionsModel;
     PeerTableModel *peerTableModel;
+    QString cachedMasternodeCountString;
     BanTableModel *banTableModel;
 
     QTimer *pollTimer;
+    QTimer *pollMnTimer;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
 
 Q_SIGNALS:
     void numConnectionsChanged(int count);
+    void strMasternodesChanged(const QString &strMasternodes);
     void numBlocksChanged(int count, const QDateTime& blockDate, double nVerificationProgress, bool header);
+    void additionalDataSyncProgressChanged(double nSyncProgress);
     void mempoolSizeChanged(long count, size_t mempoolSizeInBytes);
     void networkActiveChanged(bool networkActive);
     void alertsChanged(const QString &warnings);
@@ -113,6 +118,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void updateTimer();
+    void updateMnTimer();
     void updateNumConnections(int numConnections);
     void updateNetworkActive(bool networkActive);
     void updateAlert();

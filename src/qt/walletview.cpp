@@ -9,6 +9,7 @@
 #include "machinecoingui.h"
 #include "clientmodel.h"
 #include "guiutil.h"
+#include "masternodeconfig.h"
 #include "optionsmodel.h"
 #include "overviewpage.h"
 #include "platformstyle.h"
@@ -25,8 +26,10 @@
 #include <QActionGroup>
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QSettings>
 #include <QVBoxLayout>
 
 WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
@@ -63,6 +66,12 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(transactionsPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
+        
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool()) {
+        masternodeListPage = new MasternodeList(platformStyle);
+        addWidget(masternodeListPage);
+    }
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -111,6 +120,10 @@ void WalletView::setClientModel(ClientModel *_clientModel)
 
     overviewPage->setClientModel(_clientModel);
     sendCoinsPage->setClientModel(_clientModel);
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool()) {
+        masternodeListPage->setClientModel(_clientModel);
+    }
 }
 
 void WalletView::setWalletModel(WalletModel *_walletModel)
@@ -177,6 +190,14 @@ void WalletView::gotoOverviewPage()
 void WalletView::gotoHistoryPage()
 {
     setCurrentWidget(transactionsPage);
+}
+
+void WalletView::gotoMasternodePage()
+{
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool()) {
+        setCurrentWidget(masternodeListPage);
+    }
 }
 
 void WalletView::gotoReceiveCoinsPage()
