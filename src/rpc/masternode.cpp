@@ -12,6 +12,7 @@
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "rpc/server.h"
+#include "script/ismine.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include "wallet/wallet.h"
