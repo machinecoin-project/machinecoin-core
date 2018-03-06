@@ -205,7 +205,7 @@ void MasternodeList::updateMyMasternodeInfo(QString strAlias, QString strAddr, c
     QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(QString::fromStdString(DurationToDHMS(fFound ? (infoMn.nTimeLastPing - infoMn.sigTime) : 0)));
     QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat("%Y-%m-%d %H:%M",
                                                                                                    fFound ? infoMn.nTimeLastPing + GetOffsetFromUtc() : 0)));
-    QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(fFound ? CBitcoinAddress(infoMn.pubKeyCollateralAddress.GetID()).ToString() : ""));
+    QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(fFound ? CMachinecoinAddress(infoMn.pubKeyCollateralAddress.GetID()).ToString() : ""));
 
     ui->tableWidgetMyMasternodes->setItem(nNewRow, 0, aliasItem);
     ui->tableWidgetMyMasternodes->setItem(nNewRow, 1, addrItem);
@@ -286,7 +286,7 @@ void MasternodeList::updateNodeList()
         QTableWidgetItem *statusItem = new QTableWidgetItem(QString::fromStdString(mn.GetStatus()));
         QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(QString::fromStdString(DurationToDHMS(mn.lastPing.sigTime - mn.sigTime)));
         QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat("%Y-%m-%d %H:%M", mn.lastPing.sigTime + offsetFromUtc)));
-        QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(CBitcoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString()));
+        QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString()));
 
         if (strCurrentFilter != "")
         {
@@ -346,7 +346,7 @@ void MasternodeList::on_startButton_clicked()
 
     WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
 
-    if(encStatus == walletModel->Locked || encStatus == walletModel->UnlockedForMixingOnly) {
+    if(encStatus == walletModel->Locked) {
         WalletModel::UnlockContext ctx(walletModel->requestUnlock());
 
         if(!ctx.isValid()) return; // Unlock wallet was cancelled
@@ -370,7 +370,7 @@ void MasternodeList::on_startAllButton_clicked()
 
     WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
 
-    if(encStatus == walletModel->Locked || encStatus == walletModel->UnlockedForMixingOnly) {
+    if(encStatus == walletModel->Locked) {
         WalletModel::UnlockContext ctx(walletModel->requestUnlock());
 
         if(!ctx.isValid()) return; // Unlock wallet was cancelled
@@ -402,7 +402,7 @@ void MasternodeList::on_startMissingButton_clicked()
 
     WalletModel::EncryptionStatus encStatus = walletModel->getEncryptionStatus();
 
-    if(encStatus == walletModel->Locked || encStatus == walletModel->UnlockedForMixingOnly) {
+    if(encStatus == walletModel->Locked) {
         WalletModel::UnlockContext ctx(walletModel->requestUnlock());
 
         if(!ctx.isValid()) return; // Unlock wallet was cancelled
