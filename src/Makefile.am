@@ -243,6 +243,8 @@ libmachinecoin_server_a_SOURCES = \
   policy/policy.cpp \
   pow.cpp \
   rest.cpp \
+  rpc/blockchain.cpp \
+  rpc/masternode.cpp \
   rpc/governance.cpp \
   rpc/mining.cpp \
   rpc/misc.cpp \
