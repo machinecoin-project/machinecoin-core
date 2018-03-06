@@ -85,7 +85,7 @@ UniValue masternode(const JSONRPCRequest& request)
         UniValue newParams(UniValue::VARR);
         // forward params but skip "list"
         for (unsigned int i = 1; i < request.params.size(); i++) {
-            newrequest.params.push_back(request.params[i]);
+            newParams.push_back(request.params[i]);
         }
         // TODO uncomment after QT files are merged
         // return masternodelist(newParams, request.fHelp);
