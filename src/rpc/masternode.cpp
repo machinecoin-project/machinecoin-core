@@ -368,15 +368,15 @@ UniValue masternode(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue masternodelist(const JSONRPCRequest& request)
+UniValue masternodelist(const UniValue& params, bool fHelp)
 {
     std::string strMode = "status";
     std::string strFilter = "";
 
-    if (request.params.size() >= 1) strMode = request.params[0].get_str();
-    if (request.params.size() == 2) strFilter = request.params[1].get_str();
+    if (params.size() >= 1) strMode = params[0].get_str();
+    if (params.size() == 2) strFilter = params[1].get_str();
 
-    if (request.fHelp || (
+    if (fHelp || (
                 strMode != "activeseconds" && strMode != "addr" && strMode != "full" && strMode != "info" &&
                 strMode != "lastseen" && strMode != "lastpaidtime" && strMode != "lastpaidblock" &&
                 strMode != "protocol" && strMode != "payee" && strMode != "pubkey" &&
