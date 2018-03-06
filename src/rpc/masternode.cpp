@@ -777,3 +777,19 @@ UniValue sentinelping(const UniValue& params, bool fHelp)
     activeMasternode.UpdateSentinelPing(StringVersionToInt(params[0].get_str()));
     return true;
 }
+
+static const CRPCCommand commands[] =
+{ //  category              name                      actor (function)         okSafeMode
+  //  --------------------- ------------------------  -----------------------  ----------
+    { "masternodes",        "getpoolinfo",            &getpoolinfo,            true,  {} },
+    { "masternodes",        "masternode",             &masternode,             true,  {"args"} },
+    { "masternodes",        "masternodelist",         &masternodelist,         true,  {"args"} },
+    { "masternodes",        "masternodebroadcast",    &masternodebroadcast,    true,  {"args"} },
+    { "masternodes",        "sentinelping",           &sentinelping,           true,  {"args"} },
+};
+
+void RegisterMiscRPCCommands(CRPCTable &t)
+{
+    for (unsigned int vcidx = 0; vcidx < ARRAYLEN(commands); vcidx++)
+        t.appendCommand(commands[vcidx].name, &commands[vcidx]);
+}
