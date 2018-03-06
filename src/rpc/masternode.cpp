@@ -14,6 +14,7 @@
 #include "rpc/server.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "wallet/wallet.h"
 
 #include <fstream>
 #include <iomanip>
