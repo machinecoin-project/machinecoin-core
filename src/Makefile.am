@@ -279,6 +279,7 @@ endif
 libmachinecoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES)
 libmachinecoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmachinecoin_wallet_a_SOURCES = \
+  script/ismine.h \
   wallet/crypter.cpp \
   wallet/db.cpp \
   wallet/rpcdump.cpp \
