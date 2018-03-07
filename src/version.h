@@ -9,13 +9,13 @@
  * network protocol versioning
  */
 
-static const int PROTOCOL_VERSION = 70016;
+static const int PROTOCOL_VERSION = 70017;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
 
 //! In this version, 'getheaders' was introduced.
-static const int GETHEADERS_VERSION = 70002;
+static const int GETHEADERS_VERSION = 70017;
 
 //! disconnect from peers older than this proto version
 static const int MIN_PEER_PROTO_VERSION = GETHEADERS_VERSION;
@@ -47,5 +47,8 @@ static const int INVALID_CB_NO_BAN_VERSION = 70015;
 
 //! integrated difficulty adjustment algorithm
 static const int UPDATED_DIFF_ADJUST_ALGO = 70016;
+
+//! implemented masternodes to machinecoin
+static const int IMPLEMENTED_MASTERNODES = 70017;
 
 #endif // MACHINECOIN_VERSION_H
