@@ -1783,7 +1783,6 @@ void CConnman::ThreadOpenConnections()
             LOCK(cs_vNodes);
             BOOST_FOREACH(CNode* pnode, vNodes) {
                 if (!pnode->fInbound && !pnode->fAddnode && !pnode->fMasternode) {
-
                     // Count the peers that have all relevant services
                     if (pnode->fSuccessfullyConnected && !pnode->fFeeler && ((pnode->nServices & nRelevantServices) == nRelevantServices)) {
                       nOutboundRelevant++;
