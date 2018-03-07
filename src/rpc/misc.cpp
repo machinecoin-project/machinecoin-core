@@ -620,7 +620,7 @@ static const CRPCCommand commands[] =
     { "util",               "signmessagewithprivkey", &signmessagewithprivkey, true,  {"privkey","message"} },
   
     /* Masternodes */
-    { "masternodes",        "mnsymc",                 &mnsync,                 true,  {"command"} },
+    { "masternodes",        "mnsync",                 &mnsync,                 true,  {"command"} },
     { "masternodes",        "spork",                  &spork,                  true,  {"command","sporkid"} },
 
     /* Not shown in help */
