@@ -1783,9 +1783,10 @@ void CConnman::ThreadOpenConnections()
             LOCK(cs_vNodes);
             BOOST_FOREACH(CNode* pnode, vNodes) {
                 if (!pnode->fInbound && !pnode->fAddnode && !pnode->fMasternode) {
+
                     // Count the peers that have all relevant services
                     if (pnode->fSuccessfullyConnected && !pnode->fFeeler && ((pnode->nServices & nRelevantServices) == nRelevantServices)) {
-                        nOutboundRelevant++;
+                      nOutboundRelevant++;
                     }
                     // Netgroups for inbound and addnode peers are not excluded because our goal here
                     // is to not use multiple of our limited outbound slots on a single netgroup
