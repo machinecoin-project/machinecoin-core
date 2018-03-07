@@ -981,7 +981,7 @@ UniValue getsuperblockbudget(const JSONRPCRequest &request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafeMode
   //  --------------------- ------------------------  -----------------------  ----------
-    { "governance",         "gobject",                &getingobjectfo,         true,  {"command"} },
+    { "governance",         "gobject",                &gobject,                true,  {"command"} },
     { "governance",         "getgovernanceinfo",      &getgovernanceinfo,      true,  {"command"} },
     { "governance",         "getsuperblockbudget",    &getsuperblockbudget,    true,  {"command"} },
     { "governance",         "voteraw",                &voteraw,                true,  {"command"} },
