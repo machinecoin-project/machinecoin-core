@@ -456,7 +456,7 @@ void CConnman::DumpBanlist()
     GetBanned(banmap);
     if (bandb.Write(banmap)) {
         SetBannedSetDirty(false);
-		}
+    }
 
     LogPrint("net", "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
         banmap.size(), GetTimeMillis() - nStart);
@@ -576,8 +576,8 @@ bool CConnman::Unban(const CSubNet &subNet) {
 void CConnman::GetBanned(banmap_t &banMap)
 {
     LOCK(cs_setBanned);
-		// Sweep the banlist so expired bans are not returned
-		SweepBanned();
+    // Sweep the banlist so expired bans are not returned
+    SweepBanned();
     banMap = setBanned; //create a thread safe copy
 }
 
@@ -1634,9 +1634,9 @@ void CConnman::ThreadDNSAddressSeed()
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
 
     BOOST_FOREACH(const CDNSSeedData &seed, vSeeds) {
-				if (interruptNet) {
-						return;
-				}
+        if (interruptNet) {
+            return;
+        }
         if (HaveNameProxy()) {
             AddOneShot(seed.host);
         } else {
@@ -1654,9 +1654,9 @@ void CConnman::ThreadDNSAddressSeed()
                     found++;
                 }
             }
-						if (interruptNet) {
-								return;
-						}
+            if (interruptNet) {
+                return;
+            }
             // TODO: The seed name resolve may fail, yielding an IP of [::], which results in
             // addrman assigning the same source to results from different seeds.
             // This should switch to a hard-coded stable dummy IP for each seed name, so that the
@@ -1852,13 +1852,13 @@ void CConnman::ThreadOpenConnections()
 
             // only consider nodes missing relevant services after 40 failed attempts and only if less than half the outbound are up.
             ServiceFlags nRequiredServices = nRelevantServices;
-						if (nTries >= 40 && nOutbound < (nMaxOutbound >> 1)) {
-								nRequiredServices = REQUIRED_SERVICES;
-						}
-						
-						if ((addr.nServices & nRequiredServices) != nRequiredServices) {
-								continue;
-						}
+            if (nTries >= 40 && nOutbound < (nMaxOutbound >> 1)) {
+              nRequiredServices = REQUIRED_SERVICES;
+            }
+
+            if ((addr.nServices & nRequiredServices) != nRequiredServices) {
+              continue;
+            }
 
             // do not allow non-default ports, unless after 50 invalid addresses selected already
             if (addr.GetPort() != Params().GetDefaultPort() && nTries < 50)
@@ -1866,14 +1866,14 @@ void CConnman::ThreadOpenConnections()
 
             addrConnect = addr;
 						
-						// regardless of the services assumed to be available, only require the minimum if half or more outbound have relevant services
-						if (nOutboundRelevant >= (nMaxOutbound >> 1)) {
-								addrConnect.nServices = REQUIRED_SERVICES;
-						} else {
-								addrConnect.nServices = nRequiredServices;
-						}
-            break;
-        }
+            // regardless of the services assumed to be available, only require the minimum if half or more outbound have relevant services
+            if (nOutboundRelevant >= (nMaxOutbound >> 1)) {
+              addrConnect.nServices = REQUIRED_SERVICES;
+            } else {
+              addrConnect.nServices = nRequiredServices;
+            }
+                break;
+            }
 
         if (addrConnect.IsValid()) {
 
