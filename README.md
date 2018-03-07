@@ -3,7 +3,7 @@ Machinecoin Core integration/staging tree
 
 [![Build Status](https://travis-ci.org/machinecoin-project/machinecoin.svg?branch=master)](https://travis-ci.org/machinecoin-project/machinecoin)
 
-https://machinecoin.org
+https://machinecoin.io
 
 What is Machinecoin?
 ----------------
@@ -15,7 +15,7 @@ out collectively by the network. Machinecoin Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Machinecoin Core software, see [https://machinecoin.org](https://machinecoin.org).
+the Machinecoin Core software, see [https://machinecoin.io](https://machinecoin.io).
 
 License
 -------

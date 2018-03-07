@@ -3,7 +3,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-###   This script attempts to download the signature file SHA256SUMS.asc from machinecoin.org
+###   This script attempts to download the signature file SHA256SUMS.asc from machinecoin.io
 ###   It first checks if the signature passes, and then downloads the files specified in
 ###   the file, and checks if the hashes of these files match those that are specified
 ###   in the signature file.
@@ -22,7 +22,7 @@ TMPFILE="hashes.tmp"
 
 SIGNATUREFILENAME="SHA256SUMS.asc"
 RCSUBDIR="test"
-BASEDIR="https://machinecoin.org/bin/"
+BASEDIR="https://machinecoin.io/bin/"
 VERSIONPREFIX="machinecoin-core-"
 RCVERSIONSTRING="rc"
 

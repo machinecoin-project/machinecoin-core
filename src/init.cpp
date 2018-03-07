@@ -550,7 +550,7 @@ std::string HelpMessage(HelpMessageMode mode)
 std::string LicenseInfo()
 {
     const std::string URL_SOURCE_CODE = "<https://github.com/machinecoin-project/machinecoin>";
-    const std::string URL_WEBSITE = "<https://machinecoin.org>";
+    const std::string URL_WEBSITE = "<https://machinecoin.io>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2011, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +

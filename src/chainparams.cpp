@@ -84,8 +84,8 @@ public:
         // consensus.nPowTargetSpacingV3
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1916; // Machinecoin 95% of 2016
-        consensus.nMinerConfirmationWindow = 2016; // Machinecoin nPowTargetTimespan / nPowTargetSpacing
+        consensus.nRuleChangeActivationThreshold = 1916; // Machinecoin
+        consensus.nMinerConfirmationWindow = 2016; // Machinecoin - max blocks for softfork to activate, default nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
@@ -97,11 +97,11 @@ public:
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 0; // January 28, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 0; // January 31st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1518811200; // Feb 16, 2018 8pm.
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1550347200; // Feb 16, 2019 pm.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000039fa7a2354aa8");
+        consensus.nMinimumChainWork = uint256S("0000000000000000000000000000000000000000000000000060f90e5c5717f3");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975"); // 467593
@@ -124,8 +124,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x36a9e41063f3e71466299d0ed9e8193c1c802a88b286016fa4a4d0c3bc384a5c"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.org", "dnsseed1.machinecoin.org", true));
-        vSeeds.push_back(CDNSSeedData("dnsseed2.machinecoin.org", "dnsseed2.machinecoin.org"));
+        vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.io", "dnsseed1.machinecoin.io", true));
+        vSeeds.push_back(CDNSSeedData("dnsseed2.machinecoin.io", "dnsseed2.machinecoin.io"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50); // Machinecoin M
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
@@ -154,9 +154,9 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x8da1c7f79018fac8acac69a57b2f8b5d2743af67976a4525fdedc8c85a3a1418 (height 410476).
-            1490495580, // * UNIX timestamp of last known number of transactions
-            449775,  // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x1f1face6161f136f673e3af962328bfa233b954994fd06da4ee97804d1b02481 (height 467245).
+            1518719681, // * UNIX timestamp of last known number of transactions
+            524706,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
             500.0         // * estimated number of transactions per second after that timestamp
         };
@@ -200,10 +200,10 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Machinecoin PoW Limit
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // Machinecoin 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin 2.5 minutes
-				consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin 2.5 minutes
-				consensus.nPowTargetSpacingV2 = 2.5 * 60; // Machinecoin 2.5 minutes
-				// consensus.nPowTargetTimespanV3
-				// consensus.nPowTargetSpacingV3
+        consensus.nPowTargetTimespanV2 = 2.5 * 60; // Machinecoin 2.5 minutes
+        consensus.nPowTargetSpacingV2 = 2.5 * 60; // Machinecoin 2.5 minutes
+        // consensus.nPowTargetTimespanV3
+        // consensus.nPowTargetSpacingV3
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1; // Machinecoin Testnet 1% of 2
@@ -267,8 +267,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x36a9e41063f3e71466299d0ed9e8193c1c802a88b286016fa4a4d0c3bc384a5c"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.org", "dnsseed1.machinecoin.org", true));
-        vSeeds.push_back(CDNSSeedData("dnsseed2.machinecoin.org", "dnsseed2.machinecoin.org"));
+        vSeeds.push_back(CDNSSeedData("dnsseed1.machinecoin.io", "dnsseed1.machinecoin.io", true));
+        vSeeds.push_back(CDNSSeedData("dnsseed2.machinecoin.io", "dnsseed2.machinecoin.io"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,53); // Machinecoin N
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
@@ -284,9 +284,9 @@ public:
         fMineBlocksOnDemand = false;
 
         checkpointData = (CCheckpointData) {
-          boost::assign::map_list_of
-          ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"))  // Machinecoin Testnet: checkpoint at 0
-          ( 209, uint256S("0x3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3"))  // Machinecoin Testnet: checkpoint at 209
+            boost::assign::map_list_of
+            ( 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"))  // Machinecoin Testnet: checkpoint at 0
+            ( 209, uint256S("0x3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3"))  // Machinecoin Testnet: checkpoint at 209
         };
 
         chainTxData = ChainTxData{
@@ -390,8 +390,8 @@ public:
         fMineBlocksOnDemand = true;
 
         checkpointData = (CCheckpointData) {
-          boost::assign::map_list_of
-          ( 0, uint256S("0x62214f698865bf3308a4cddec2a18c1e9a98f272189f696e0f99d5d1b137912b"))  // Machinecoin Regtest: checkpoint at 0
+            boost::assign::map_list_of
+            ( 0, uint256S("0x62214f698865bf3308a4cddec2a18c1e9a98f272189f696e0f99d5d1b137912b"))  // Machinecoin Regtest: checkpoint at 0
         };
 
         chainTxData = ChainTxData{
