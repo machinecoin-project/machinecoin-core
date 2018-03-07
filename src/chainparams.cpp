@@ -104,7 +104,7 @@ public:
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000039fa7a2354aa8");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x80316ccd85323c6ed19be11a420c53a5b42b6bc37df14eb56763e5bec37990c5"); //416569
+        consensus.defaultAssumeValid = uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975"); // 467593
       
         // Masternodes
         consensus.nMasternodePaymentsStartBlock = 100000; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
