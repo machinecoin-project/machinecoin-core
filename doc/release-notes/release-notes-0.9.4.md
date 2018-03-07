@@ -1,6 +1,6 @@
 Machinecoin Core version 0.9.4 is now available from:
 
-  https://machinecoin.org/bin/0.9.4/
+  https://machinecoin.io/bin/0.9.4/
 
 This is a new minor version release, bringing only bug fixes and updated
 translations. Upgrading to this release is recommended.
@@ -25,7 +25,7 @@ various operating system maintainers. Review by Gregory Maxwell determined that
 this update is incompatible with the Machinecoin system and could lead to consensus
 forks.
 
-Machinecoin Core released binaries from https://machinecoin.org are unaffected,
+Machinecoin Core released binaries from https://machinecoin.io are unaffected,
 as are any built with the gitian deterministic build system.
 
 However, if you are running either

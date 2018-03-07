@@ -7,7 +7,7 @@ Source: https://github.com/machinecoin-project/machinecoin-core
 Files: *
 Copyright: 2009-2017, Machinecoin Core Developers
 License: Expat
-Comment: The Machinecoin Core Developers encompasses the current developers listed on machinecoin.org,
+Comment: The Machinecoin Core Developers encompasses the current developers listed on machinecoin.io,
          as well as the numerous contributors to the project.
 
 Files: debian/*

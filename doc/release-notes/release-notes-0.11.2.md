@@ -1,6 +1,6 @@
 Machinecoin Core version 0.11.2 is now available from:
 
-  <https://machinecoin.org/bin/machinecoin-core-0.11.2/>
+  <https://machinecoin.io/bin/machinecoin-core-0.11.2/>
 
 This is a new minor version release, bringing bug fixes, the BIP65
 (CLTV) consensus change, and relay policy preparation for BIP113. It is

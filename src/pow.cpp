@@ -10,6 +10,7 @@
 #include "primitives/block.h"
 #include "uint256.h"
 #include "util.h"
+#include "validation.h"
 
 // Machinecoin: Select retargeting
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
@@ -19,16 +20,20 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return GetNextWorkRequired_V1(pindexLast, pblock, params); // Machinecoin: Standard retargeting (V1)
     }
     else if (pindexLast->nHeight+1 < 329529)
-    {  
+    {
         return GetNextWorkRequired_V2(pindexLast, pblock, params); // Machinecoin: Digishield retargeting (V2)
     }
     else if (pindexLast->nHeight+1 < 330000)
-    {  
+    {
         return UintToArith256(params.powLimit).GetCompact();       // Machinecoin: Retargeting to support the PoW change phase (V3)
     }
-    else
-    {  
+    else if (pindexLast->nHeight+1 < 468500)
+    {
         return GetNextWorkRequired_V2(pindexLast, pblock, params); // Machinecoin: Digishield retargeting (V2)
+    }
+    else
+    {
+        return GetNextWorkRequired_V3(pindexLast, pblock, params); // Machinecoin: Octopus retargeting (V3)
     }
 }
 
@@ -125,10 +130,40 @@ unsigned int GetNextWorkRequired_V2(const CBlockIndex* pindexLast, const CBlockH
 }
 
 // Retargeting to support the PoW change phase (V3)
-// unsigned int GetNextWorkRequired_V3(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
-// {
-//    return UintToArith256(params.powLimit).GetCompact();
-// }
+unsigned int GetNextWorkRequired_V3(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
+{
+
+    if (pblock->GetBlockTime() - pindexLast->GetBlockTime() >= 300 && pblock->nBits != GetNextWorkRequired_V2(pindexLast, pblock, params)){
+        arith_uint256 bnNew;
+        bnNew.SetCompact(GetNextWorkRequired_V2(pindexLast, pblock, params));
+        bool fShift = false;
+
+        for (int i=0; i <= (pblock->GetBlockTime() -  pindexLast->GetBlockTime()) / 150; i++)
+        {
+            if (i == 0) continue;
+            if (bnNew.bits() > 235)
+            {
+                fShift = true;
+                bnNew >>= 1;
+            }
+            bnNew *= 190 + i * 3;
+            bnNew /= 173;
+            if (fShift)
+            {
+                fShift = false;
+                bnNew <<= 1;
+            }
+        }
+
+        const arith_uint256 nPowLimit  = UintToArith256(params.powLimit);
+
+        if (bnNew > nPowLimit)
+            bnNew = nPowLimit;
+
+        return bnNew.GetCompact();
+    }
+    else return GetNextWorkRequired_V2(pindexLast, pblock, params);
+}
 
 // Machinecoin: Select retargeting
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
@@ -139,14 +174,18 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     }
     else if (pindexLast->nHeight+1 < 329529) // Machinecoin: Digishield retargeting (V2)
     {
-        return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params); 
+        return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params);
     }
     else if (pindexLast->nHeight+1 < 330000) // Machinecoin: Retargeting to support the PoW change phase (V3)
     {
         return UintToArith256(params.powLimit).GetCompact();
     }
+    else if (pindexLast->nHeight+1 < 468500) // Machinecoin: Digishield retargeting (V2)
+    {
+        return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params);
+    }
     else
-    {  
+    {
         return CalculateNextWorkRequired_V2(pindexLast, nFirstBlockTime, params); // Machinecoin: Digishield retargeting (V2)
     }
 }
@@ -167,9 +206,9 @@ unsigned int CalculateNextWorkRequired_V1(const CBlockIndex* pindexLast, int64_t
 
     // Retarget
     arith_uint256 bnNew;
-		arith_uint256 bnOld;
+		  arith_uint256 bnOld;
     bnNew.SetCompact(pindexLast->nBits);
-		bnOld = bnNew;
+		  bnOld = bnNew;
     // Machinecoin: intermediate uint256 can overflow by 1 bit
     bool fShift = bnNew.bits() > 235;
     if (fShift)
@@ -179,7 +218,7 @@ unsigned int CalculateNextWorkRequired_V1(const CBlockIndex* pindexLast, int64_t
     if (fShift)
         bnNew <<= 1;
 
-		const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
+    const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
     if (bnNew > bnPowLimit)
         bnNew = bnPowLimit;
 
@@ -220,10 +259,39 @@ unsigned int CalculateNextWorkRequired_V2(const CBlockIndex* pindexLast, int64_t
 }
 
 // Retargeting to support the PoW change phase (V3)
-// unsigned int CalculateNextWorkRequired_V3(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
-// {
-//    return UintToArith256(params.powLimit).GetCompact();
-// }
+unsigned int CalculateNextWorkRequired_V3(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int64_t nBlockTimeO, int64_t nBlockTime, const Consensus::Params& params)
+ {
+   if (nBlockTime - nBlockTimeO >= 300)
+   {
+        arith_uint256 bnNew;
+        bnNew.SetCompact(GetNextWorkRequired_V2(pindexLast, pblock, params));
+        bool fShift = false;
+        for (int i=0; i <= (nBlockTime - nBlockTimeO) / 150 ; i++)
+        {
+            if (i == 0) continue;
+            if (bnNew.bits() > 235)
+            {
+                fShift = true;
+                bnNew >>= 1; 
+            }
+            bnNew *= 190 + i * 3;
+            bnNew /= 173;
+            if (fShift)
+            {
+                fShift = false;
+                bnNew <<= 1;
+            }
+        }
+
+        const arith_uint256 nPowLimit = UintToArith256(params.powLimit);
+
+        if (bnNew > nPowLimit)
+            bnNew = nPowLimit;
+
+        return bnNew.GetCompact();
+    }
+    else return pblock->nBits;
+ }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params& params)
 {
