@@ -150,6 +150,7 @@ public:
             (305275, uint256S("0x4222db35707d9af172ea5c23582338874d1f2956b1850f857c50a3e6f2c6f313"))  // Machinecoin: checkpoint at 305275
             (329528, uint256S("0x6fc60fe0c0133dfbb7fd7fae48e689c344e513a109cb4724913f768070f02a11"))  // Machinecoin: checkpoint at 329528
 						      (410476, uint256S("0x8da1c7f79018fac8acac69a57b2f8b5d2743af67976a4525fdedc8c85a3a1418"))  // Machinecoin: checkpoint at 410476
+            (467593, uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975"))  // Machinecoin: checkpoint at 467593
         };
 
         chainTxData = ChainTxData{
