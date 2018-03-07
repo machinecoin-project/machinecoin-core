@@ -15,6 +15,8 @@ void RegisterBlockchainRPCCommands(CRPCTable &tableRPC);
 void RegisterNetRPCCommands(CRPCTable &tableRPC);
 /** Register miscellaneous RPC commands */
 void RegisterMiscRPCCommands(CRPCTable &tableRPC);
+/** Register Governance RPC commands */
+void RegisterGovRPCCommands(CRPCTable &tableRPC);
 /** Register Masternode RPC commands */
 void RegisterMNRPCCommands(CRPCTable &tableRPC);
 /** Register mining RPC commands */
@@ -27,6 +29,7 @@ static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
     RegisterBlockchainRPCCommands(t);
     RegisterNetRPCCommands(t);
     RegisterMiscRPCCommands(t);
+    RegisterGovRPCCommands(t);
     RegisterMNRPCCommands(t);
     RegisterMiningRPCCommands(t);
     RegisterRawTransactionRPCCommands(t);
