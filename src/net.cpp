@@ -424,8 +424,8 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         pnode->nServicesExpected = ServiceFlags(addrConnect.nServices & nRelevantServices);
         pnode->nTimeConnected = GetSystemTimeInSeconds();
         if(fConnectToMasternode) {
-          pnode->AddRef();
-          pnode->fMasternode = true;
+            pnode->AddRef();
+            pnode->fMasternode = true;
         }
 
         GetNodeSignals().InitializeNode(pnode, *this);
@@ -1141,7 +1141,7 @@ void CConnman::AcceptConnection(const ListenSocket& hListenSocket) {
     uint64_t nonce = GetDeterministicRandomizer(RANDOMIZER_ID_LOCALHOSTNONCE).Write(id).Finalize();
 
     CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addr, CalculateKeyedNetGroup(addr), nonce, "", true, true);
-    pnode->AddRef();
+    // pnode->AddRef();
     pnode->fWhitelisted = whitelisted;
     GetNodeSignals().InitializeNode(pnode, *this);
 
@@ -1321,13 +1321,7 @@ void CConnman::ThreadSocketHandler()
         //
         // Service each socket
         //
-        std::vector<CNode*> vNodesCopy;
-        {
-            LOCK(cs_vNodes);
-            vNodesCopy = vNodes;
-            BOOST_FOREACH(CNode* pnode, vNodesCopy)
-                pnode->AddRef();
-        }
+        std::vector<CNode*> vNodesCopy = CopyNodeVector();
         BOOST_FOREACH(CNode* pnode, vNodesCopy)
         {
             if (interruptNet)
@@ -1450,11 +1444,7 @@ void CConnman::ThreadSocketHandler()
                 }
             }
         }
-        {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH(CNode* pnode, vNodesCopy)
-                pnode->Release();
-        }
+        ReleaseNodeVector(vNodesCopy);
     }
 }
 
@@ -2067,14 +2057,7 @@ void CConnman::ThreadMessageHandler()
 {
     while (!flagInterruptMsgProc)
     {
-        std::vector<CNode*> vNodesCopy;
-        {
-            LOCK(cs_vNodes);
-            vNodesCopy = vNodes;
-            BOOST_FOREACH(CNode* pnode, vNodesCopy) {
-                pnode->AddRef();
-            }
-        }
+        std::vector<CNode*> vNodesCopy = CopyNodeVector();
 
         bool fMoreWork = false;
 
@@ -2098,11 +2081,7 @@ void CConnman::ThreadMessageHandler()
                 return;
         }
 
-        {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH(CNode* pnode, vNodesCopy)
-                pnode->Release();
-        }
+        ReleaseNodeVector(vNodesCopy);
 
         std::unique_lock<std::mutex> lock(mutexMsgProc);
         if (!fMoreWork) {
