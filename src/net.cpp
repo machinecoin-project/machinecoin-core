@@ -2872,6 +2872,9 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     BOOST_FOREACH(const std::string &msg, getAllNetMessageTypes())
         mapRecvBytesPerMsgCmd[msg] = 0;
     mapRecvBytesPerMsgCmd[NET_MESSAGE_COMMAND_OTHER] = 0;
+      
+    if(fNetworkNode || fInbound)
+        AddRef();
 
     if (fLogIPs)
         LogPrint("net", "Added connection to %s peer=%d\n", addrName, id);
