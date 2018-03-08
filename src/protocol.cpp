@@ -217,6 +217,20 @@ std::string CInv::GetCommand() const
     case MSG_BLOCK:          return cmd.append(NetMsgType::BLOCK);
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
+    // Masternodes
+    case MSG_SPORK:                     return cmd.append(NetMsgType::SPORK);
+    case MSG_GETSPORKS:                 return cmd.append(NetMsgType::GETSPORKS);
+    case MSG_MASTERNODEPAYMENTVOTE:     return cmd.append(NetMsgType::MASTERNODEPAYMENTVOTE);
+    case MSG_MASTERNODEPAYMENTBLOCK:    return cmd.append(NetMsgType::MASTERNODEPAYMENTBLOCK);
+    case MSG_MASTERNODEPAYMENTSYNC:     return cmd.append(NetMsgType::MASTERNODEPAYMENTSYNC);
+    case MSG_MNANNOUNCE:                return cmd.append(NetMsgType::MNANNOUNCE);
+    case MSG_MNPING:                    return cmd.append(NetMsgType::MNPING);
+    case MSG_SYNCSTATUSCOUNT:           return cmd.append(NetMsgType::SYNCSTATUSCOUNT);
+    case MSG_MNGOVERNANCESYNC:          return cmd.append(NetMsgType::MNGOVERNANCESYNC);
+    case MSG_MNGOVERNANCEOBJECT:        return cmd.append(NetMsgType::MNGOVERNANCEOBJECT);
+    case MSG_MNGOVERNANCEOBJECTVOTE:    return cmd.append(NetMsgType::MNGOVERNANCEOBJECTVOTE);
+    case MSG_MNVERIFY:                  return cmd.append(NetMsgType::MNVERIFY);
+
     default:
         throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
     }

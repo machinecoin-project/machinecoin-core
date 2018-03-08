@@ -1138,7 +1138,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     }
                 }
             }
-            else if (inv.type == MSG_TX || inv.type == MSG_WITNESS_TX)
+            else if (inv.type == MSG_TX || inv.type == MSG_WITNESS_TX || inv.type == MSG_SPORK || inv.type == MSG_MASTERNODE_PAYMENT_VOTE || inv.type == MSG_MASTERNODE_PAYMENT_BLOCK || inv.type == MSG_MASTERNODE_ANNOUNCE || inv.type == MSG_MASTERNODE_PING || inv.type == MSG_GOVERNANCE_OBJECT || inv.type == MSG_GOVERNANCE_OBJECT_VOTE || inv.type == MSG_MASTERNODE_VERIFY)
             {
                 // Send stream from relay memory
                 bool push = false;
