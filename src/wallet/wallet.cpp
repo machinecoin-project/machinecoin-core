@@ -2159,15 +2159,14 @@ void CWallet::AvailableMNCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, con
                 if (!(IsSpent(wtxid, i)) && mine != ISMINE_NO &&                                                        // TODO change to more than 100 coins, but keep this for testing
                     !IsLockedCoin((*it).first, i) && (pcoin->tx->vout[i].nValue >= 10000000000 || fIncludeZeroValue) && // ONLY return coins with equal or higher value as needed for Masternodes
                     (!coinControl || !coinControl->HasSelected() || coinControl->fAllowOtherInputs || coinControl->IsSelected(COutPoint((*it).first, i))))
-                        vCoins.push_back(COutput(pcoin, i, nDepth,
-                                                 ((mine & ISMINE_SPENDABLE) != ISMINE_NO) ||
-                                                  (coinControl && coinControl->fAllowWatchOnly && (mine & ISMINE_WATCH_SOLVABLE) != ISMINE_NO),
-                                                 (mine & (ISMINE_SPENDABLE | ISMINE_WATCH_SOLVABLE)) != ISMINE_NO));
+                {
+                    vCoins.push_back(COutput(pcoin, i, nDepth,
+                         ((mine & ISMINE_SPENDABLE) != ISMINE_NO) ||
+                          (coinControl && coinControl->fAllowWatchOnly && (mine & ISMINE_WATCH_SOLVABLE) != ISMINE_NO),
+                         (mine & (ISMINE_SPENDABLE | ISMINE_WATCH_SOLVABLE)) != ISMINE_NO));
+                    LogPrintf("CAvailableMNCoins -- %s", i)
+                }
             }
-            
-            LogPrintf("CAvailableMNCoins -- %s", vCoins[0]);
-            LogPrintf("CAvailableMNCoins -- %s", vCoins[1]);
-            LogPrintf("CAvailableMNCoins -- %s", vCoins[2]);
         }
     }
 }
