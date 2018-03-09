@@ -2164,6 +2164,10 @@ void CWallet::AvailableMNCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, con
                                                   (coinControl && coinControl->fAllowWatchOnly && (mine & ISMINE_WATCH_SOLVABLE) != ISMINE_NO),
                                                  (mine & (ISMINE_SPENDABLE | ISMINE_WATCH_SOLVABLE)) != ISMINE_NO));
             }
+            
+            LogPrintf("CAvailableMNCoins -- %s", vCoins[0]);
+            LogPrintf("CAvailableMNCoins -- %s", vCoins[1]);
+            LogPrintf("CAvailableMNCoins -- %s", vCoins[2]);
         }
     }
 }
