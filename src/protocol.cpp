@@ -78,8 +78,6 @@ const static std::string ppszTypeName[] =
     NetMsgType::CMPCTBLOCK,
     // Machinecoin message types
     // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
-    NetMsgType::TXLOCKREQUEST,
-    NetMsgType::TXLOCKVOTE,
     NetMsgType::SPORK,
     NetMsgType::MASTERNODEPAYMENTVOTE,
     NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
