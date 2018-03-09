@@ -45,21 +45,46 @@ const char *GETSPORKS="getsporks";
 const char *MASTERNODEPAYMENTVOTE="mnw";
 const char *MASTERNODEPAYMENTBLOCK="mnwb";
 const char *MASTERNODEPAYMENTSYNC="mnget";
+const char *MNBUDGETSYNC="mnvs"; // depreciated since 12.1
+const char *MNBUDGETVOTE="mvote"; // depreciated since 12.1
+const char *MNBUDGETPROPOSAL="mprop"; // depreciated since 12.1
+const char *MNBUDGETFINAL="fbs"; // depreciated since 12.1
+const char *MNBUDGETFINALVOTE="fbvote"; // depreciated since 12.1
+const char *MNQUORUM="mn quorum"; // not implemented
 const char *MNANNOUNCE="mnb";
 const char *MNPING="mnp";
-const char *DSACCEPT="dsa";
-const char *DSVIN="dsi";
-const char *DSFINALTX="dsf";
-const char *DSSIGNFINALTX="dss";
-const char *DSCOMPLETE="dsc";
-const char *DSSTATUSUPDATE="dssu";
-const char *DSQUEUE="dsq";
-const char *DSEG="dseg";
 const char *SYNCSTATUSCOUNT="ssc";
 const char *MNGOVERNANCESYNC="govsync";
 const char *MNGOVERNANCEOBJECT="govobj";
 const char *MNGOVERNANCEOBJECTVOTE="govobjvote";
 const char *MNVERIFY="mnv";
+};
+
+const static std::string ppszTypeName[] =
+{
+    "ERROR", // Should never occur
+    NetMsgType::TX,
+    NetMsgType::BLOCK,
+    NetMsgType::MERKLEBLOCK
+    NetMsgType::CMPCTBLOCK
+    // Machinecoin message types
+    // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
+    NetMsgType::TXLOCKREQUEST,
+    NetMsgType::TXLOCKVOTE,
+    NetMsgType::SPORK,
+    NetMsgType::MASTERNODEPAYMENTVOTE,
+    NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
+    NetMsgType::MNBUDGETVOTE, // depreciated since 12.1
+    NetMsgType::MNBUDGETPROPOSAL, // depreciated since 12.1
+    NetMsgType::MNBUDGETFINAL, // depreciated since 12.1
+    NetMsgType::MNBUDGETFINALVOTE, // depreciated since 12.1
+    NetMsgType::MNQUORUM, // not implemented
+    NetMsgType::MNANNOUNCE,
+    NetMsgType::MNPING,
+    NetMsgType::DSTX,
+    NetMsgType::MNGOVERNANCEOBJECT,
+    NetMsgType::MNGOVERNANCEOBJECTVOTE,
+    NetMsgType::MNVERIFY,
 };
 
 /** All known message types. Keep this in the same order as the list of
@@ -101,14 +126,6 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::MASTERNODEPAYMENTSYNC,
     NetMsgType::MNANNOUNCE,
     NetMsgType::MNPING,
-    NetMsgType::DSACCEPT,
-    NetMsgType::DSVIN,
-    NetMsgType::DSFINALTX,
-    NetMsgType::DSSIGNFINALTX,
-    NetMsgType::DSCOMPLETE,
-    NetMsgType::DSSTATUSUPDATE,
-    NetMsgType::DSQUEUE,
-    NetMsgType::DSEG,
     NetMsgType::SYNCSTATUSCOUNT,
     NetMsgType::MNGOVERNANCESYNC,
     NetMsgType::MNGOVERNANCEOBJECT,
@@ -200,9 +217,26 @@ CInv::CInv(int typeIn, const uint256& hashIn)
     hash = hashIn;
 }
 
-bool operator<(const CInv& a, const CInv& b)
+// Machinecoin
+CInv::CInv(const std::string& strType, const uint256& hashIn)
 {
-    return (a.type < b.type || (a.type == b.type && a.hash < b.hash));
+    unsigned int i;
+    for (i = 1; i < ARRAYLEN(ppszTypeName); i++)
+    {
+        if (strType == ppszTypeName[i])
+        {
+            type = i;
+            break;
+        }
+    }
+    if (i == ARRAYLEN(ppszTypeName))
+        throw std::out_of_range(strprintf("CInv::CInv(string, uint256): unknown type '%s'", strType));
+    hash = hashIn;
+}
+
+bool CInv::IsKnownType() const
+{
+    return (type >= 1 && type < (int)ARRAYLEN(ppszTypeName));
 }
 
 std::string CInv::GetCommand() const
@@ -210,26 +244,15 @@ std::string CInv::GetCommand() const
     std::string cmd;
     if (type & MSG_WITNESS_FLAG)
         cmd.append("witness-");
-    int masked = type & MSG_TYPE_MASK;
-    switch (masked)
-    {
-    case MSG_TX:             return cmd.append(NetMsgType::TX);
-    case MSG_BLOCK:          return cmd.append(NetMsgType::BLOCK);
-    case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
-    case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
-    // Masternodes
-    case MSG_SPORK:                     return cmd.append(NetMsgType::SPORK);
-    case MSG_MASTERNODE_PAYMENT_VOTE:     return cmd.append(NetMsgType::MASTERNODEPAYMENTVOTE);
-    case MSG_MASTERNODE_PAYMENT_BLOCK:    return cmd.append(NetMsgType::MASTERNODEPAYMENTBLOCK);
-    case MSG_MASTERNODE_ANNOUNCE:                return cmd.append(NetMsgType::MNANNOUNCE);
-    case MSG_MASTERNODE_PING:                    return cmd.append(NetMsgType::MNPING);
-    case MSG_GOVERNANCE_OBJECT:        return cmd.append(NetMsgType::MNGOVERNANCEOBJECT);
-    case MSG_GOVERNANCE_OBJECT_VOTE:    return cmd.append(NetMsgType::MNGOVERNANCEOBJECTVOTE);
-    case MSG_MASTERNODE_VERIFY:                  return cmd.append(NetMsgType::MNVERIFY);
 
-    default:
+    if (!IsKnownType())
         throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
-    }
+    return ppszTypeName[type];
+}
+
+bool operator<(const CInv& a, const CInv& b)
+{
+    return (a.type < b.type || (a.type == b.type && a.hash < b.hash));
 }
 
 std::string CInv::ToString() const

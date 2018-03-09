@@ -1139,7 +1139,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     }
                 }
             }
-            else if (inv.type == MSG_TX || inv.type == MSG_WITNESS_TX || inv.type == MSG_SPORK || inv.type == MSG_MASTERNODE_PAYMENT_VOTE || inv.type == MSG_MASTERNODE_PAYMENT_BLOCK || inv.type == MSG_MASTERNODE_ANNOUNCE || inv.type == MSG_MASTERNODE_PING || inv.type == MSG_GOVERNANCE_OBJECT || inv.type == MSG_GOVERNANCE_OBJECT_VOTE || inv.type == MSG_MASTERNODE_VERIFY)
+            else if (inv.IsKnownType())
             {
                 // Send stream from relay memory
                 bool push = false;
@@ -1687,10 +1687,17 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++)
         {
             CInv &inv = vInv[nInv];
+            
+            if(!inv.IsKnownType()) {
+                LogPrint("net", "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->id);
+                continue;
+            }
 
             if (interruptMsgProc)
                 return true;
 
+            pfrom->AddInventoryKnown(inv);
+            
             bool fAlreadyHave = AlreadyHave(inv);
             LogPrint("net", "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
 
@@ -1712,7 +1719,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             }
             else
             {
-                pfrom->AddInventoryKnown(inv);
+                // pfrom->AddInventoryKnown(inv);
                 if (fBlocksOnly)
                     LogPrint("net", "transaction (%s) inv sent in violation of protocol peer=%d\n", inv.hash.ToString(), pfrom->id);
                 else if (!fAlreadyHave && !fImporting && !fReindex && !IsInitialBlockDownload())
@@ -2742,10 +2749,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         }
     }
 
-    else if (strCommand == NetMsgType::NOTFOUND) {
+    // Commented out for testing
+    // else if (strCommand == NetMsgType::NOTFOUND) {
         // We do not care about the NOTFOUND message, but logging an Unknown Command
         // message would be undesirable as we transmit it ourselves.
-    }
+    // }
   
     else
     {

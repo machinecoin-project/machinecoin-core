@@ -250,14 +250,6 @@ extern const char *MASTERNODEPAYMENTVOTE;
 extern const char *MASTERNODEPAYMENTSYNC;
 extern const char *MNANNOUNCE;
 extern const char *MNPING;
-extern const char *DSACCEPT;
-extern const char *DSVIN;
-extern const char *DSFINALTX;
-extern const char *DSSIGNFINALTX;
-extern const char *DSCOMPLETE;
-extern const char *DSSTATUSUPDATE;
-extern const char *DSQUEUE;
-extern const char *DSEG;
 extern const char *SYNCSTATUSCOUNT;
 extern const char *MNGOVERNANCESYNC;
 extern const char *MNGOVERNANCEOBJECT;
@@ -355,9 +347,18 @@ enum GetDataMsg
     MSG_WITNESS_BLOCK = MSG_BLOCK | MSG_WITNESS_FLAG, //!< Defined in BIP144
     MSG_WITNESS_TX = MSG_TX | MSG_WITNESS_FLAG,       //!< Defined in BIP144
     MSG_FILTERED_WITNESS_BLOCK = MSG_FILTERED_BLOCK | MSG_WITNESS_FLAG,
+    // Machinecoin message types
+    // NOTE: declare non-implmented here, we must keep this enum consistent and backwards compatible
+    MSG_TXLOCK_REQUEST,
+    MSG_TXLOCK_VOTE,
     MSG_SPORK,
     MSG_MASTERNODE_PAYMENT_VOTE,
     MSG_MASTERNODE_PAYMENT_BLOCK, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
+    MSG_BUDGET_VOTE, // depreciated since 12.1
+    MSG_BUDGET_PROPOSAL, // depreciated since 12.1
+    MSG_BUDGET_FINALIZED, // depreciated since 12.1
+    MSG_BUDGET_FINALIZED_VOTE, // depreciated since 12.1
+    MSG_MASTERNODE_QUORUM, // not implemented
     MSG_MASTERNODE_ANNOUNCE,
     MSG_MASTERNODE_PING,
     MSG_GOVERNANCE_OBJECT,
@@ -371,6 +372,7 @@ class CInv
 public:
     CInv();
     CInv(int typeIn, const uint256& hashIn);
+    CInv(const std::string& strType, const uint256& hashIn);
 
     ADD_SERIALIZE_METHODS;
 
@@ -383,6 +385,7 @@ public:
 
     friend bool operator<(const CInv& a, const CInv& b);
 
+    bool IsKnownType() const;
     std::string GetCommand() const;
     std::string ToString() const;
 
