@@ -87,12 +87,12 @@ bool CActiveMasternode::SendMasternodePing(CConnman& connman)
         return false;
     }
 
-    if(!mnodeman.Has(outpoint)) {
+    /*if(!mnodeman.Has(outpoint)) {
         strNotCapableReason = "Masternode not in masternode list";
         nState = ACTIVE_MASTERNODE_NOT_CAPABLE;
         LogPrintf("CActiveMasternode::SendMasternodePing -- %s: %s\n", GetStateString(), strNotCapableReason);
         return false;
-    }
+    }*/
 
     CMasternodePing mnp(outpoint);
     mnp.nSentinelVersion = nSentinelVersion;
