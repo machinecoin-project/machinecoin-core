@@ -1026,7 +1026,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
 
             it++;
             
-            LogPrintf("InvType -- %s\n", inv.type)
+            LogPrintf("InvType -- %s\n", inv.type);
 
             if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK || inv.type == MSG_CMPCT_BLOCK || inv.type == MSG_WITNESS_BLOCK)
             {
