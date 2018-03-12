@@ -389,6 +389,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
     mWeAskedForMasternodeList[pnode->addr] = askAgain;
 
     LogPrint("masternode", "CMasternodeMan::DsegUpdate -- asked %s for the list\n", pnode->addr.ToString());
+    LogPrintf("CMasternodeMan::DsegUpdate -- %s", pnode->addr.ToString());
 }
 
 CMasternode* CMasternodeMan::Find(const COutPoint &outpoint)
