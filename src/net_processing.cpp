@@ -1025,6 +1025,8 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                 return;
 
             it++;
+            
+            LogPrintf("InvType -- %s\n", inv.type)
 
             if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK || inv.type == MSG_CMPCT_BLOCK || inv.type == MSG_WITNESS_BLOCK)
             {
@@ -1321,7 +1323,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 {
     LogPrint("net", "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
     
-    LogPrintf("Received strCommand -- %s", SanitizeString(strCommand));
+    LogPrintf("Received strCommand -- %s\n", SanitizeString(strCommand));
     
     if (IsArgSet("-dropmessagestest") && GetRand(GetArg("-dropmessagestest", 0)) == 0)
     {
@@ -2761,8 +2763,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     else
     {
         bool found = false;
-        
-        LogPrintf("Not found strCommand -- %s", SanitizeString(strCommand));
 
         const std::vector<std::string> &allMessages = getAllNetMessageTypes();
         BOOST_FOREACH(const std::string msg, allMessages) {
@@ -2774,7 +2774,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
         if (found)
         {
-            LogPrintf("Found strCommand -- %s", SanitizeString(strCommand));
             mnodeman.ProcessMessage(pfrom, strCommand, vRecv, connman);
             mnpayments.ProcessMessage(pfrom, strCommand, vRecv, connman);
             sporkManager.ProcessSpork(pfrom, strCommand, vRecv, connman);
