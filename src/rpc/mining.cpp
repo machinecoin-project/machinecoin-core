@@ -494,14 +494,12 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
   
     // when enforcement is on we need information about a masternode payee or otherwise our block is going to be orphaned by the network
     CScript payee;
-    if (true))
-        && !masternodeSync.IsWinnersListSynced()
+    if (!masternodeSync.IsWinnersListSynced()
         && !mnpayments.GetBlockPayee(chainActive.Height() + 1, payee))
             throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin Core is downloading masternode winners...");
 
     // next bock is a superblock and we need governance info to correctly construct it
-    if (true)
-        && !masternodeSync.IsSynced()
+    if (!masternodeSync.IsSynced()
         && CSuperblock::IsValidBlockHeight(chainActive.Height() + 1))
             throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin Core is syncing with network...");
 
