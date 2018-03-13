@@ -164,7 +164,6 @@ MACHINECOIN_CORE_H = \
   script/sign.h \
   script/standard.h \
   script/ismine.h \
-  spork.h \
   streams.h \
   support/allocators/secure.h \
   support/allocators/zeroafterfree.h \
@@ -253,7 +252,6 @@ libmachinecoin_server_a_SOURCES = \
   rpc/server.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
-  spork.cpp \
   timedata.cpp \
   torcontrol.cpp \
   txdb.cpp \

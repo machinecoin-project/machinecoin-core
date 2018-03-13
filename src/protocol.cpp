@@ -40,8 +40,6 @@ const char *CMPCTBLOCK="cmpctblock";
 const char *GETBLOCKTXN="getblocktxn";
 const char *BLOCKTXN="blocktxn";
 // Machinecoin message types
-const char *SPORK="spork";
-const char *GETSPORKS="getsporks";
 const char *MASTERNODEPAYMENTVOTE="mnw";
 const char *MASTERNODEPAYMENTBLOCK="mnwb";
 const char *MASTERNODEPAYMENTSYNC="mnget";
@@ -78,7 +76,6 @@ const static std::string ppszTypeName[] =
     NetMsgType::CMPCTBLOCK,
     // Machinecoin message types
     // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
-    NetMsgType::SPORK,
     NetMsgType::MASTERNODEPAYMENTVOTE,
     NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
     NetMsgType::MNBUDGETVOTE, // depreciated since 12.1
@@ -134,8 +131,6 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::BLOCKTXN,
     // Machinecoin message types
     // NOTE: do NOT include non-implmented here, we want them to be "Unknown command" in ProcessMessage()
-    NetMsgType::SPORK,
-    NetMsgType::GETSPORKS,
     NetMsgType::MASTERNODEPAYMENTVOTE,
     // NetMsgType::MASTERNODEPAYMENTBLOCK, // there is no message for this, only inventory
     NetMsgType::MASTERNODEPAYMENTSYNC,

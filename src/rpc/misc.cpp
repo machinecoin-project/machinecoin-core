@@ -20,7 +20,6 @@
 #endif
 
 #include "masternode-sync.h"
-#include "spork.h"
 
 #include <stdint.h>
 
@@ -191,62 +190,6 @@ public:
     }
 };
 #endif
-
-/*
-    Used for updating/reading spork settings on the network
-*/
-UniValue spork(const JSONRPCRequest& request)
-{
-    if(request.params.size() == 1 && request.params[0].get_str() == "show"){
-        UniValue ret(UniValue::VOBJ);
-        for(int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++){
-            if(sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
-                ret.push_back(Pair(sporkManager.GetSporkNameByID(nSporkID), sporkManager.GetSporkValue(nSporkID)));
-        }
-        return ret;
-    } else if(request.params.size() == 1 && request.params[0].get_str() == "active"){
-        UniValue ret(UniValue::VOBJ);
-        for(int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++){
-            if(sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
-                ret.push_back(Pair(sporkManager.GetSporkNameByID(nSporkID), sporkManager.IsSporkActive(nSporkID)));
-        }
-        return ret;
-    }
-#ifdef ENABLE_WALLET
-    else if (request.params.size() == 2){
-        int nSporkID = sporkManager.GetSporkIDByName(request.params[0].get_str());
-        if(nSporkID == -1){
-            return "Invalid spork name";
-        }
-
-        if (!g_connman)
-            throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
-
-        // SPORK VALUE
-        int64_t nValue = request.params[1].get_int64();
-
-        //broadcast new spork
-        if(sporkManager.UpdateSpork(nSporkID, nValue, *g_connman)){
-            sporkManager.ExecuteSpork(nSporkID, nValue);
-            return "success";
-        } else {
-            return "failure";
-        }
-
-    }
-
-    throw runtime_error(
-        "spork <name> [<value>]\n"
-        "<name> is the corresponding spork name, or 'show' to show all current spork settings, active to show which sporks are active\n"
-        "<value> is a epoch datetime to enable or disable spork\n"
-        + HelpRequiringPassphrase());
-#else // ENABLE_WALLET
-    throw runtime_error(
-        "spork <name>\n"
-        "<name> is the corresponding spork name, or 'show' to show all current spork settings, active to show which sporks are active\n");
-#endif // ENABLE_WALLET
-
-}
 
 UniValue validateaddress(const JSONRPCRequest& request)
 {
@@ -621,7 +564,6 @@ static const CRPCCommand commands[] =
   
     /* Masternodes */
     { "masternodes",        "mnsync",                 &mnsync,                 true,  {"command"} },
-    { "masternodes",        "spork",                  &spork,                  true,  {"command","sporkid"} },
 
     /* Not shown in help */
     { "hidden",             "setmocktime",            &setmocktime,            true,  {"timestamp"}},

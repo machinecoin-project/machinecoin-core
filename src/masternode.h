@@ -7,7 +7,6 @@
 
 #include "key.h"
 #include "validation.h"
-#include "spork.h"
 
 class CMasternode;
 class CMasternodeBroadcast;
@@ -241,7 +240,7 @@ public:
         if(nActiveState == MASTERNODE_ENABLED) {
             return true;
         }
-        if(!sporkManager.IsSporkActive(SPORK_14_REQUIRE_SENTINEL_FLAG) &&
+        if(false) &&
            (nActiveState == MASTERNODE_WATCHDOG_EXPIRED)) {
             return true;
         }

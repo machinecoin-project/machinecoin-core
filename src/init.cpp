@@ -58,7 +58,6 @@
 #include "masternodeconfig.h"
 #include "messagesigner.h"
 #include "netfulfilledman.h"
-#include "spork.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -1233,12 +1232,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (nScriptCheckThreads) {
         for (int i=0; i<nScriptCheckThreads-1; i++)
             threadGroup.create_thread(&ThreadScriptCheck);
-    }
-  
-    if (IsArgSet("-sporkkey")) // spork priv key
-    {
-        if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
-            return InitError(_("Unable to sign spork message, wrong key?"));
     }
 
     // Start the lightweight task scheduler thread

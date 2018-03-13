@@ -409,5 +409,4 @@ QT_TRANSLATE_NOOP("machinecoin-core", "Synchronization pending..."),
 QT_TRANSLATE_NOOP("machinecoin-core", "Synchronizing governance objects..."),
 QT_TRANSLATE_NOOP("machinecoin-core", "Synchronizing masternode payments..."),
 QT_TRANSLATE_NOOP("machinecoin-core", "Synchronizing masternodes..."),
-QT_TRANSLATE_NOOP("machinecoin-core", "Unable to sign spork message, wrong key?"),
 };

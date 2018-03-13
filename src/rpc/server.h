@@ -202,7 +202,6 @@ extern void EnsureWalletIsUnlocked();
 
 extern UniValue getpoolinfo(const JSONRPCRequest &request);
 extern UniValue getpoolinfo(const JSONRPCRequest &request);
-extern UniValue spork(const JSONRPCRequest &request);
 extern UniValue masternode(const JSONRPCRequest &request);
 extern UniValue masternodelist(const JSONRPCRequest &request);
 extern UniValue masternodebroadcast(const JSONRPCRequest &request);
