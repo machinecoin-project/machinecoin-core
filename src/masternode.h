@@ -240,8 +240,7 @@ public:
         if(nActiveState == MASTERNODE_ENABLED) {
             return true;
         }
-        if(false) &&
-           (nActiveState == MASTERNODE_WATCHDOG_EXPIRED)) {
+        if(nActiveState == MASTERNODE_WATCHDOG_EXPIRED) {
             return true;
         }
 
