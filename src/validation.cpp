@@ -1756,26 +1756,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     int32_t nVersion = VERSIONBITS_TOP_BITS;
 
     for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; i++) {
-        Consensus::DeploymentPos pos = Consensus::DeploymentPos(i);
-        
         ThresholdState state = VersionBitsState(pindexPrev, params, (Consensus::DeploymentPos)i, versionbitscache);
-        const struct BIP9DeploymentInfo& vbinfo = VersionBitsDeploymentInfo[pos];
-        if (vbinfo.check_mn_protocol && state == THRESHOLD_STARTED && !fAssumeMasternodeIsUpgraded) {
-            CScript payee;
-            masternode_info_t mnInfo;
-            if (!mnpayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
-                // no votes for this block
-                continue;
-            }
-            if (!mnodeman.GetMasternodeInfo(payee, mnInfo)) {
-                // unknown masternode
-                continue;
-            }
-            if (mnInfo.nProtocolVersion < 70017) {
-                // masternode is not upgraded yet
-                continue;
-            }
-        }
         if (state == THRESHOLD_LOCKED_IN || state == THRESHOLD_STARTED) {
             nVersion |= VersionBitsMask(params, (Consensus::DeploymentPos)i);
         }
