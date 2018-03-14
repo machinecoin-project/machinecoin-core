@@ -428,10 +428,10 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             pnode->fMasternode = true;
         }
 
-        // GetNodeSignals().InitializeNode(pnode, *this);
-        // LOCK(cs_vNodes);
-        // vNodes.push_back(pnode);*/
-        pnode->AddRef();
+        GetNodeSignals().InitializeNode(pnode, *this);
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);*/
+        // pnode->AddRef();
 
         return pnode;
     } else if (!proxyConnectionFailed) {
@@ -1984,7 +1984,7 @@ void CConnman::ThreadMnbRequestConnections()
         std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
         if(p.first == CService() || p.second.empty()) continue;
 
-        ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, false, true);
+        ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, true, true);
 
         LOCK(cs_vNodes);
 
@@ -2029,7 +2029,7 @@ bool CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
     } else if (FindNode(std::string(pszDest)))
         return false;
 
-    CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
+    CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure);
 
     if (!pnode)
         return false;
@@ -2053,6 +2053,7 @@ bool CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
 
 void CConnman::ThreadMessageHandler()
 {
+    SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (!flagInterruptMsgProc)
     {
         std::vector<CNode*> vNodesCopy = CopyNodeVector();

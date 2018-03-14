@@ -36,6 +36,9 @@
 #include "versionbits.h"
 #include "warnings.h"
 
+#include "masternodeman.h"
+#include "masternode-payments.h"
+
 #include <atomic>
 #include <sstream>
 
@@ -43,6 +46,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/math/distributions/poisson.hpp>
 #include <boost/thread.hpp>
 
@@ -1746,13 +1750,30 @@ void ThreadScriptCheck() {
 // Protected by cs_main
 VersionBitsCache versionbitscache;
 
-int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params, bool fAssumeMasternodeIsUpgraded)
 {
     LOCK(cs_main);
     int32_t nVersion = VERSIONBITS_TOP_BITS;
 
     for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; i++) {
         ThresholdState state = VersionBitsState(pindexPrev, params, (Consensus::DeploymentPos)i, versionbitscache);
+        const struct BIP9DeploymentInfo& vbinfo = VersionBitsDeploymentInfo[pos];
+        if (vbinfo.check_mn_protocol && state == THRESHOLD_STARTED && !fAssumeMasternodeIsUpgraded) {
+            CScript payee;
+            masternode_info_t mnInfo;
+            if (!mnpayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
+                // no votes for this block
+                continue;
+            }
+            if (!mnodeman.GetMasternodeInfo(payee, mnInfo)) {
+                // unknown masternode
+                continue;
+            }
+            if (mnInfo.nProtocolVersion < 70017) {
+                // masternode is not upgraded yet
+                continue;
+            }
+        }
         if (state == THRESHOLD_LOCKED_IN || state == THRESHOLD_STARTED) {
             nVersion |= VersionBitsMask(params, (Consensus::DeploymentPos)i);
         }
@@ -1781,7 +1802,7 @@ public:
     {
         return ((pindex->nVersion & VERSIONBITS_TOP_MASK) == VERSIONBITS_TOP_BITS) &&
                ((pindex->nVersion >> bit) & 1) != 0 &&
-               ((ComputeBlockVersion(pindex->pprev, params) >> bit) & 1) == 0;
+               ((ComputeBlockVersion(pindex->pprev, params, true) >> bit) & 1) == 0;
     }
 };
 
@@ -1990,12 +2011,33 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime3 - nTime2), 0.001 * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * 0.000001);
 
-    CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
+    /*CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
     if (block.vtx[0]->GetValueOut() > blockReward)
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0]->GetValueOut(), blockReward),
-                               REJECT_INVALID, "bad-cb-amount");
+                               REJECT_INVALID, "bad-cb-amount");*/
+  
+    // MACHINECOIN : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
+
+    // It's possible that we simply don't have enough data and this could fail
+    // (i.e. block itself could be a correct one and we need to store it),
+    // that's why this is in ConnectBlock. Could be the other way around however -
+    // the peer who sent us this block is missing some data and wasn't able
+    // to recognize that block is actually invalid.
+    // TODO: resync data (both ways?) and try to reprocess this block later.
+    CAmount blockReward = nFees + GetBlockSubsidy(pindex->pprev->nBits, pindex->pprev->nHeight, chainparams.GetConsensus());
+    std::string strError = "";
+    if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
+        return state.DoS(0, error("ConnectBlock(MAC): %s", strError), REJECT_INVALID, "bad-cb-amount");
+    }
+
+    if (!IsBlockPayeeValid(block.vtx[0], pindex->nHeight, blockReward)) {
+        mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
+        return state.DoS(0, error("ConnectBlock(MAC): couldn't find masternode or superblock payments"),
+                                REJECT_INVALID, "bad-cb-payee");
+    }
+    // END MACHINECOIN
 
     if (!control.Wait())
         return state.DoS(100, false);
