@@ -429,9 +429,9 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         }
 
         GetNodeSignals().InitializeNode(pnode, *this);
-        LOCK(cs_vNodes);
-        vNodes.push_back(pnode);
-        // pnode->AddRef();
+        /*LOCK(cs_vNodes);
+        vNodes.push_back(pnode);*/
+        pnode->AddRef();
 
         return pnode;
     } else if (!proxyConnectionFailed) {
