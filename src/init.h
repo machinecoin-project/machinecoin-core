@@ -61,4 +61,6 @@ std::string HelpMessage(HelpMessageMode mode);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
 
+void ThreadCheckPrivateSend(CConnman& connman);
+
 #endif // MACHINECOIN_INIT_H

@@ -1767,6 +1767,16 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     // but don't call it directly to prevent triggering of other listeners like zmq etc.
     // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
     pdsNotificationInterface->InitializeCurrentBlockTip();
+  
+    // ********************************************************* Step 11d: start dash-ps-<smth> threads
+
+    threadGroup.create_thread(boost::bind(&ThreadCheckPrivateSend, boost::ref(*g_connman)));
+    if (fMasterNode)
+        threadGroup.create_thread(boost::bind(&ThreadCheckPrivateSendServer, boost::ref(*g_connman)));
+#ifdef ENABLE_WALLET
+    else
+        threadGroup.create_thread(boost::bind(&ThreadCheckPrivateSendClient, boost::ref(*g_connman)));
+#endif // ENABLE_WALLET
 
     // ********************************************************* Step 11: start node
 
@@ -1811,4 +1821,52 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 #endif
 
     return !fRequestShutdown;
+}
+
+void ThreadCheckPrivateSend(CConnman& connman)
+{
+    if(fLiteMode) return; // disable all Dash specific functionality
+
+    static bool fOneThread;
+    if(fOneThread) return;
+    fOneThread = true;
+
+    // Make this thread recognisable as the PrivateSend thread
+    RenameThread("dash-ps");
+
+    unsigned int nTick = 0;
+
+    while (true)
+    {
+        MilliSleep(1000);
+
+        // try to sync from all available nodes, one step at a time
+        masternodeSync.ProcessTick(connman);
+
+        if(masternodeSync.IsBlockchainSynced() && !ShutdownRequested()) {
+
+            nTick++;
+
+            // make sure to check all masternodes first
+            mnodeman.Check();
+
+            // check if we should activate or ping every few minutes,
+            // slightly postpone first run to give net thread a chance to connect to some peers
+            if(nTick % MASTERNODE_MIN_MNP_SECONDS == 15)
+                activeMasternode.ManageState(connman);
+
+            if(nTick % 60 == 0) {
+                mnodeman.ProcessMasternodeConnections(connman);
+                mnodeman.CheckAndRemove(connman);
+                mnpayments.CheckAndRemove();
+            }
+            if(fMasterNode && (nTick % (60 * 5) == 0)) {
+                mnodeman.DoFullVerificationStep(connman);
+            }
+
+            if(nTick % (60 * 5) == 0) {
+                governance.DoMaintenance(connman);
+            }
+        }
+    }
 }
