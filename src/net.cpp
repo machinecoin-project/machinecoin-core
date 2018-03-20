@@ -424,14 +424,14 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         pnode->nServicesExpected = ServiceFlags(addrConnect.nServices & nRelevantServices);
         // pnode->nTimeConnected = GetSystemTimeInSeconds();
         if(fConnectToMasternode) {
-            // pnode->AddRef();
+            pnode->AddRef();
             pnode->fMasternode = true;
         }
 
         GetNodeSignals().InitializeNode(pnode, *this);
-        /*LOCK(cs_vNodes);
-        vNodes.push_back(pnode);*/
-        pnode->AddRef();
+        LOCK(cs_vNodes);
+        vNodes.push_back(pnode);
+        // pnode->AddRef();
 
         return pnode;
     } else if (!proxyConnectionFailed) {
