@@ -1156,6 +1156,8 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         push = true;
                     }
                 }
+              
+                LogPrintf("isKnown strCommand: %s", inv.type);
 
                 if (!push && inv.type == MSG_MASTERNODE_PAYMENT_VOTE) {
                     if(mnpayments.HasVerifiedPaymentVote(inv.hash)) {
@@ -1191,7 +1193,9 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mnodeman.mapSeenMasternodeBroadcast[inv.hash].second;
-                        connman.PushMessage(pfrom, NetMsgType::MNANNOUNCE, ss);
+                        // connman.PushMessage(pfrom, NetMsgType::MNANNOUNCE, ss);
+                        connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::MNANNOUNCE, ss));
+                        // connman.PushMessage(pfrom, NetMsgType::MNANNOUNCE, ss);
                         push = true;
                     }
                 }
@@ -1201,7 +1205,8 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mnodeman.mapSeenMasternodePing[inv.hash];
-                        connman.PushMessage(pfrom, NetMsgType::MNPING, ss);
+                        connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::MNPING, ss));
+                        // connman.PushMessage(pfrom, NetMsgType::MNPING, ss);
                         push = true;
                     }
                 }
