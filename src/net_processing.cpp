@@ -1141,7 +1141,21 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             {
                 // Send stream from relay memory
                 bool push = false;
-                auto mi = mapRelay.find(inv.hash);
+                {
+                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                    {
+                        LOCK(cs_mapRelay);
+                        map<CInv, CDataStream>::iterator mi = mapRelay.find(inv);
+                        if (mi != mapRelay.end()) {
+                            ss += (*mi).second;
+                            push = true;
+                        }
+                    }
+                    if(push)
+                        // connman.PushMessage(pfrom, inv.GetCommand(), ss);
+                        connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
+                }
+                /*auto mi = mapRelay.find(inv.hash);
                 int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
                 if (mi != mapRelay.end()) {
                     // connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *mi->second));
@@ -1155,7 +1169,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *txinfo.tx));
                         push = true;
                     }
-                }
+                }*/
               
                 LogPrintf("isKnown strCommand: %s", inv.type);
 
