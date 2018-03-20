@@ -1146,7 +1146,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     {
                         auto mi = mapRelay.find(inv.hash);
                         if (mi != mapRelay.end()) {
-                            ss += (*mi).second;
+                            ss = *mi->second;
                             push = true;
                         }
                     }
