@@ -3238,6 +3238,23 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                 }
             }
             pto->vInventoryBlockToSend.clear();
+          
+            // Add other inv types
+            LOCK(pto->cs_inventory);
+            vInv.reserve(std::max<size_t>(pto->vInventoryToSend.size(), INVENTORY_BROADCAST_MAX));
+            BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)
+            {
+                pto->filterInventoryKnown.insert(inv.hash);
+
+                LogPrintf("SendMessages -- queued inv: %s  index=%d peer=%d\n", inv.ToString(), vInv.size(), pto->id);
+                // TODO maybe CInv(inv.type, inv.hash)
+                vInv.push_back(inv);
+                if (vInv.size() == MAX_INV_SZ) {
+                    LogPrintf("SendMessages -- pushing inv's: count=%d peer=%d\n", vInv.size(), pto->id);
+                    connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
+                    vInv.clear();
+                }
+            }            
 
             // Check whether periodic sends should happen
             bool fSendTrickle = pto->fWhitelisted;
