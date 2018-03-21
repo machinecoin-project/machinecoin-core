@@ -423,15 +423,16 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, pszDest ? pszDest : "", false, true);
         pnode->nServicesExpected = ServiceFlags(addrConnect.nServices & nRelevantServices);
         // pnode->nTimeConnected = GetSystemTimeInSeconds();
-        if(fConnectToMasternode) {
-            // pnode->AddRef();
-            pnode->fMasternode = true;
-        }
 
         GetNodeSignals().InitializeNode(pnode, *this);
         /*LOCK(cs_vNodes);
         vNodes.push_back(pnode);*/
         pnode->AddRef();
+      
+        if(fConnectToMasternode) {
+            // pnode->AddRef();
+            pnode->fMasternode = true;
+        }
 
         return pnode;
     } else if (!proxyConnectionFailed) {
