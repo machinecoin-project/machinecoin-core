@@ -359,17 +359,17 @@ enum GetDataMsg
     MSG_TXLOCK_REQUEST = 5,
     MSG_TXLOCK_VOTE = 6,
     MSG_MASTERNODE_PAYMENT_VOTE = 7,
-    MSG_MASTERNODE_PAYMENT_BLOCK = 7, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
-    MSG_BUDGET_VOTE = 8, // depreciated since 12.1
-    MSG_BUDGET_PROPOSAL = 9, // depreciated since 12.1
-    MSG_BUDGET_FINALIZED = 10, // depreciated since 12.1
-    MSG_BUDGET_FINALIZED_VOTE = 11, // depreciated since 12.1
-    MSG_MASTERNODE_QUORUM = 12, // not implemented
-    MSG_MASTERNODE_ANNOUNCE = 13,
-    MSG_MASTERNODE_PING = 14,
-    MSG_GOVERNANCE_OBJECT = 15,
-    MSG_GOVERNANCE_OBJECT_VOTE = 16,
-    MSG_MASTERNODE_VERIFY = 17,
+    MSG_MASTERNODE_PAYMENT_BLOCK = 8, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
+    MSG_BUDGET_VOTE = 9, // depreciated since 12.1
+    MSG_BUDGET_PROPOSAL = 10, // depreciated since 12.1
+    MSG_BUDGET_FINALIZED = 11, // depreciated since 12.1
+    MSG_BUDGET_FINALIZED_VOTE = 12, // depreciated since 12.1
+    MSG_MASTERNODE_QUORUM = 13, // not implemented
+    MSG_MASTERNODE_ANNOUNCE = 14,
+    MSG_MASTERNODE_PING = 15,
+    MSG_GOVERNANCE_OBJECT = 16,
+    MSG_GOVERNANCE_OBJECT_VOTE = 17,
+    MSG_MASTERNODE_VERIFY = 18,
 };
 
 /** inv message data */
