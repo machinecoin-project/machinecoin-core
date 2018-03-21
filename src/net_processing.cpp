@@ -3240,15 +3240,15 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
             pto->vInventoryBlockToSend.clear();
           
             // Add other inv types
-            LOCK(pto->cs_inventory);
-            vInv.reserve(std::max<size_t>(pto->vInventoryToSend.size(), INVENTORY_BROADCAST_MAX));
             BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)
             {
-                pto->filterInventoryKnown.insert(inv.hash);
+                // pto->filterInventoryKnown.insert(inv.hash);
 
                 LogPrintf("SendMessages -- queued inv: %s  index=%d peer=%d\n", inv.ToString(), vInv.size(), pto->id);
                 // TODO maybe CInv(inv.type, inv.hash)
-                vInv.push_back(inv);
+                // vInv.push_back(inv);
+                LogPrintf("INV WITH TYPE: %s\n", inv.type);
+                vInv.push_back(CInv(inv.type, inv.hash));
                 if (vInv.size() == MAX_INV_SZ) {
                     LogPrintf("SendMessages -- pushing inv's: count=%d peer=%d\n", vInv.size(), pto->id);
                     connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
