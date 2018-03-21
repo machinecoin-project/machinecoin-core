@@ -384,7 +384,8 @@ void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
         }
     }
 
-    connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn());
+    // connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn()));
     int64_t askAgain = GetTime() + DSEG_UPDATE_SECONDS;
     mWeAskedForMasternodeList[pnode->addr] = askAgain;
 
@@ -840,7 +841,9 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         }
 
         if(vin == CTxIn()) {
-            connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
+            // connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST), nInvCount);
+
             LogPrintf("DSEG -- Sent %d Masternode invs to peer %d\n", nInvCount, pfrom->id);
             return;
         }

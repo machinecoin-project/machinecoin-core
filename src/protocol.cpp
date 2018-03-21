@@ -254,6 +254,7 @@ CInv::CInv(const std::string& strType, const uint256& hashIn)
 
 bool CInv::IsKnownType() const
 {
+    LogPrintf("IsKnownType was called");
     return (type >= 1 && type < (int)ARRAYLEN(ppszTypeName));
 }
 
@@ -284,5 +285,6 @@ std::string CInv::ToString() const
 
 const std::vector<std::string> &getAllNetMessageTypes()
 {
+    LogPrintf("getAllNetMessageTypes was called");
     return allNetMessageTypesVec;
 }
