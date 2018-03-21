@@ -798,7 +798,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         CTxIn vin;
         vRecv >> vin;
 
-        LogPrint("masternode", "DSEG -- Masternode list, masternode=%s\n", vin.prevout.ToStringShort());
+        LogPrintf("DSEG -- Masternode list, masternode=%s\n", vin.prevout.ToStringShort());
 
         LOCK(cs);
 
@@ -825,7 +825,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
             if (mnpair.second.addr.IsRFC1918() || mnpair.second.addr.IsLocal()) continue; // do not send local network masternode
             if (mnpair.second.IsUpdateRequired()) continue; // do not send outdated masternodes
 
-            LogPrint("masternode", "DSEG -- Sending Masternode entry: masternode=%s  addr=%s\n", mnpair.first.ToStringShort(), mnpair.second.addr.ToString());
+            LogPrintf("DSEG -- Sending Masternode entry: masternode=%s  addr=%s\n", mnpair.first.ToStringShort(), mnpair.second.addr.ToString());
             CMasternodeBroadcast mnb = CMasternodeBroadcast(mnpair.second);
             CMasternodePing mnp = mnpair.second.lastPing;
             uint256 hashMNB = mnb.GetHash();
