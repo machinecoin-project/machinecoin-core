@@ -9,6 +9,7 @@
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
+#include "netmessagemaker.h"
 #include "netfulfilledman.h"
 #include "script/standard.h"
 #include "util.h"
@@ -383,6 +384,8 @@ void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
             }
         }
     }
+  
+    const CNetMsgMaker msgMaker(pnode->GetSendVersion());
 
     // connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn());
     connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn()));
@@ -841,6 +844,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         }
 
         if(vin == CTxIn()) {
+            const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
             // connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
             connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST), nInvCount);
 
