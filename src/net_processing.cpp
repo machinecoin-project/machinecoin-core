@@ -3238,23 +3238,6 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                 }
             }
             pto->vInventoryBlockToSend.clear();
-          
-            // Add other inv types
-            BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)
-            {
-                // pto->filterInventoryKnown.insert(inv.hash);
-
-                LogPrintf("SendMessages -- queued inv: %s  index=%d peer=%d\n", inv.ToString(), vInv.size(), pto->id);
-                // TODO maybe CInv(inv.type, inv.hash)
-                // vInv.push_back(inv);
-                LogPrintf("INV WITH TYPE: %s\n", inv.type);
-                vInv.push_back(CInv(inv.type, inv.hash));
-                if (vInv.size() == MAX_INV_SZ) {
-                    LogPrintf("SendMessages -- pushing inv's: count=%d peer=%d\n", vInv.size(), pto->id);
-                    connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
-                    vInv.clear();
-                }
-            }            
 
             // Check whether periodic sends should happen
             bool fSendTrickle = pto->fWhitelisted;
@@ -3368,6 +3351,23 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                     pto->filterInventoryKnown.insert(hash);
                 }
             }
+
+            // Add other inv types
+            // Produce a vector with all candidates for sending
+            std::vector<std::set<uint256>::iterator> vInvOTHER;
+            vInvOTHER.reserve(pto->vInventoryToSend.size());
+            BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)
+            {
+                pto->filterInventoryKnown.insert(inv.hash);
+                vInvOTHER.push_back(inv);
+                if (vInvOTHER.size() == MAX_INV_SZ) {
+                    LogPrintf("SendMessages -- pushing inv's: count=%d peer=%d\n", vInvOTHER.size(), pto->id);
+                    connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInvOTHER));
+                    vInvOTHER.clear();
+                }
+            }
+            if (!vInvOTHER.empty())
+                connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInvOTHER));
         }
         if (!vInv.empty())
             connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
