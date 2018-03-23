@@ -719,7 +719,6 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
     LogPrintf("Break #1 - CMasternodeMan::ProcessMessage\n");
     LogPrintf("CMasternodeMan::ProcessMessage - pfrom: %s\n", pfrom->GetId());
     LogPrintf("CMasternodeMan::ProcessMessage - strCommand: %s\n", strCommand);
-    LogPrintf("CMasternodeMan::ProcessMessage - vRecv: %s\n", vRecv);
   
     if(fLiteMode) return; // disable all Dash specific functionality
 
