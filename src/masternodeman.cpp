@@ -716,6 +716,11 @@ std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestCo
 
 void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
+    LogPrintf("Break #1 - CMasternodeMan::ProcessMessage\n");
+    LogPrintf("CMasternodeMan::ProcessMessage - pfrom: %s\n", pfrom->GetId());
+    LogPrintf("CMasternodeMan::ProcessMessage - strCommand: %s\n", strCommand);
+    LogPrintf("CMasternodeMan::ProcessMessage - vRecv: %s\n", vRecv);
+  
     if(fLiteMode) return; // disable all Dash specific functionality
 
     if (strCommand == NetMsgType::MNANNOUNCE) { //Masternode Broadcast
@@ -742,17 +747,24 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
             NotifyMasternodeUpdates(connman);
         }
     } else if (strCommand == NetMsgType::MNPING) { //Masternode Ping
-
+        LogPrintf("Break #2 - NetMsgType::MNPING\n");
+        
         CMasternodePing mnp;
         vRecv >> mnp;
 
         uint256 nHash = mnp.GetHash();
+        
+        LogPrintf("NetMsgType::MNPING - nHash: %s\n", mnp.GetHash());
 
         pfrom->setAskFor.erase(nHash);
 
         if(!masternodeSync.IsBlockchainSynced()) return;
+        
+        LogPrintf("NetMsgType::MNPING - IsBlockchainSynced = true");
 
         LogPrint("masternode", "MNPING -- Masternode ping, masternode=%s\n", mnp.vin.prevout.ToStringShort());
+        
+        LogPrintf("NetMsgType::MNPING - vin: %s", mnp.vin.prevout.ToStringShort());
 
         // Need LOCK2 here to ensure consistent locking order because the CheckAndUpdate call below locks cs_main
         LOCK2(cs_main, cs);
@@ -764,26 +776,36 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         // see if we have this Masternode
         CMasternode* pmn = Find(mnp.vin.prevout);
+        
+        LogPrintf("NetMsgType::MNPING - pmn: %s", pmn);
 
         // if masternode uses sentinel ping instead of watchdog
         // we shoud update nTimeLastWatchdogVote here if sentinel
         // ping flag is actual
         if(pmn && mnp.fSentinelIsCurrent)
             UpdateWatchdogVoteTime(mnp.vin.prevout, mnp.sigTime);
-
+        
+        LogPrintf("NetMsgType::MNPING - pmn->IsNewStartRequired(): %s", pmn->IsNewStartRequired());
+        
         // too late, new MNANNOUNCE is required
         if(pmn && pmn->IsNewStartRequired()) return;
+        
+        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s", mnp.CheckAndUpdate(pmn, false, nDos, connman));
 
         int nDos = 0;
         if(mnp.CheckAndUpdate(pmn, false, nDos, connman)) return;
 
         if(nDos > 0) {
+            LogPrintf("NetMsgType::MNPING - if anything significant failed, mark that node");
             // if anything significant failed, mark that node
             Misbehaving(pfrom->GetId(), nDos);
         } else if(pmn != NULL) {
+            LogPrintf("NetMsgType::MNPING - nothing significant failed, mn is a known one too");
             // nothing significant failed, mn is a known one too
             return;
         }
+        
+        LogPrintf("NetMsgType::MNPING - AskForMN is next");
 
         // something significant is broken or mn is unknown,
         // we might have to ask for a masternode entry once
