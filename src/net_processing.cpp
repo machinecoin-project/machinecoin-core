@@ -3353,7 +3353,7 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
             }
             
             // Add other invs
-            BOOST_FOREACH(const CInv& inv, pto->vInventoryBlockToSend) {
+            BOOST_FOREACH(const CInv& inv, pto->vInventoryMNToSend) {
                 pto->filterInventoryKnown.insert(inv.hash);
                 
                 LogPrintf("INV TYPE: %s\n", inv.type);

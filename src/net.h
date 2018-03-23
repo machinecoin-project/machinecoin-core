@@ -771,7 +771,7 @@ public:
     // Set of transaction ids we still have to announce.
     // They are sorted by the mempool before relay, so the order is not important.
     std::set<uint256> setInventoryTxToSend;
-    std::set<CInv> setMNInventoryTxToSend;
+    std::set<CInv> vInventoryMNToSend;
     // List of block ids we still have announce.
     // There is no final sorting before sending, as they are always sent immediately
     // and in the order requested.
@@ -928,7 +928,7 @@ public:
             vInventoryBlockToSend.push_back(inv.hash);
         } else {
             LogPrintf("OTHER TYPE PushInventory --  inv: %s peer=%d\n", inv.ToString(), id);
-            setMNInventoryTxToSend.insert(inv);
+            vInventoryMNToSend.push_back(inv);
         }
     }
 
