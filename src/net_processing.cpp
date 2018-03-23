@@ -3357,7 +3357,7 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                 pto->filterInventoryKnown.insert(inv.hash);
                 
                 LogPrintf("INV TYPE: %s\n", inv.type);
-                LogPrintf("INV HASH: %s\n", inv.hash);
+                LogPrintf("INV: %s\n", inv.ToString());
                 
                 vInv.push_back(CInv(inv.type, inv.hash));
                 if (vInv.size() == MAX_INV_SZ) {
