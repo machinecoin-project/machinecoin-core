@@ -3353,13 +3353,13 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
             }
             
             // Add other invs
-            BOOST_FOREACH(const CInv& vInv, pto->vInventoryBlockToSend) {
-                pto->filterInventoryKnown.insert(vInv.hash);
+            BOOST_FOREACH(const CInv& inv, pto->vInventoryBlockToSend) {
+                pto->filterInventoryKnown.insert(inv.hash);
                 
-                LogPrintf("INV TYPE: %s\n", vInv.type);
-                LogPrintf("INV HASH: %s\n", vInv.hash);
+                LogPrintf("INV TYPE: %s\n", inv.type);
+                LogPrintf("INV HASH: %s\n", inv.hash);
                 
-                vInv.push_back(CInv(vInv.type, vInv.hash));
+                vInv.push_back(CInv(inv.type, inv.hash));
                 if (vInv.size() == MAX_INV_SZ) {
                     connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
                     vInv.clear();
