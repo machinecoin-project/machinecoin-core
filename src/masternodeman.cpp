@@ -752,8 +752,6 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         vRecv >> mnp;
 
         uint256 nHash = mnp.GetHash();
-        
-        LogPrintf("NetMsgType::MNPING - nHash: %s\n", mnp.GetHash());
 
         pfrom->setAskFor.erase(nHash);
 
