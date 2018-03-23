@@ -789,10 +789,9 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         
         // too late, new MNANNOUNCE is required
         if(pmn && pmn->IsNewStartRequired()) return;
-        
-        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s", mnp.CheckAndUpdate(pmn, false, nDos, connman));
 
         int nDos = 0;
+        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s", mnp.CheckAndUpdate(pmn, false, nDos, connman));
         if(mnp.CheckAndUpdate(pmn, false, nDos, connman)) return;
 
         if(nDos > 0) {
