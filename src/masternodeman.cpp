@@ -782,8 +782,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if(pmn && mnp.fSentinelIsCurrent)
             UpdateWatchdogVoteTime(mnp.vin.prevout, mnp.sigTime);
         
-        LogPrintf("NetMsgType::MNPING - pmn->IsNewStartRequired(): %s", pmn->IsNewStartRequired());
+        //this will crash in case that mn is unknown
+        //LogPrintf("NetMsgType::MNPING - pmn->IsNewStartRequired(): %s", pmn->IsNewStartRequired());
         
+        //this one is ok because when mn is not known, pmn is false, so pmn->IsNewStartRequired() isnt executed
         // too late, new MNANNOUNCE is required
         if(pmn && pmn->IsNewStartRequired()) return;
 
