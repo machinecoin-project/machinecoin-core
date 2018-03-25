@@ -137,6 +137,13 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
     sendCoinsPage->setModel(_walletModel);
     usedReceivingAddressesPage->setModel(_walletModel->getAddressTableModel());
     usedSendingAddressesPage->setModel(_walletModel->getAddressTableModel());
+    
+    //added wallet model to avoid crash when start is clicked at masternode tab
+    //note that at this time its not possible to run node via this tab because coins are pre-loced at start of MAC and start button trying to lock it again
+    QSettings settings;
+    if (settings.value("fShowMasternodesTab").toBool()) {
+        masternodeListPage->setWalletModel(_walletModel);
+    }
 
     if (_walletModel)
     {
