@@ -794,9 +794,12 @@ void CGovernanceManager::Sync(CNode* pfrom, const uint256& nProp, const CBloomFi
             }
         }
     }
-
-    connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_GOVOBJ, nObjCount);
-    connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_GOVOBJ_VOTE, nVoteCount);
+    
+    const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
+    connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, nObjCount));
+    connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, nVoteCount));
+    // connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_GOVOBJ, nObjCount);
+    // connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_GOVOBJ_VOTE, nVoteCount);
     LogPrintf("CGovernanceManager::Sync -- sent %d objects and %d votes to peer=%d\n", nObjCount, nVoteCount, pfrom->id);
 }
 
@@ -1090,11 +1093,13 @@ void CGovernanceManager::RequestGovernanceObject(CNode* pfrom, const uint256& nH
     if(!pfrom) {
         return;
     }
+    
+    const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
 
     LogPrint("gobject", "CGovernanceObject::RequestGovernanceObject -- hash = %s (peer=%d)\n", nHash.ToString(), pfrom->GetId());
 
-    if(pfrom->nVersion < GOVERNANCE_FILTER_PROTO_VERSION) {
-        connman.PushMessage(pfrom, NetMsgType::MNGOVERNANCESYNC, nHash);
+    if(pfrom->nVersion < GOVERNANCE_FILTER_PROTO_VERSION) {        
+        connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, nHash));
         return;
     }
 
@@ -1117,7 +1122,8 @@ void CGovernanceManager::RequestGovernanceObject(CNode* pfrom, const uint256& nH
     }
 
     LogPrint("gobject", "CGovernanceManager::RequestGovernanceObject -- nHash %s nVoteCount %d peer=%d\n", nHash.ToString(), nVoteCount, pfrom->id);
-    connman.PushMessage(pfrom, NetMsgType::MNGOVERNANCESYNC, nHash, filter);
+    // connman.PushMessage(pfrom, NetMsgType::MNGOVERNANCESYNC, nHash, filter);
+    connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, nHash));
 }
 
 int CGovernanceManager::RequestGovernanceObjectVotes(CNode* pnode, CConnman& connman)

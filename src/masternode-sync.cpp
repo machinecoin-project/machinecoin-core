@@ -199,6 +199,9 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
         if(pnode->fMasternode || (fMasterNode && pnode->fInbound)) continue;
         LogPrintf("After if");
         LogPrintf("Is Masternode? %s", pnode->fMasternode);
+        
+        const CNetMsgMaker msgMaker(pnode->GetSendVersion());
+        
         // QUICK MODE (REGTEST ONLY!)
         if(Params().NetworkIDString() == CBaseChainParams::REGTEST)
         {
@@ -206,7 +209,8 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
                 mnodeman.DsegUpdate(pnode, connman);
             } else if(nRequestedMasternodeAttempt < 4) {
                 int nMnCount = mnodeman.CountMasternodes();
-                connman.PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, nMnCount); //sync payment votes
+                connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, nMnCount));
+                // connman.PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, nMnCount); //sync payment votes
                 SendGovernanceSyncRequest(pnode, connman);
             } else {
                 nRequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
@@ -313,7 +317,9 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
                 nRequestedMasternodeAttempt++;
 
                 // ask node for all payment votes it has (new nodes will only return votes for future payments)
-                connman.PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit());
+                
+                connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit()));
+                // connman.PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit());
                 // ask node for missing pieces only (old nodes will not be asked)
                 mnpayments.RequestLowDataPaymentBlocks(pnode, connman);
 
@@ -389,14 +395,17 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
 
 void CMasternodeSync::SendGovernanceSyncRequest(CNode* pnode, CConnman& connman)
 {
+    const CNetMsgMaker msgMaker(pnode->GetSendVersion());
     if(pnode->nVersion >= GOVERNANCE_FILTER_PROTO_VERSION) {
         CBloomFilter filter;
         filter.clear();
 
-        connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256(), filter);
+        connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256()));
+        // connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256(), filter);
     }
     else {
-        connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256());
+        connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256()));
+        // connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256());
     }
 }
 

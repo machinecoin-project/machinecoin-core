@@ -104,7 +104,9 @@ void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman&
     }
     mWeAskedForMasternodeListEntry[outpoint][pnode->addr] = GetTime() + DSEG_UPDATE_SECONDS;
 
-    connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn(outpoint));
+    const CNetMsgMaker msgMaker(pnode->GetSendVersion());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn(outpoint)));
+    // connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn(outpoint));
 }
 
 bool CMasternodeMan::PoSeBan(const COutPoint &outpoint)
@@ -1056,7 +1058,10 @@ bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<C
     CMasternodeVerification mnv(addr, GetRandInt(999999), nCachedBlockHeight - 1);
     mWeAskedForVerification[addr] = mnv;
     LogPrintf("CMasternodeMan::SendVerifyRequest -- verifying node using nonce %d addr=%s\n", mnv.nonce, addr.ToString());
-    connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
+    
+    const CNetMsgMaker msgMaker(pnode->GetSendVersion());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
+    // connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
 
     return true;
 }
@@ -1097,7 +1102,9 @@ void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv,
         return;
     }
 
-    connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
+    const CNetMsgMaker msgMaker(pnode->GetSendVersion());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
+    // connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
     netfulfilledman.AddFulfilledRequest(pnode->addr, strprintf("%s", NetMsgType::MNVERIFY)+"-reply");
 }
 
