@@ -5,7 +5,6 @@
 #include "activemasternode.h"
 #include "base58.h"
 #include "init.h"
-#include "net.h"
 #include "netbase.h"
 #include "masternode.h"
 #include "masternode-payments.h"
