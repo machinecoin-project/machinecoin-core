@@ -9,6 +9,7 @@
 #include "masternodeman.h"
 #include "messagesigner.h"
 #include "netfulfilledman.h"
+#include "netmessagemaker.h"
 #include "util.h"
 
 #include <boost/lexical_cast.hpp>

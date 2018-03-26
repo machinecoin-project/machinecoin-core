@@ -11,6 +11,7 @@
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "netfulfilledman.h"
+#include "netmessagemaker.h"
 #include "ui_interface.h"
 #include "util.h"
 

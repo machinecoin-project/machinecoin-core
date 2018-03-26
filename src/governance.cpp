@@ -12,6 +12,7 @@
 #include "masternodeman.h"
 #include "messagesigner.h"
 #include "netfulfilledman.h"
+#include "netmessagemaker.h"
 #include "util.h"
 
 CGovernanceManager governance;
