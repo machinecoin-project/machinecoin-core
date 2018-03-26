@@ -16,7 +16,6 @@
 #include "crypto/scrypt.h"
 #include "validation.h"
 #include "masternode-payments.h"
-#include "masternode-sync.h"
 #include "net.h"
 #include "policy/policy.h"
 #include "pow.h"
