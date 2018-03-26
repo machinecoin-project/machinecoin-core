@@ -15,7 +15,6 @@
 #include "hash.h"
 #include "crypto/scrypt.h"
 #include "validation.h"
-#include "masternode-payments.h"
 #include "net.h"
 #include "policy/policy.h"
 #include "pow.h"
@@ -25,6 +24,7 @@
 #include "txmempool.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "masternode-payments.h"
 #include "validationinterface.h"
 
 #include <algorithm>
