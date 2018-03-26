@@ -248,14 +248,6 @@ extern const char *MASTERNODEPAYMENTVOTE;
 extern const char *MASTERNODEPAYMENTSYNC;
 extern const char *MNANNOUNCE;
 extern const char *MNPING;
-extern const char *DSACCEPT;
-extern const char *DSVIN;
-extern const char *DSFINALTX;
-extern const char *DSSIGNFINALTX;
-extern const char *DSCOMPLETE;
-extern const char *DSSTATUSUPDATE;
-extern const char *DSTX;
-extern const char *DSQUEUE;
 extern const char *DSEG;
 extern const char *SYNCSTATUSCOUNT;
 extern const char *MNGOVERNANCESYNC;
@@ -356,20 +348,18 @@ enum GetDataMsg
     MSG_FILTERED_WITNESS_BLOCK = MSG_FILTERED_BLOCK | MSG_WITNESS_FLAG,
     // Machinecoin message types
     // NOTE: declare non-implmented here, we must keep this enum consistent and backwards compatible
-    MSG_TXLOCK_REQUEST = 5,
-    MSG_TXLOCK_VOTE = 6,
-    MSG_MASTERNODE_PAYMENT_VOTE = 7,
-    MSG_MASTERNODE_PAYMENT_BLOCK = 8, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
-    MSG_BUDGET_VOTE = 9, // depreciated since 12.1
-    MSG_BUDGET_PROPOSAL = 10, // depreciated since 12.1
-    MSG_BUDGET_FINALIZED = 11, // depreciated since 12.1
-    MSG_BUDGET_FINALIZED_VOTE = 12, // depreciated since 12.1
-    MSG_MASTERNODE_QUORUM = 13, // not implemented
-    MSG_MASTERNODE_ANNOUNCE = 14,
-    MSG_MASTERNODE_PING = 15,
-    MSG_GOVERNANCE_OBJECT = 16,
-    MSG_GOVERNANCE_OBJECT_VOTE = 17,
-    MSG_MASTERNODE_VERIFY = 18,
+    MSG_MASTERNODE_PAYMENT_VOTE = 5,
+    MSG_MASTERNODE_PAYMENT_BLOCK = 6, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
+    MSG_BUDGET_VOTE = 7, // depreciated since 12.1
+    MSG_BUDGET_PROPOSAL = 8, // depreciated since 12.1
+    MSG_BUDGET_FINALIZED = 9, // depreciated since 12.1
+    MSG_BUDGET_FINALIZED_VOTE = 10, // depreciated since 12.1
+    MSG_MASTERNODE_QUORUM = 11, // not implemented
+    MSG_MASTERNODE_ANNOUNCE = 12,
+    MSG_MASTERNODE_PING = 13,
+    MSG_GOVERNANCE_OBJECT = 14,
+    MSG_GOVERNANCE_OBJECT_VOTE = 15,
+    MSG_MASTERNODE_VERIFY = 16,
 };
 
 /** inv message data */
