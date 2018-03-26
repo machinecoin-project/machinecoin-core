@@ -6,6 +6,7 @@
 #define MASTERNODE_H
 
 #include "key.h"
+#include "net.h"
 #include "validation.h"
 
 class CMasternode;
