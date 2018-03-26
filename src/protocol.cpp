@@ -230,7 +230,6 @@ CInv::CInv(const std::string& strType, const uint256& hashIn)
 
 bool CInv::IsKnownType() const
 {
-    LogPrintf("IsKnownType was called");
     return (type >= 1 && type < (int)ARRAYLEN(ppszTypeName));
 }
 

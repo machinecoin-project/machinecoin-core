@@ -1023,6 +1023,9 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             it++;
             
             LogPrintf("InvType -- %s\n", inv.type);
+            
+            LogPrintf("BF if statement\n");
+            LogPrintf("ISKNOWNTYPE: %s for inv: %d", inv.IsKnownType(), inv.ToString());
 
             if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK || inv.type == MSG_CMPCT_BLOCK || inv.type == MSG_WITNESS_BLOCK)
             {
@@ -1139,6 +1142,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             }
             else if (inv.IsKnownType())
             {
+                LogPrintf("AF if statement\n");
                 // Send stream from relay memory
                 bool push = false;
                 {
@@ -2758,11 +2762,10 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         }
     }
 
-    // Commented out for testing
-    // else if (strCommand == NetMsgType::NOTFOUND) {
+    else if (strCommand == NetMsgType::NOTFOUND) {
         // We do not care about the NOTFOUND message, but logging an Unknown Command
         // message would be undesirable as we transmit it ourselves.
-    // }
+    }
   
     else
     {
