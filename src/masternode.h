@@ -7,9 +7,6 @@
 
 #include "key.h"
 #include "validation.h"
-#include "hash.h"
-#include "net.h"
-#include "utilstrencodings.h"
 
 class CMasternode;
 class CMasternodeBroadcast;

@@ -12,6 +12,10 @@
 #include "netmessagemaker.h"
 #include "util.h"
 
+#include "hash.h"
+#include "net.h"
+#include "utilstrencodings.h"
+
 #include <boost/lexical_cast.hpp>
 
 /** Object for who's going to get paid on which blocks */
