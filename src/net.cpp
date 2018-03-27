@@ -18,6 +18,7 @@
 #include "hash.h"
 #include "primitives/transaction.h"
 #include "netbase.h"
+#include "netmessagemaker.h"
 #include "scheduler.h"
 #include "ui_interface.h"
 #include "utilstrencodings.h"
