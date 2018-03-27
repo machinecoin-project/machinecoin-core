@@ -401,7 +401,7 @@ void CMasternodeSync::SendGovernanceSyncRequest(CNode* pnode, CConnman& connman)
         CBloomFilter filter;
         filter.clear();
 
-        connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256()));
+        connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256(), filter));
         // connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256(), filter);
     }
     else {
