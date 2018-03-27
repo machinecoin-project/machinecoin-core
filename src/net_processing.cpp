@@ -1171,7 +1171,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
               
                 LogPrintf("isKnown strCommand: %s", inv.GetCommand());
                 
-                if (inv.GetCommand == MSG_MASTERNODE_PAYMENT_BLOCK) {
+                if (inv.GetCommand() == MSG_MASTERNODE_PAYMENT_BLOCK) {
                     LogPrintf("MSG_MASTERNODE_PAYMENT_BLOCK");
                 }
 
