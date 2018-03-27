@@ -2923,7 +2923,7 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
     LogPrint("net", "sending %s (%d bytes) peer=%d\n",  SanitizeString(msg.command.c_str()), nMessageSize, pnode->id);
     
     if (SanitizeString(msg.command.c_str()) == "inv") {
-        std::string str(msg.data.begin(), msg.data.end())
+        std::string str(msg.data.begin(), msg.data.end());
         LogPrintf("sending inv: %s", str);
     }
 
