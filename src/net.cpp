@@ -7,11 +7,6 @@
 #include "config/machinecoin-config.h"
 #endif
 
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <vector>
-
 #include "net.h"
 
 #include "addrman.h"
@@ -2949,8 +2944,6 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
         pnode->vSendMsg.push_back(std::move(serializedHeader));
         if (nMessageSize)
             pnode->vSendMsg.push_back(std::move(msg.data));
-        
-        print_contents(msg.data);
 
         // If write queue empty, attempt "optimistic write"
         if (optimisticSend == true)

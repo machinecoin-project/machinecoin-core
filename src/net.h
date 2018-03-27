@@ -177,18 +177,6 @@ public:
     struct CAllNodes {
         bool operator() (const CNode*) const {return true;}
     };
-    
-    template <typename T>
-    void print_contents(const std::vector<T>& v, const char * const separator = " ")
-    {
-        if(!v.empty())
-        {
-            std::copy(v.begin(),
-                      --v.end(),
-                      std::ostream_iterator<T>(std::cout, separator));
-            std::cout << v.back() << "\n";
-        }
-    }
 
     constexpr static const CAllNodes AllNodes{};
 
