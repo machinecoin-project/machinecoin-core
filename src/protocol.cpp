@@ -260,6 +260,5 @@ std::string CInv::ToString() const
 
 const std::vector<std::string> &getAllNetMessageTypes()
 {
-    LogPrintf("getAllNetMessageTypes was called");
     return allNetMessageTypesVec;
 }

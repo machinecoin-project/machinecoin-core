@@ -940,7 +940,10 @@ bool static AlreadyHave(const CInv& inv) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
         }
 
     case MSG_MASTERNODE_ANNOUNCE:
-        return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash) && !mnodeman.IsMnbRecoveryRequested(inv.hash);
+        {
+            LogPrintf("MNANNOUNCE: %s", mnodeman.mapSeenMasternodeBroadcast.count(inv.hash));
+            return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash) && !mnodeman.IsMnbRecoveryRequested(inv.hash);
+        }
 
     case MSG_MASTERNODE_PING:
         return mnodeman.mapSeenMasternodePing.count(inv.hash);
@@ -2768,8 +2771,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     else
     {
         bool found = false;
-      
-        LogPrintf("MAC related strCommand\n");
 
         const std::vector<std::string> &allMessages = getAllNetMessageTypes();
         BOOST_FOREACH(const std::string msg, allMessages) {
