@@ -1137,7 +1137,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             }
             else if (inv.IsKnownType())
             {
-                LogPrintf("AF if statement\n");
                 // Send stream from relay memory
                 bool push = false;
                 {
@@ -1151,7 +1150,8 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     }
                     if(push)
                         // connman.PushMessage(pfrom, inv.GetCommand(), ss);
-                        connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
+                        // connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
+                        connman.PushMessage(pfrom, msgMaker.Make(inv.type, ss));
                 }
                 /*auto mi = mapRelay.find(inv.hash);
                 int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
@@ -1168,8 +1168,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         push = true;
                     }
                 }*/
-              
-                LogPrintf("isKnown strCommand: %s", inv.GetCommand());
                 
                 if (inv.type == MSG_MASTERNODE_PAYMENT_BLOCK) {
                     LogPrintf("MSG_MASTERNODE_PAYMENT_BLOCK");
@@ -1332,8 +1330,6 @@ inline void static SendBlockTransactions(const CBlock& block, const BlockTransac
 bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, int64_t nTimeReceived, const CChainParams& chainparams, CConnman& connman, const std::atomic<bool>& interruptMsgProc)
 {
     LogPrint("net", "received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
-    
-    LogPrintf("Received strCommand -- %s\n", SanitizeString(strCommand));
     
     if (IsArgSet("-dropmessagestest") && GetRand(GetArg("-dropmessagestest", 0)) == 0)
     {
@@ -1734,7 +1730,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             }
             else
             {
-                // pfrom->AddInventoryKnown(inv);
+                pfrom->AddInventoryKnown(inv);
                 if (fBlocksOnly)
                     LogPrint("net", "transaction (%s) inv sent in violation of protocol peer=%d\n", inv.hash.ToString(), pfrom->id);
                 else if (!fAlreadyHave && !fImporting && !fReindex && !IsInitialBlockDownload())
@@ -3360,9 +3356,6 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
             // Add other invs
             BOOST_FOREACH(const CInv& inv, pto->vInventoryMNToSend) {
                 pto->filterInventoryKnown.insert(inv.hash);
-                
-                LogPrintf("INV command: %s\n", inv.GetCommand());
-                LogPrintf("INV: %s\n", inv.ToString());
                 
                 vInv.push_back(CInv(inv.GetCommand(), inv.hash));
                 if (vInv.size() == MAX_INV_SZ) {
