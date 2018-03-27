@@ -1021,11 +1021,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                 return;
 
             it++;
-            
-            LogPrintf("InvType -- %s\n", inv.type);
-            
-            LogPrintf("BF if statement\n");
-            LogPrintf("ISKNOWNTYPE: %s for inv: %d", inv.IsKnownType(), inv.ToString());
 
             if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK || inv.type == MSG_CMPCT_BLOCK || inv.type == MSG_WITNESS_BLOCK)
             {
@@ -1174,7 +1169,11 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     }
                 }*/
               
-                LogPrintf("isKnown strCommand: %s", inv.type);
+                LogPrintf("isKnown strCommand: %s", inv.GetCommand());
+                
+                if (inv.GetCommand == MSG_MASTERNODE_PAYMENT_BLOCK) {
+                    LogPrintf("MSG_MASTERNODE_PAYMENT_BLOCK");
+                }
 
                 if (!push && inv.type == MSG_MASTERNODE_PAYMENT_VOTE) {
                     if(mnpayments.HasVerifiedPaymentVote(inv.hash)) {
