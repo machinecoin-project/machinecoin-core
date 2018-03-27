@@ -2945,7 +2945,7 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
         if (nMessageSize)
             pnode->vSendMsg.push_back(std::move(msg.data));
         
-        LogPrintf("sending inv: %s", msg.data.data());
+        LogPrintf("sending inv: %s", msg.data.ToString());
 
         // If write queue empty, attempt "optimistic write"
         if (optimisticSend == true)
