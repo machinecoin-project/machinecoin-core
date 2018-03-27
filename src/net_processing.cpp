@@ -1151,7 +1151,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     if(push)
                         // connman.PushMessage(pfrom, inv.GetCommand(), ss);
                         // connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
-                        connman.PushMessage(pfrom, msgMaker.Make(inv.type, ss));
+                        connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
                 }
                 /*auto mi = mapRelay.find(inv.hash);
                 int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
