@@ -2006,7 +2006,7 @@ void CConnman::ThreadMnbRequestConnections()
         }
 
         // ask for data
-        PushMessage(pnode, NetMsgType::GETDATA, vToFetch);
+        PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
     }
 }
 
