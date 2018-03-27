@@ -1991,6 +1991,8 @@ void CConnman::ThreadMnbRequestConnections()
 
         CNode *pnode = FindNode(p.first);
         if(!pnode || pnode->fDisconnect) continue;
+        
+        const CNetMsgMaker msgMaker(pnode->GetSendVersion());
 
         grant.MoveTo(pnode->grantMasternodeOutbound);
 
