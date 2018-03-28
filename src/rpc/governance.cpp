@@ -967,8 +967,7 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
         );
     }
     
-    // RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
-    LogPrintf("Got param0: %s", request.params[0].get_int());
+    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
 
     int nBlockHeight = request.params[0].get_int();
     if (nBlockHeight < 0) {
