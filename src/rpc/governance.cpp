@@ -28,6 +28,8 @@
 
 #include <univalue.h>
 
+using namespace std;
+
 UniValue gobject(const JSONRPCRequest& request)
 {
     std::string strCommand;
