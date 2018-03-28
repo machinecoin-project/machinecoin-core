@@ -166,10 +166,19 @@ void CMasternodeMan::CheckAndRemove(CConnman& connman)
                 mapMasternodes.erase(it++);
                 fMasternodesRemoved = true;
             } else {
+                LogPrintf("MN output is not spent!\n");
+                
                 bool fAsk = (nAskForMnbRecovery > 0) &&
                             masternodeSync.IsSynced() &&
                             it->second.IsNewStartRequired() &&
                             !IsMnbRecoveryRequested(hash);
+                LogPrintf("fAsk is set to: %s", fAsk);
+                
+                LogPrintf("nAskForMnbRecovery -- %s\n", nAskForMnbRecovery);
+                LogPrintf("masternodeSync.IsSynced -- %s\n", masternodeSync.IsSynced());
+                LogPrintf("it->second.IsNewStartRequired -- %s\n", it->second.IsNewStartRequired());
+                LogPrintf("IsMnbRecoveryRequested -- %s\n", IsMnbRecoveryRequested(hash));
+                
                 if(fAsk) {
                     // this mn is in a non-recoverable state and we haven't asked other nodes yet
                     std::set<CNetAddr> setRequested;
@@ -186,6 +195,7 @@ void CMasternodeMan::CheckAndRemove(CConnman& connman)
                         // didn't ask recently, ok to ask now
                         CService addr = vecMasternodeRanks[i].second.addr;
                         setRequested.insert(addr);
+                        LogPrintf("listScheduledMnbRequestConnections.push_back\n");
                         listScheduledMnbRequestConnections.push_back(std::make_pair(addr, hash));
                         fAskedForMnbRecovery = true;
                     }

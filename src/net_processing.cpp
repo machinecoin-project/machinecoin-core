@@ -1741,10 +1741,8 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             GetMainSignals().Inventory(inv.hash);
         }
 
-        if (!vToFetch.empty()) {
-            LogPrintf("Sending GETDATA for vToFetch with size: %s", vToFetch.size());
+        if (!vToFetch.empty())
             connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
-        }
     }
 
 
@@ -3357,7 +3355,7 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
             BOOST_FOREACH(const CInv& inv, pto->vInventoryMNToSend) {
                 pto->filterInventoryKnown.insert(inv.hash);
                 
-                vInv.push_back(CInv(inv.GetCommand(), inv.hash));
+                vInv.push_back(CInv(inv.type, inv.hash));
                 if (vInv.size() == MAX_INV_SZ) {
                     connman.PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
                     vInv.clear();
