@@ -200,17 +200,16 @@ extern std::string HelpExampleRpc(const std::string& methodname, const std::stri
 
 extern void EnsureWalletIsUnlocked();
 
-extern UniValue getpoolinfo(const JSONRPCRequest &request);
-extern UniValue getpoolinfo(const JSONRPCRequest &request);
-extern UniValue masternode(const JSONRPCRequest &request);
-extern UniValue masternodelist(const JSONRPCRequest &request);
-extern UniValue masternodebroadcast(const JSONRPCRequest &request);
-extern UniValue gobject(const JSONRPCRequest &request);
-extern UniValue getgovernanceinfo(const JSONRPCRequest &request);
-extern UniValue getsuperblockbudget(const JSONRPCRequest &request);
-extern UniValue voteraw(const JSONRPCRequest &request);
-extern UniValue mnsync(const JSONRPCRequest &request);
-extern UniValue sentinelping(const JSONRPCRequest &request);
+extern UniValue getpoolinfo(const JSONRPCRequest& request);
+extern UniValue masternode(const JSONRPCRequest& request);
+extern UniValue masternodelist(const JSONRPCRequest& request);
+extern UniValue masternodebroadcast(const JSONRPCRequest& request);
+extern UniValue gobject(const JSONRPCRequest& request);
+extern UniValue getgovernanceinfo(const JSONRPCRequest& request);
+extern UniValue getsuperblockbudget(const JSONRPCRequest& request);
+extern UniValue voteraw(const JSONRPCRequest& request);
+extern UniValue mnsync(const JSONRPCRequest& request);
+extern UniValue sentinelping(const JSONRPCRequest& request);
 
 bool StartRPC();
 void InterruptRPC();

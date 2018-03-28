@@ -26,7 +26,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-UniValue gobject(const JSONRPCRequest &request)
+UniValue gobject(const JSONRPCRequest& request)
 {
     std::string strCommand;
     if (request.params.size() >= 1)
@@ -830,7 +830,7 @@ UniValue gobject(const JSONRPCRequest &request)
     return NullUniValue;
 }
 
-UniValue voteraw(const JSONRPCRequest &request)
+UniValue voteraw(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 7)
         throw std::runtime_error(
@@ -891,7 +891,7 @@ UniValue voteraw(const JSONRPCRequest &request)
     }
 }
 
-UniValue getgovernanceinfo(const JSONRPCRequest &request)
+UniValue getgovernanceinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0) {
         throw std::runtime_error(
@@ -951,7 +951,7 @@ UniValue getgovernanceinfo(const JSONRPCRequest &request)
     return obj;
 }
 
-UniValue getsuperblockbudget(const JSONRPCRequest &request)
+UniValue getsuperblockbudget(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1) {
         throw std::runtime_error(
@@ -966,6 +966,9 @@ UniValue getsuperblockbudget(const JSONRPCRequest &request)
             + HelpExampleRpc("getsuperblockbudget", "1000")
         );
     }
+    
+    // RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
+    LogPrintf("Got param0: %s", request.params[0]);
 
     int nBlockHeight = request.params[0].get_int();
     if (nBlockHeight < 0) {
