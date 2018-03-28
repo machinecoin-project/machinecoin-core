@@ -4,6 +4,8 @@
 
 //#define ENABLE_DASH_DEBUG
 
+#include <typeinfo>
+
 #include "consensus/validation.h"
 #include "activemasternode.h"
 #include "governance.h"
@@ -970,6 +972,8 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
             + HelpExampleRpc("getsuperblockbudget", "1000")
         );
     }
+    
+    LogPrintf("TYPE: %s", typeid(request.params[0]).name());
     
     int nBlockHeight = request.params[0].get_int();
     if (nBlockHeight < 0) {
