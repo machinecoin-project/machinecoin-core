@@ -27,6 +27,8 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <univalue.h>
+
 UniValue gobject(const JSONRPCRequest& request)
 {
     std::string strCommand;
