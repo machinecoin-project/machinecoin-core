@@ -130,6 +130,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "echojson", 8, "arg8" },
     { "echojson", 9, "arg9" },
     // Masternodes
+    { "getsuperblockbudget", 0 },
     { "voteraw", 1 },
     { "voteraw", 5 },
 };

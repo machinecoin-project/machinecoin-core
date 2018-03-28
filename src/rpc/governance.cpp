@@ -973,8 +973,6 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
         );
     }
     
-    LogPrintf("TYPE: %s", typeid(request.params[0]).name());
-    
     int nBlockHeight = request.params[0].get_int();
     if (nBlockHeight < 0) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
