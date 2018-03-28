@@ -24,6 +24,7 @@
 #include "wallet/wallet.h"
 #endif // ENABLE_WALLET
 
+#include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
 
 UniValue gobject(const JSONRPCRequest& request)
