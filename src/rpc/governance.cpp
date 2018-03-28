@@ -24,7 +24,6 @@
 #include "wallet/wallet.h"
 #endif // ENABLE_WALLET
 
-#include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <univalue.h>
@@ -970,8 +969,6 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
         );
     }
     
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
-
     int nBlockHeight = request.params[0].get_int();
     if (nBlockHeight < 0) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
