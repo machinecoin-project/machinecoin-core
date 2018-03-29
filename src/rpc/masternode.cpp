@@ -91,7 +91,9 @@ UniValue masternode(const JSONRPCRequest& request)
         /*for (unsigned int i = 1; i < request.params.size(); i++) {
             newParams.push_back(request.params[i]);
         }*/
-        for(int i = 0; i < request.params.size(); ++i)
+        const int nSize = request.params.size();
+        
+        for(int i = 0; i < nSize; ++i)
             request.params[i] = request.params[i+1];
 
         return masternodelist(request);
