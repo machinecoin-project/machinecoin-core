@@ -22,6 +22,8 @@
 #include <iomanip>
 #include <univalue.h>
 
+#include <algorithm>
+
 UniValue getpoolinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
@@ -84,12 +86,14 @@ UniValue masternode(const JSONRPCRequest& request)
 
     if (strCommand == "list")
     {
-        UniValue newParams(UniValue::VARR);
+        const UniValue newParams(UniValue::VARR);
         // forward params but skip "list"
-        for (unsigned int i = 1; i < request.params.size(); i++) {
+        /*for (unsigned int i = 1; i < request.params.size(); i++) {
             newParams.push_back(request.params[i]);
-        }
-        return masternodelist(request, newParams);
+        }*/
+        request.params = std::copy(request.params+1, request.params+request.params.size(), request.params);
+
+        return masternodelist(request);
     }
 
     if(strCommand == "connect")
@@ -368,13 +372,13 @@ UniValue masternode(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue masternodelist(const JSONRPCRequest& request, UniValue params)
+UniValue masternodelist(const JSONRPCRequest& request)
 {
     std::string strMode = "status";
     std::string strFilter = "";
 
-    if (params.size() >= 1) strMode = params[0].get_str();
-    if (params.size() == 2) strFilter = params[1].get_str();
+    if (request.params.size() >= 1) strMode = request.params[0].get_str();
+    if (request.params.size() == 2) strFilter = request.params[1].get_str();
 
     if (request.fHelp || (
                 strMode != "activeseconds" && strMode != "addr" && strMode != "full" && strMode != "info" &&
