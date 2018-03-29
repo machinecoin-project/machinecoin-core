@@ -91,8 +91,12 @@ UniValue masternode(const JSONRPCRequest& request)
         for (unsigned int i = 1; i < request.params.size(); i++) {
             newParams.push_back(request.params[i]);
         }
+        
+        const JSONRPCRequest& request_;
+        request_.fHelp = request.fHelp;
+        request_.params = newParams;
 
-        return masternodelist(request, newParams);
+        return masternodelist(request_);
     }
 
     if(strCommand == "connect")
@@ -371,17 +375,13 @@ UniValue masternode(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue masternodelist(const JSONRPCRequest& request, UniValue params)
+UniValue masternodelist(const JSONRPCRequest& request)
 {
     std::string strMode = "status";
     std::string strFilter = "";
-    
-    if (params.size() == 0) {
-        params = request.params;
-    }
 
-    if (params.size() >= 1) strMode = params[0].get_str();
-    if (params.size() == 2) strFilter = params[1].get_str();
+    if (request.params.size() >= 1) strMode = request.params[0].get_str();
+    if (request.params.size() == 2) strFilter = request.params[1].get_str();
 
     if (request.fHelp || (
                 strMode != "activeseconds" && strMode != "addr" && strMode != "full" && strMode != "info" &&
