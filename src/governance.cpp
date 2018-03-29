@@ -859,7 +859,7 @@ bool CGovernanceManager::MasternodeRateCheck(const CGovernanceObject& govobj, bo
     const CTxIn& vin = govobj.GetMasternodeVin();
     int64_t nTimestamp = govobj.GetCreationTime();
     int64_t nNow = GetAdjustedTime();
-    int64_t nSuperblockCycleSeconds = Params().GetConsensus().nSuperblockCycle * Params().GetConsensus().nPowTargetSpacing;
+    int64_t nSuperblockCycleSeconds = Params().GetConsensus().nSuperblockCycle * Params().GetConsensus().nPowTargetSpacingV2;
 
     std::string strHash = govobj.GetHash().ToString();
 
@@ -884,18 +884,18 @@ bool CGovernanceManager::MasternodeRateCheck(const CGovernanceObject& govobj, bo
         return true;
     }
 
-    double dMaxRate = 1.1 / nSuperblockCycleSeconds;
+    double dMaxRate = 1.2 / nSuperblockCycleSeconds;
     double dRate = 0.0;
     CRateCheckBuffer buffer;
     switch(nObjectType) {
     case GOVERNANCE_OBJECT_TRIGGER:
         // Allow 1 trigger per mn per cycle, with a small fudge factor
         buffer = it->second.triggerBuffer;
-        dMaxRate = 2 * 1.1 / double(nSuperblockCycleSeconds);
+        dMaxRate = 2 * 1.2 / double(nSuperblockCycleSeconds);
         break;
     case GOVERNANCE_OBJECT_WATCHDOG:
         buffer = it->second.watchdogBuffer;
-        dMaxRate = 2 * 1.1 / 3600.;
+        dMaxRate = 2 * 1.2 / 3600.;
         break;
     default:
         break;
