@@ -91,7 +91,8 @@ UniValue masternode(const JSONRPCRequest& request)
         /*for (unsigned int i = 1; i < request.params.size(); i++) {
             newParams.push_back(request.params[i]);
         }*/
-        request.params = std::copy(request.params+1, request.params+request.params.size(), request.params);
+        for(int i = 0; i < request.params.size(); ++i)
+            request.params[i] = request.params[i+1];
 
         return masternodelist(request);
     }
