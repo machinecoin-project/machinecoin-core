@@ -92,7 +92,7 @@ UniValue masternode(const JSONRPCRequest& request)
             newParams.push_back(request.params[i]);
         }
         
-        const JSONRPCRequest& request_;
+        JSONRPCRequest request_;
         request_.fHelp = request.fHelp;
         request_.params = newParams;
 
