@@ -202,7 +202,7 @@ extern void EnsureWalletIsUnlocked();
 
 extern UniValue getpoolinfo(const JSONRPCRequest& request);
 extern UniValue masternode(const JSONRPCRequest& request);
-extern UniValue masternodelist(const JSONRPCRequest& request);
+extern UniValue masternodelist(const JSONRPCRequest& request, UniValue params = 0);
 extern UniValue masternodebroadcast(const JSONRPCRequest& request);
 extern UniValue gobject(const JSONRPCRequest& request);
 extern UniValue getgovernanceinfo(const JSONRPCRequest& request);
