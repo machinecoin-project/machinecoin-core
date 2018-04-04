@@ -1139,7 +1139,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             {
                 // Send stream from relay memory
                 bool push = false;
-                {
+                /*{
                     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                     {
                         auto mi = mapRelay.find(inv.hash);
@@ -1152,11 +1152,11 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         // connman.PushMessage(pfrom, inv.GetCommand(), ss);
                         // connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
                         connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
-                }
-                /*auto mi = mapRelay.find(inv.hash);
+                }*/
+                
+                auto mi = mapRelay.find(inv.hash);
                 int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
                 if (mi != mapRelay.end()) {
-                    // connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *mi->second));
                     connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, inv.GetCommand(), *mi->second));
                     push = true;
                 } else if (pfrom->timeLastMempoolReq) {
@@ -1167,7 +1167,19 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *txinfo.tx));
                         push = true;
                     }
-                }*/
+                }
+              
+                int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
+                if (!pushed && inv.type == MSG_TX) {
+                    CTransaction tx;
+                    if (mempool.lookup(inv.hash, tx)) {
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        ss.reserve(1000);
+                        ss << tx;
+                        connman.PushMessage(pfrom, NetMsgType::TX, ss);
+                        pushed = true;
+                    }
+                }
 
                 if (!push && inv.type == MSG_MASTERNODE_PAYMENT_VOTE) {
                     if(mnpayments.HasVerifiedPaymentVote(inv.hash)) {
