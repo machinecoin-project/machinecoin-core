@@ -653,7 +653,7 @@ void CGovernanceObject::UpdateSentinelVariables()
     int nAbsVoteReq = std::max(Params().GetConsensus().nGovernanceMinQuorum, nMnCount / 10);
     int nAbsDeleteReq = std::max(Params().GetConsensus().nGovernanceMinQuorum, (2 * nMnCount) / 3);
     // todo - 12.1 - Temporarily set to 1 for testing - reverted
-    nAbsVoteReq = 1;
+    // nAbsVoteReq = 1;
 
     // SET SENTINEL FLAGS TO FALSE
 
