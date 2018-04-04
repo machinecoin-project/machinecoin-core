@@ -1135,29 +1135,13 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     }
                 }
             }
-            else if (inv.IsKnownType())
+            else if (inv.IsKnownType() || inv.type == MSG_TX || inv.type == MSG_WITNESS_TX)
             {
                 // Send stream from relay memory
                 bool push = false;
-                {
-                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                    {
-                        auto mi = mapRelay.find(inv.hash);
-                        if (mi != mapRelay.end()) {
-                            ss << *mi->second;
-                            push = true;
-                        }
-                    }
-                    if(push)
-                        // connman.PushMessage(pfrom, inv.GetCommand(), ss);
-                        // connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
-                        connman.PushMessage(pfrom, msgMaker.Make(inv.GetCommand(), ss));
-                }
-                
-                /*auto mi = mapRelay.find(inv.hash);
+                auto mi = mapRelay.find(inv.hash);
                 int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
                 if (mi != mapRelay.end()) {
-                    // connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, inv.GetCommand(), *mi->second));
                     connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *mi->second));
                     push = true;
                 } else if (pfrom->timeLastMempoolReq) {
@@ -1166,18 +1150,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     // that TX couldn't have been INVed in reply to a MEMPOOL request.
                     if (txinfo.tx && txinfo.nTime <= pfrom->timeLastMempoolReq) {
                         connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *txinfo.tx));
-                        push = true;
-                    }
-                }*/
-              
-                int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
-                if (!push && inv.type == MSG_TX) {
-                    CTransaction tx;
-                    if (mempool.lookup(inv.hash, tx)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << tx;
-                        connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, ss));
                         push = true;
                     }
                 }
