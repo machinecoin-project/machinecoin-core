@@ -1763,7 +1763,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
   
     // ********************************************************* Step 11c: update block tip in Machinecoin modules
 
-    // force UpdatedBlockTip to initialize nCachedBlockHeight for DS, MN payments and budgets
+    // force UpdatedBlockTip to initialize nCachedBlockHeight for MN payments and budgets
     // but don't call it directly to prevent triggering of other listeners like zmq etc.
     // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
     pdsNotificationInterface->InitializeCurrentBlockTip();
