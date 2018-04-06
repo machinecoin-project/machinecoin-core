@@ -61,8 +61,6 @@ public:
     int GetDefaultPort() const { return nDefaultPort; }
     
     // Masternodes
-    const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
-    int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 
     const CBlock& GenesisBlock() const { return genesis; }
@@ -90,8 +88,6 @@ protected:
     
     // Masternodes
     //! Raw pub key bytes for the broadcast alert signing key.
-    std::vector<unsigned char> vAlertPubKey;
-    int nPoolMaxTransactions;
     int nFulfilledRequestExpireTime;
     std::string strMasternodePaymentsPubKey;
     

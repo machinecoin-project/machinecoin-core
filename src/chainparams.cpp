@@ -162,24 +162,13 @@ public:
         };
       
         // Masternodes
-        consensus.nMasternodePaymentsStartBlock = 100000; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-        consensus.nMasternodePaymentsIncreaseBlock = 158000; // actual historical value
-        consensus.nMasternodePaymentsIncreasePeriod = 576*30; // 17280 - actual historical value
-        consensus.nBudgetPaymentsStartBlock = 328008; // actual historical value
-        consensus.nBudgetPaymentsCycleBlocks = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
-        consensus.nBudgetPaymentsWindowBlocks = 100;
-        consensus.nBudgetProposalEstablishingTime = 60*60*24;
-        consensus.nSuperblockStartBlock = 614820; // The block at which 12.1 goes live (end of final 12.0 budget cycle)
+        consensus.nMasternodePaymentsStartBlock = 0;
+        consensus.nSuperblockStartBlock = 0;
         consensus.nSuperblockCycle = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
         consensus.nGovernanceMinQuorum = 10;
         consensus.nGovernanceFilterElements = 20000;
         consensus.nMasternodeMinimumConfirmations = 15;
-        consensus.nMajorityEnforceBlockUpgrade = 750;
-        consensus.nMajorityRejectBlockOutdated = 950;
-        consensus.nMajorityWindow = 1000;
-        nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        vAlertPubKey = ParseHex("048240a8748a80a286b270ba126705ced4f2ce5a7847b3610ea3c06513150dade2a8512ed5ea86320824683fc0818f0ac019214973e677acd1244f6d0571fc5103");
     }
 };
 static CMainParams mainParams;
@@ -226,26 +215,6 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); //0
-
-        // Masternodes
-        consensus.nMasternodePaymentsStartBlock = 4010; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-        consensus.nMasternodePaymentsIncreaseBlock = 4030; // actual historical value
-        consensus.nMasternodePaymentsIncreasePeriod = 10; // 17280 - actual historical value
-        consensus.nBudgetPaymentsStartBlock = 0; // actual historical value
-        consensus.nBudgetPaymentsCycleBlocks = 50; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
-        consensus.nBudgetPaymentsWindowBlocks = 10;
-        consensus.nBudgetProposalEstablishingTime = 60*20;
-        consensus.nSuperblockStartBlock = 1; // The block at which 12.1 goes live (end of final 12.0 budget cycle)
-        consensus.nSuperblockCycle = 24; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
-        consensus.nGovernanceMinQuorum = 1;
-        consensus.nGovernanceFilterElements = 500;
-        consensus.nMasternodeMinimumConfirmations = 1;
-        consensus.nMajorityEnforceBlockUpgrade = 750;
-        consensus.nMajorityRejectBlockOutdated = 950;
-        consensus.nMajorityWindow = 1000;
-        nPoolMaxTransactions = 3;
-        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-        vAlertPubKey = ParseHex("048240a8748a80a286b270ba126705ced4f2ce5a7847b3610ea3c06513150dade2a8512ed5ea86320824683fc0818f0ac019214973e677acd1244f6d0571fc5103");
       
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -294,6 +263,15 @@ public:
                         //   (the tx=... number in the SetBestChain debug.log lines)
             500.0         // * estimated number of transactions per second after that timestamp
         };
+      
+        // Masternodes
+        consensus.nMasternodePaymentsStartBlock = 0;
+        consensus.nSuperblockStartBlock = 1;
+        consensus.nSuperblockCycle = 24;
+        consensus.nGovernanceMinQuorum = 1;
+        consensus.nGovernanceFilterElements = 500;
+        consensus.nMasternodeMinimumConfirmations = 1;
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
     }
 };
 static CTestNetParams testNetParams;
@@ -340,26 +318,6 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00"); //0
-        
-        // Masternodes
-        consensus.nMasternodePaymentsStartBlock = 100000; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
-        consensus.nMasternodePaymentsIncreaseBlock = 158000; // actual historical value
-        consensus.nMasternodePaymentsIncreasePeriod = 576*30; // 17280 - actual historical value
-        consensus.nBudgetPaymentsStartBlock = 328008; // actual historical value
-        consensus.nBudgetPaymentsCycleBlocks = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
-        consensus.nBudgetPaymentsWindowBlocks = 100;
-        consensus.nBudgetProposalEstablishingTime = 60*60*24;
-        consensus.nSuperblockStartBlock = 614820; // The block at which 12.1 goes live (end of final 12.0 budget cycle)
-        consensus.nSuperblockCycle = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
-        consensus.nGovernanceMinQuorum = 10;
-        consensus.nGovernanceFilterElements = 20000;
-        consensus.nMasternodeMinimumConfirmations = 15;
-        consensus.nMajorityEnforceBlockUpgrade = 750;
-        consensus.nMajorityRejectBlockOutdated = 950;
-        consensus.nMajorityWindow = 1000;
-        nPoolMaxTransactions = 3;
-        nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        vAlertPubKey = ParseHex("048240a8748a80a286b270ba126705ced4f2ce5a7847b3610ea3c06513150dade2a8512ed5ea86320824683fc0818f0ac019214973e677acd1244f6d0571fc5103");
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -396,6 +354,15 @@ public:
             0,
             0
         };
+      
+        // Masternodes
+        consensus.nMasternodePaymentsStartBlock = 0;
+        consensus.nSuperblockStartBlock = 1;
+        consensus.nSuperblockCycle = 24;
+        consensus.nGovernanceMinQuorum = 1;
+        consensus.nGovernanceFilterElements = 500;
+        consensus.nMasternodeMinimumConfirmations = 1;
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55); // Machinecoin N
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
