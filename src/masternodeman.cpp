@@ -64,7 +64,6 @@ CMasternodeMan::CMasternodeMan()
   nLastWatchdogVoteTime(0),
   mapSeenMasternodeBroadcast(),
   mapSeenMasternodePing(),
-  nDsqCount(0)
 {}
 
 bool CMasternodeMan::Add(CMasternode &mn)
@@ -326,7 +325,6 @@ void CMasternodeMan::Clear()
     mWeAskedForMasternodeListEntry.clear();
     mapSeenMasternodeBroadcast.clear();
     mapSeenMasternodePing.clear();
-    nDsqCount = 0;
     nLastWatchdogVoteTime = 0;
 }
 
@@ -1318,8 +1316,7 @@ std::string CMasternodeMan::ToString() const
     info << "Masternodes: " << (int)mapMasternodes.size() <<
             ", peers who asked us for Masternode list: " << (int)mAskedUsForMasternodeList.size() <<
             ", peers we asked for Masternode list: " << (int)mWeAskedForMasternodeList.size() <<
-            ", entries in Masternode list we asked for: " << (int)mWeAskedForMasternodeListEntry.size() <<
-            ", nDsqCount: " << (int)nDsqCount;
+            ", entries in Masternode list we asked for: " << (int)mWeAskedForMasternodeListEntry.size();
 
     return info.str();
 }

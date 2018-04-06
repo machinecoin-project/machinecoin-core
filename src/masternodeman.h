@@ -88,9 +88,6 @@ public:
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
     // Keep track of all verifications I've seen
     std::map<uint256, CMasternodeVerification> mapSeenMasternodeVerification;
-    // keep track of dsq count to prevent masternodes from gaming darksend queue
-    int64_t nDsqCount;
-
 
     ADD_SERIALIZE_METHODS;
 
@@ -113,7 +110,6 @@ public:
         READWRITE(mMnbRecoveryRequests);
         READWRITE(mMnbRecoveryGoodReplies);
         READWRITE(nLastWatchdogVoteTime);
-        READWRITE(nDsqCount);
 
         READWRITE(mapSeenMasternodeBroadcast);
         READWRITE(mapSeenMasternodePing);
