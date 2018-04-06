@@ -63,7 +63,7 @@ CMasternodeMan::CMasternodeMan()
   vecDirtyGovernanceObjectHashes(),
   nLastWatchdogVoteTime(0),
   mapSeenMasternodeBroadcast(),
-  mapSeenMasternodePing(),
+  mapSeenMasternodePing()
 {}
 
 bool CMasternodeMan::Add(CMasternode &mn)

@@ -40,8 +40,6 @@ bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockRewar
     bool isBlockRewardValueMet = (block.vtx[0]->GetValueOut() <= blockReward);
     if(fDebug) LogPrintf("block.vtx[0]->GetValueOut() %lld <= blockReward %lld\n", block.vtx[0]->GetValueOut(), blockReward);
 
-    const Consensus::Params& consensusParams = Params().GetConsensus();
-
     // superblocks started
 
     CAmount nSuperblockMaxValue =  blockReward + CSuperblock::GetPaymentsLimit(nBlockHeight);
@@ -99,11 +97,6 @@ bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount b
         if(fDebug) LogPrintf("IsBlockPayeeValid -- WARNING: Client not synced, skipping block payee checks\n");
         return true;
     }
-
-    // we are still using budgets, but we have no data about them anymore,
-    // we can only check masternode payments
-
-    const Consensus::Params& consensusParams = Params().GetConsensus();
 
     // superblocks started
     // SEE IF THIS IS A VALID SUPERBLOCK
