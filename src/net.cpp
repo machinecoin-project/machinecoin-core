@@ -2625,7 +2625,6 @@ void CConnman::RelayTransaction(const CTransaction& tx)
 {
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss.reserve(10000);
-    uint256 hash = tx.GetHash();
     ss << tx;
     RelayTransaction(tx, ss);
 }

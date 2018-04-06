@@ -360,7 +360,7 @@ bool RPCConsole::RPCParseCommandLine(std::string &strResult, const std::string &
         }
         *pstrFilteredOut = strCommand;
         for (auto i = filter_ranges.rbegin(); i != filter_ranges.rend(); ++i) {
-            pstrFilteredOut->replace(i->first, i->second - i->first, "(???)");
+            pstrFilteredOut->replace(i->first, i->second - i->first, "(…)");
         }
     }
     switch(state) // final state
