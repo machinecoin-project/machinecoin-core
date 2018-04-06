@@ -927,7 +927,7 @@ public:
             LogPrint("net", "PushInventory --  inv: %s peer=%d\n", inv.ToString(), id);
             vInventoryBlockToSend.push_back(inv.hash);
         } else {
-            LogPrintf("OTHER TYPE PushInventory --  inv: %s peer=%d\n", inv.ToString(), id);
+            LogPrint("net", "PushInventory --  inv: %s peer=%d\n", inv.ToString(), id);
             vInventoryMNToSend.push_back(inv);
         }
     }

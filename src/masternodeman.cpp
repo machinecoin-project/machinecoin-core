@@ -167,18 +167,10 @@ void CMasternodeMan::CheckAndRemove(CConnman& connman)
                 mapMasternodes.erase(it++);
                 fMasternodesRemoved = true;
             } else {
-                LogPrintf("MN output is not spent!\n");
-                
                 bool fAsk = (nAskForMnbRecovery > 0) &&
                             masternodeSync.IsSynced() &&
                             it->second.IsNewStartRequired() &&
                             !IsMnbRecoveryRequested(hash);
-                LogPrintf("fAsk is set to: %s", fAsk);
-                
-                LogPrintf("nAskForMnbRecovery -- %s\n", nAskForMnbRecovery);
-                LogPrintf("masternodeSync.IsSynced -- %s\n", masternodeSync.IsSynced());
-                LogPrintf("it->second.IsNewStartRequired -- %s\n", it->second.IsNewStartRequired());
-                LogPrintf("IsMnbRecoveryRequested -- %s\n", IsMnbRecoveryRequested(hash));
                 
                 if(fAsk) {
                     // this mn is in a non-recoverable state and we haven't asked other nodes yet
@@ -196,7 +188,6 @@ void CMasternodeMan::CheckAndRemove(CConnman& connman)
                         // didn't ask recently, ok to ask now
                         CService addr = vecMasternodeRanks[i].second.addr;
                         setRequested.insert(addr);
-                        LogPrintf("listScheduledMnbRequestConnections.push_back\n");
                         listScheduledMnbRequestConnections.push_back(std::make_pair(addr, hash));
                         fAskedForMnbRecovery = true;
                     }
@@ -728,11 +719,7 @@ std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestCo
 
 
 void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
-{
-    LogPrintf("Break #1 - CMasternodeMan::ProcessMessage\n");
-    LogPrintf("CMasternodeMan::ProcessMessage - pfrom: %s\n", pfrom->GetId());
-    LogPrintf("CMasternodeMan::ProcessMessage - strCommand: %s\n", strCommand);
-  
+{  
     if(fLiteMode) return; // disable all Machinecoin specific functionality
 
     if (strCommand == NetMsgType::MNANNOUNCE) { //Masternode Broadcast
@@ -758,9 +745,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if(fMasternodesAdded) {
             NotifyMasternodeUpdates(connman);
         }
-    } else if (strCommand == NetMsgType::MNPING) { //Masternode Ping
-        LogPrintf("Break #2 - NetMsgType::MNPING\n");
-        
+    } else if (strCommand == NetMsgType::MNPING) { //Masternode Ping        
         CMasternodePing mnp;
         vRecv >> mnp;
 
@@ -769,12 +754,8 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         pfrom->setAskFor.erase(nHash);
 
         if(!masternodeSync.IsBlockchainSynced()) return;
-        
-        LogPrintf("NetMsgType::MNPING - IsBlockchainSynced = true");
 
         LogPrint("masternode", "MNPING -- Masternode ping, masternode=%s\n", mnp.vin.prevout.ToStringShort());
-        
-        LogPrintf("NetMsgType::MNPING - vin: %s", mnp.vin.prevout.ToStringShort());
 
         // Need LOCK2 here to ensure consistent locking order because the CheckAndUpdate call below locks cs_main
         LOCK2(cs_main, cs);
@@ -815,8 +796,6 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
             // nothing significant failed, mn is a known one too
             return;
         }
-        
-        LogPrintf("NetMsgType::MNPING - AskForMN is next");
 
         // something significant is broken or mn is unknown,
         // we might have to ask for a masternode entry once
