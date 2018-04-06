@@ -1,3 +1,4 @@
+﻿// Copyright (c) 2014-2018 The Dash Core developers
 // Copyright (c) 2014-2018 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -732,7 +733,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
     LogPrintf("CMasternodeMan::ProcessMessage - pfrom: %s\n", pfrom->GetId());
     LogPrintf("CMasternodeMan::ProcessMessage - strCommand: %s\n", strCommand);
   
-    if(fLiteMode) return; // disable all Dash specific functionality
+    if(fLiteMode) return; // disable all Machinecoin specific functionality
 
     if (strCommand == NetMsgType::MNANNOUNCE) { //Masternode Broadcast
 

@@ -1,3 +1,4 @@
+﻿// Copyright (c) 2014-2018 The Dash Core developers
 // Copyright (c) 2014-2018 The Machinecoin Core developers
 
 // Distributed under the MIT/X11 software license, see the accompanying

@@ -1768,9 +1768,9 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
     pdsNotificationInterface->InitializeCurrentBlockTip();
   
-    // ********************************************************* Step 11d: start dash-ps-<smth> threads
+    // ********************************************************* Step 11d: start mac-ps-<smth> threads
 
-    threadGroup.create_thread(boost::bind(&ThreadCheckPrivateSend, boost::ref(*g_connman)));
+    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(*g_connman)));
 
     // ********************************************************* Step 11: start node
 
@@ -1817,16 +1817,16 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     return !fRequestShutdown;
 }
 
-void ThreadCheckPrivateSend(CConnman& connman)
+void ThreadCheckMasternode(CConnman& connman)
 {
-    if(fLiteMode) return; // disable all Dash specific functionality
+    if(fLiteMode) return; // disable all Machinecoin specific functionality
 
     static bool fOneThread;
     if(fOneThread) return;
     fOneThread = true;
 
     // Make this thread recognisable as the PrivateSend thread
-    RenameThread("dash-ps");
+    RenameThread("mac-mn");
 
     unsigned int nTick = 0;
 
