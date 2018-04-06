@@ -350,16 +350,12 @@ enum GetDataMsg
     // NOTE: declare non-implmented here, we must keep this enum consistent and backwards compatible
     MSG_MASTERNODE_PAYMENT_VOTE = 5,
     MSG_MASTERNODE_PAYMENT_BLOCK = 6, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
-    MSG_BUDGET_VOTE = 7, // depreciated since 12.1
-    MSG_BUDGET_PROPOSAL = 8, // depreciated since 12.1
-    MSG_BUDGET_FINALIZED = 9, // depreciated since 12.1
-    MSG_BUDGET_FINALIZED_VOTE = 10, // depreciated since 12.1
-    MSG_MASTERNODE_QUORUM = 11, // not implemented
-    MSG_MASTERNODE_ANNOUNCE = 12,
-    MSG_MASTERNODE_PING = 13,
-    MSG_GOVERNANCE_OBJECT = 14,
-    MSG_GOVERNANCE_OBJECT_VOTE = 15,
-    MSG_MASTERNODE_VERIFY = 16,
+    MSG_MASTERNODE_QUORUM = 7, // not implemented
+    MSG_MASTERNODE_ANNOUNCE = 8,
+    MSG_MASTERNODE_PING = 9,
+    MSG_GOVERNANCE_OBJECT = 10,
+    MSG_GOVERNANCE_OBJECT_VOTE = 11,
+    MSG_MASTERNODE_VERIFY = 12,
 };
 
 /** inv message data */

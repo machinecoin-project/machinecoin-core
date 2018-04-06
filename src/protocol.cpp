@@ -43,11 +43,6 @@ const char *BLOCKTXN="blocktxn";
 const char *MASTERNODEPAYMENTVOTE="mnw";
 const char *MASTERNODEPAYMENTBLOCK="mnwb";
 const char *MASTERNODEPAYMENTSYNC="mnget";
-const char *MNBUDGETSYNC="mnvs"; // depreciated since 12.1
-const char *MNBUDGETVOTE="mvote"; // depreciated since 12.1
-const char *MNBUDGETPROPOSAL="mprop"; // depreciated since 12.1
-const char *MNBUDGETFINAL="fbs"; // depreciated since 12.1
-const char *MNBUDGETFINALVOTE="fbvote"; // depreciated since 12.1
 const char *MNQUORUM="mn quorum"; // not implemented
 const char *MNANNOUNCE="mnb";
 const char *MNPING="mnp";
@@ -70,10 +65,6 @@ const static std::string ppszTypeName[] =
     // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
     NetMsgType::MASTERNODEPAYMENTVOTE,
     NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
-    NetMsgType::MNBUDGETVOTE, // depreciated since 12.1
-    NetMsgType::MNBUDGETPROPOSAL, // depreciated since 12.1
-    NetMsgType::MNBUDGETFINAL, // depreciated since 12.1
-    NetMsgType::MNBUDGETFINALVOTE, // depreciated since 12.1
     NetMsgType::MNQUORUM, // not implemented
     NetMsgType::MNANNOUNCE,
     NetMsgType::MNPING,
