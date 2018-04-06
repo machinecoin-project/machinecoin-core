@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2017 The Machinecoin Core developers
+﻿// Copyright (c) 2010-2018 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
