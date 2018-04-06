@@ -727,7 +727,6 @@ public:
     bool fOneShot;
     bool fAddnode;
     bool fClient;
-    bool fNetworkNode;
     const bool fInbound;
     std::atomic_bool fSuccessfullyConnected;
     std::atomic_bool fDisconnect;
@@ -810,15 +809,10 @@ public:
     CAmount lastSentFeeFilter;
     int64_t nextSendTimeFeeFilter;
 
-    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const std::string &addrNameIn = "", bool fInboundIn = false, bool fNetworkNodeIn = false);
+    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const std::string &addrNameIn = "", bool fInboundIn = false);
     ~CNode();
 
 private:
-    // Secret key for computing keyed net groups
-    static std::vector<unsigned char> vchSecretKey;
-    
-    CCriticalSection cs_nRefCount;
-
     CNode(const CNode&);
     void operator=(const CNode&);
 
@@ -924,10 +918,8 @@ public:
                 setInventoryTxToSend.insert(inv.hash);
             }
         } else if (inv.type == MSG_BLOCK) {
-            LogPrint("net", "PushInventory --  inv: %s peer=%d\n", inv.ToString(), id);
             vInventoryBlockToSend.push_back(inv.hash);
         } else {
-            LogPrint("net", "PushInventory --  inv: %s peer=%d\n", inv.ToString(), id);
             vInventoryMNToSend.push_back(inv);
         }
     }

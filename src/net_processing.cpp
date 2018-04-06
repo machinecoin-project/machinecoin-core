@@ -1015,7 +1015,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             break;
 
         const CInv &inv = *it;
-        LogPrint("net", "ProcessGetData -- inv = %s\n", inv.ToString());
         {
             if (interruptMsgProc)
                 return;
@@ -1684,8 +1683,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
             if (interruptMsgProc)
                 return true;
-
-            pfrom->AddInventoryKnown(inv);
             
             bool fAlreadyHave = AlreadyHave(inv);
             LogPrint("net", "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
@@ -3357,7 +3354,7 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
         // We compensate for other peers to prevent killing off peers due to our own downstream link
         // being saturated. We only count validated in-flight blocks so peers can't advertise non-existing block hashes
         // to unreasonably increase our timeout.
-        if (!pto->fDisconnect && state.vBlocksInFlight.size() > 0) {
+        if (state.vBlocksInFlight.size() > 0) {
             QueuedBlock &queuedBlock = state.vBlocksInFlight.front();
             int nOtherPeersWithValidatedDownloads = nPeersWithValidatedDownloads - (state.nBlocksInFlightValidHeaders > 0);
             if (nNow > state.nDownloadingSince + consensusParams.nPowTargetSpacing * (BLOCK_DOWNLOAD_TIMEOUT_BASE + BLOCK_DOWNLOAD_TIMEOUT_PER_PEER * nOtherPeersWithValidatedDownloads)) {
