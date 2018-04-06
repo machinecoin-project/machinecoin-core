@@ -423,17 +423,12 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         uint64_t nonce = GetDeterministicRandomizer(RANDOMIZER_ID_LOCALHOSTNONCE).Write(id).Finalize();
         CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, pszDest ? pszDest : "", false, true);
         pnode->nServicesExpected = ServiceFlags(addrConnect.nServices & nRelevantServices);
-        // pnode->nTimeConnected = GetSystemTimeInSeconds();
-
-        GetNodeSignals().InitializeNode(pnode, *this);
-        /*LOCK(cs_vNodes);
-        vNodes.push_back(pnode);*/
-        pnode->AddRef();
       
         if(fConnectToMasternode) {
-            // pnode->AddRef();
             pnode->fMasternode = true;
         }
+      
+        pnode->AddRef();
 
         return pnode;
     } else if (!proxyConnectionFailed) {
