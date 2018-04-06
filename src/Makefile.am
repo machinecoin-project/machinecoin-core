@@ -319,7 +319,7 @@ libmachinecoin_consensus_a_SOURCES = \
   consensus/merkle.h \
   consensus/params.h \
   consensus/validation.h \
-	crypto/scrypt.cpp \
+  crypto/scrypt.cpp \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -381,7 +381,7 @@ libmachinecoin_common_a_SOURCES = \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
-	crypto/scrypt.cpp \
+  crypto/scrypt.cpp \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
