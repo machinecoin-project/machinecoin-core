@@ -245,6 +245,7 @@ RES_ICONS = \
   qt/res/icons/machinecoin.ico \
   qt/res/icons/machinecoin_testnet.ico \
   qt/res/icons/machinecoin.png \
+  qt/res/icons/masternode.png \
   qt/res/icons/chevron.png \
   qt/res/icons/clock1.png \
   qt/res/icons/clock2.png \
