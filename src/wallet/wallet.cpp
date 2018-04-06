@@ -2155,8 +2155,8 @@ void CWallet::AvailableMNCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, con
 
             for (unsigned int i = 0; i < pcoin->tx->vout.size(); i++) {
                 isminetype mine = IsMine(pcoin->tx->vout[i]);
-                if (!(IsSpent(wtxid, i)) && mine != ISMINE_NO &&                                                        // TODO change to more than 100 coins, but keep this for testing
-                    !IsLockedCoin((*it).first, i) && (pcoin->tx->vout[i].nValue >= 10000000000 || fIncludeZeroValue) && // ONLY return coins with equal or higher value as needed for Masternodes
+                if (!(IsSpent(wtxid, i)) && mine != ISMINE_NO &&
+                    !IsLockedCoin((*it).first, i) && (pcoin->tx->vout[i].nValue >= 2500000000000 || fIncludeZeroValue) && // ONLY return coins with equal or higher value as needed for Masternodes
                     (!coinControl || !coinControl->HasSelected() || coinControl->fAllowOtherInputs || coinControl->IsSelected(COutPoint((*it).first, i))))
                 {
                     vCoins.push_back(COutput(pcoin, i, nDepth,
