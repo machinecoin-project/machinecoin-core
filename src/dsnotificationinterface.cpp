@@ -3,12 +3,12 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "chainparams.h"
-#include "dsnotificationinterface.h"
-#include "governance.h"
-#include "masternodeman.h"
-#include "masternode-payments.h"
-#include "masternode-sync.h"
+#include <chainparams.h>
+#include <dsnotificationinterface.h>
+#include <governance.h>
+#include <masternodeman.h>
+#include <masternode-payments.h>
+#include <masternode-sync.h>
 
 void CDSNotificationInterface::InitializeCurrentBlockTip()
 {

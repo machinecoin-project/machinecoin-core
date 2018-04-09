@@ -6,8 +6,8 @@
 #ifndef GOVERNANCE_VOTE_H
 #define GOVERNANCE_VOTE_H
 
-#include "key.h"
-#include "primitives/transaction.h"
+#include <key.h>
+#include <primitives/transaction.h>
 
 #include <boost/lexical_cast.hpp>
 

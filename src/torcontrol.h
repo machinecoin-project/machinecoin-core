@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Machinecoin Core developers
+// Copyright (c) 2015-2018 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +8,7 @@
 #ifndef MACHINECOIN_TORCONTROL_H
 #define MACHINECOIN_TORCONTROL_H
 
-#include "scheduler.h"
+#include <scheduler.h>
 
 extern const std::string DEFAULT_TOR_CONTROL;
 static const bool DEFAULT_LISTEN_ONION = true;

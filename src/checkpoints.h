@@ -5,7 +5,7 @@
 #ifndef MACHINECOIN_CHECKPOINTS_H
 #define MACHINECOIN_CHECKPOINTS_H
 
-#include "uint256.h"
+#include <uint256.h>
 
 #include <map>
 

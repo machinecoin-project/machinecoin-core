@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2012-2018 The Machinecoin Core developers
+// Copyright (c) 2012-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "serialize.h"
-#include "streams.h"
-#include "hash.h"
-#include "test/test_machinecoin.h"
+#include <serialize.h>
+#include <streams.h>
+#include <hash.h>
+#include <test/test_bitcoin.h>
 
 #include <stdint.h>
 

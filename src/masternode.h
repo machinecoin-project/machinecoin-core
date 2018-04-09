@@ -6,8 +6,8 @@
 #ifndef MASTERNODE_H
 #define MASTERNODE_H
 
-#include "key.h"
-#include "validation.h"
+#include <key.h>
+#include <validation.h>
 
 class CMasternode;
 class CMasternodeBroadcast;

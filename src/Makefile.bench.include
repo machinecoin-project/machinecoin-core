@@ -11,6 +11,7 @@ RAW_TEST_FILES = \
 GENERATED_TEST_FILES = $(RAW_TEST_FILES:.raw=.raw.h)
 
 bench_bench_machinecoin_SOURCES = \
+  $(RAW_BENCH_FILES) \
   bench/bench_machinecoin.cpp \
   bench/bench.cpp \
   bench/bench.h \
@@ -25,7 +26,8 @@ bench_bench_machinecoin_SOURCES = \
   bench/base58.cpp \
   bench/lockedpool.cpp \
   bench/perf.cpp \
-  bench/perf.h
+  bench/perf.h \
+  bench/prevector_destructor.cpp
 
 nodist_bench_bench_machinecoin_SOURCES = $(GENERATED_TEST_FILES)
 
@@ -38,6 +40,7 @@ bench_bench_machinecoin_LDADD = \
   $(LIBMACHINECOIN_CONSENSUS) \
   $(LIBMACHINECOIN_CRYPTO) \
   $(LIBLEVELDB) \
+  $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
   $(LIBSECP256K1) \
   $(LIBUNIVALUE)
@@ -54,7 +57,7 @@ endif
 bench_bench_machinecoin_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
 bench_bench_machinecoin_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
-CLEAN_MACHINECOIN_BENCH = bench/*.gcda bench/*.gcno $(GENERATED_TEST_FILES)
+CLEAN_MACHINECOIN_BENCH = bench/*.gcda bench/*.gcno $(GENERATED_BENCH_FILES)
 
 CLEANFILES += $(CLEAN_MACHINECOIN_BENCH)
 

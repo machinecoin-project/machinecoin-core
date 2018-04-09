@@ -6,7 +6,7 @@
 #ifndef MACHINECOIN_DSNOTIFICATIONINTERFACE_H
 #define MACHINECOIN_DSNOTIFICATIONINTERFACE_H
 
-#include "validationinterface.h"
+#include <validationinterface.h>
 
 class CDSNotificationInterface : public CValidationInterface
 {

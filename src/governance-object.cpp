@@ -3,16 +3,16 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "core_io.h"
-#include "governance.h"
-#include "governance-classes.h"
-#include "governance-object.h"
-#include "governance-vote.h"
-#include "masternode-sync.h"
-#include "masternodeman.h"
-#include "messagesigner.h"
-#include "util.h"
-#include "utilstrencodings.h"
+#include <core_io.h>
+#include <governance.h>
+#include <governance-classes.h>
+#include <governance-object.h>
+#include <governance-vote.h>
+#include <masternode-sync.h>
+#include <masternodeman.h>
+#include <messagesigner.h>
+#include <util.h>
+#include <utilstrencodings.h>
 
 #include <univalue.h>
 

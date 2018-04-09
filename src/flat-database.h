@@ -6,12 +6,13 @@
 #ifndef FLAT_DATABASE_H
 #define FLAT_DATABASE_H
 
-#include "chainparams.h"
-#include "clientversion.h"
-#include "hash.h"
-#include "streams.h"
-#include "util.h"
+#include <chainparams.h>
+#include <clientversion.h>
+#include <hash.h>
+#include <streams.h>
+#include <util.h>
 
+// TODO replace using fs.cpp
 #include <boost/filesystem.hpp>
 
 /** 

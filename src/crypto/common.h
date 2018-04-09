@@ -6,7 +6,7 @@
 #define MACHINECOIN_CRYPTO_COMMON_H
 
 #if defined(HAVE_CONFIG_H)
-#include "machinecoin-config.h"
+#include <machinecoin-config.h>
 #endif
 
 #include <stdint.h>

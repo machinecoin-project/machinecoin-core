@@ -3,10 +3,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "netbase.h"
-#include "masternodeconfig.h"
-#include "util.h"
-#include "chainparams.h"
+#include <netbase.h>
+#include <masternodeconfig.h>
+#include <util.h>
+#include <chainparams.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>

@@ -1,17 +1,17 @@
-﻿// Copyright (c) 2014-2018 The Machinecoin Core developers
+// Copyright (c) 2014-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MACHINECOIN_COMPAT_ENDIAN_H
-#define MACHINECOIN_COMPAT_ENDIAN_H
+#ifndef BITCOIN_COMPAT_ENDIAN_H
+#define BITCOIN_COMPAT_ENDIAN_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/machinecoin-config.h"
+#include <config/bitcoin-config.h>
 #endif
 
-#include <stdint.h>
+#include <compat/byteswap.h>
 
-#include "compat/byteswap.h"
+#include <stdint.h>
 
 #if defined(HAVE_ENDIAN_H)
 #include <endian.h>
@@ -193,4 +193,4 @@ inline uint64_t le64toh(uint64_t little_endian_64bits)
 
 #endif // WORDS_BIGENDIAN
 
-#endif // MACHINECOIN_COMPAT_ENDIAN_H
+#endif // BITCOIN_COMPAT_ENDIAN_H

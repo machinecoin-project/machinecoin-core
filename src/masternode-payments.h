@@ -6,12 +6,12 @@
 #ifndef MASTERNODE_PAYMENTS_H
 #define MASTERNODE_PAYMENTS_H
 
-#include "util.h"
-#include "core_io.h"
-#include "key.h"
-#include "masternode.h"
-#include "net_processing.h"
-#include "utilstrencodings.h"
+#include <util.h>
+#include <core_io.h>
+#include <key.h>
+#include <masternode.h>
+#include <net_processing.h>
+#include <utilstrencodings.h>
 
 class CMasternodePayments;
 class CMasternodePaymentVote;
