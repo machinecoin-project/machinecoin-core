@@ -423,12 +423,12 @@ bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints* lp, bool 
 
 // Masternodes
 // TODO check ~ maybe replaced by newer function
-bool GetUTXOCoin(const COutPoint& outpoint, CCoins& coins)
+bool GetUTXOCoin(const COutPoint& outpoint, CCoin& coin)
 {
     LOCK(cs_main);
-    if (!pcoinsTip->GetCoins(outpoint.hash, coins))
+    if (!pcoinsTip->GetCoin(outpoint.hash, coin))
         return false;
-    if (coins.IsPruned())
+    if (coin.IsSpent())
         return false;
     return true;
 }

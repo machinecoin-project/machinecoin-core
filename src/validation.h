@@ -310,7 +310,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
                         bool bypass_limits, const CAmount nAbsurdFee);
 
 // Masternodes
-bool GetUTXOCoin(const COutPoint& outpoint, CCoins& coins);
+bool GetUTXOCoin(const COutPoint& outpoint, CCoin& coin);
 int GetUTXOHeight(const COutPoint& outpoint);
 int GetUTXOConfirmations(const COutPoint& outpoint);
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue);
