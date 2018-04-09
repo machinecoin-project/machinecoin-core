@@ -1,4 +1,4 @@
-﻿.NOTPARALLEL :
+.NOTPARALLEL :
 
 SOURCES_PATH ?= $(BASEDIR)/sources
 BASE_CACHE ?= $(BASEDIR)/built
