@@ -183,7 +183,7 @@ static bool InitHTTPAllowList()
     std::string strAllowed;
     for (const CSubNet& subnet : rpc_allow_subnets)
         strAllowed += subnet.ToString() + " ";
-    LogPrint(BCLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
+    LogPrint(MCLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
     return true;
 }
 
@@ -223,7 +223,7 @@ static void http_request_cb(struct evhttp_request* req, void* arg)
     }
     std::unique_ptr<HTTPRequest> hreq(new HTTPRequest(req));
 
-    LogPrint(BCLog::HTTP, "Received a %s request for %s from %s\n",
+    LogPrint(MCLog::HTTP, "Received a %s request for %s from %s\n",
              RequestMethodString(hreq->GetRequestMethod()), hreq->GetURI(), hreq->GetPeer().ToString());
 
     // Early address-based allow check
@@ -273,7 +273,7 @@ static void http_request_cb(struct evhttp_request* req, void* arg)
 /** Callback to reject HTTP requests after shutdown. */
 static void http_reject_request_cb(struct evhttp_request* req, void*)
 {
-    LogPrint(BCLog::HTTP, "Rejecting request while shutting down\n");
+    LogPrint(MCLog::HTTP, "Rejecting request while shutting down\n");
     evhttp_send_error(req, HTTP_SERVUNAVAIL, nullptr);
 }
 
@@ -281,10 +281,10 @@ static void http_reject_request_cb(struct evhttp_request* req, void*)
 static bool ThreadHTTP(struct event_base* base, struct evhttp* http)
 {
     RenameThread("machinecoin-http");
-    LogPrint(BCLog::HTTP, "Entering http event loop\n");
+    LogPrint(MCLog::HTTP, "Entering http event loop\n");
     event_base_dispatch(base);
     // Event loop will be interrupted by InterruptHTTPServer()
-    LogPrint(BCLog::HTTP, "Exited http event loop\n");
+    LogPrint(MCLog::HTTP, "Exited http event loop\n");
     return event_base_got_break(base) == 0;
 }
 
@@ -315,7 +315,7 @@ static bool HTTPBindAddresses(struct evhttp* http)
 
     // Bind addresses
     for (std::vector<std::pair<std::string, uint16_t> >::iterator i = endpoints.begin(); i != endpoints.end(); ++i) {
-        LogPrint(BCLog::HTTP, "Binding RPC on address %s port %i\n", i->first, i->second);
+        LogPrint(MCLog::HTTP, "Binding RPC on address %s port %i\n", i->first, i->second);
         evhttp_bound_socket *bind_handle = evhttp_bind_socket_with_handle(http, i->first.empty() ? nullptr : i->first.c_str(), i->second);
         if (bind_handle) {
             boundSockets.push_back(bind_handle);
@@ -343,7 +343,7 @@ static void libevent_log_cb(int severity, const char *msg)
     if (severity >= EVENT_LOG_WARN) // Log warn messages and higher without debug category
         LogPrintf("libevent: %s\n", msg);
     else
-        LogPrint(BCLog::LIBEVENT, "libevent: %s\n", msg);
+        LogPrint(MCLog::LIBEVENT, "libevent: %s\n", msg);
 }
 
 bool InitHTTPServer()
@@ -362,9 +362,9 @@ bool InitHTTPServer()
     event_set_log_callback(&libevent_log_cb);
     // Update libevent's log handling. Returns false if our version of
     // libevent doesn't support debug logging, in which case we should
-    // clear the BCLog::LIBEVENT flag.
-    if (!UpdateHTTPServerLogging(logCategories & BCLog::LIBEVENT)) {
-        logCategories &= ~BCLog::LIBEVENT;
+    // clear the MCLog::LIBEVENT flag.
+    if (!UpdateHTTPServerLogging(logCategories & MCLog::LIBEVENT)) {
+        logCategories &= ~MCLog::LIBEVENT;
     }
 
 #ifdef WIN32
@@ -393,7 +393,7 @@ bool InitHTTPServer()
         return false;
     }
 
-    LogPrint(BCLog::HTTP, "Initialized HTTP server\n");
+    LogPrint(MCLog::HTTP, "Initialized HTTP server\n");
     int workQueueDepth = std::max((long)gArgs.GetArg("-rpcworkqueue", DEFAULT_HTTP_WORKQUEUE), 1L);
     LogPrintf("HTTP: creating work queue of depth %d\n", workQueueDepth);
 
@@ -424,7 +424,7 @@ static std::vector<std::thread> g_thread_http_workers;
 
 bool StartHTTPServer()
 {
-    LogPrint(BCLog::HTTP, "Starting HTTP server\n");
+    LogPrint(MCLog::HTTP, "Starting HTTP server\n");
     int rpcThreads = std::max((long)gArgs.GetArg("-rpcthreads", DEFAULT_HTTP_THREADS), 1L);
     LogPrintf("HTTP: starting %d worker threads\n", rpcThreads);
     std::packaged_task<bool(event_base*, evhttp*)> task(ThreadHTTP);
@@ -439,7 +439,7 @@ bool StartHTTPServer()
 
 void InterruptHTTPServer()
 {
-    LogPrint(BCLog::HTTP, "Interrupting HTTP server\n");
+    LogPrint(MCLog::HTTP, "Interrupting HTTP server\n");
     if (eventHTTP) {
         // Unlisten sockets
         for (evhttp_bound_socket *socket : boundSockets) {
@@ -454,9 +454,9 @@ void InterruptHTTPServer()
 
 void StopHTTPServer()
 {
-    LogPrint(BCLog::HTTP, "Stopping HTTP server\n");
+    LogPrint(MCLog::HTTP, "Stopping HTTP server\n");
     if (workQueue) {
-        LogPrint(BCLog::HTTP, "Waiting for HTTP worker threads to exit\n");
+        LogPrint(MCLog::HTTP, "Waiting for HTTP worker threads to exit\n");
         for (auto& thread: g_thread_http_workers) {
             thread.join();
         }
@@ -465,7 +465,7 @@ void StopHTTPServer()
         workQueue = nullptr;
     }
     if (eventBase) {
-        LogPrint(BCLog::HTTP, "Waiting for HTTP event thread to exit\n");
+        LogPrint(MCLog::HTTP, "Waiting for HTTP event thread to exit\n");
         // Exit the event loop as soon as there are no active events.
         event_base_loopexit(eventBase, nullptr);
         // Give event loop a few seconds to exit (to send back last RPC responses), then break it
@@ -488,7 +488,7 @@ void StopHTTPServer()
         event_base_free(eventBase);
         eventBase = nullptr;
     }
-    LogPrint(BCLog::HTTP, "Stopped HTTP server\n");
+    LogPrint(MCLog::HTTP, "Stopped HTTP server\n");
 }
 
 struct event_base* EventBase()
@@ -648,7 +648,7 @@ HTTPRequest::RequestMethod HTTPRequest::GetRequestMethod()
 
 void RegisterHTTPHandler(const std::string &prefix, bool exactMatch, const HTTPRequestHandler &handler)
 {
-    LogPrint(BCLog::HTTP, "Registering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
+    LogPrint(MCLog::HTTP, "Registering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
     pathHandlers.push_back(HTTPPathHandler(prefix, exactMatch, handler));
 }
 
@@ -661,7 +661,7 @@ void UnregisterHTTPHandler(const std::string &prefix, bool exactMatch)
             break;
     if (i != iend)
     {
-        LogPrint(BCLog::HTTP, "Unregistering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
+        LogPrint(MCLog::HTTP, "Unregistering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
         pathHandlers.erase(i);
     }
 }

@@ -316,7 +316,7 @@ std::string Socks5ErrorString(uint8_t err)
 static bool Socks5(const std::string& strDest, int port, const ProxyCredentials *auth, const SOCKET& hSocket)
 {
     IntrRecvError recvr;
-    LogPrint(BCLog::NET, "SOCKS5 connecting %s\n", strDest);
+    LogPrint(MCLog::NET, "SOCKS5 connecting %s\n", strDest);
     if (strDest.size() > 255) {
         return error("Hostname too long");
     }
@@ -357,7 +357,7 @@ static bool Socks5(const std::string& strDest, int port, const ProxyCredentials 
         if (ret != (ssize_t)vAuth.size()) {
             return error("Error sending authentication to proxy");
         }
-        LogPrint(BCLog::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
+        LogPrint(MCLog::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
         uint8_t pchRetA[2];
         if ((recvr = InterruptibleRecv(pchRetA, 2, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
             return error("Error reading proxy authentication response");
@@ -428,7 +428,7 @@ static bool Socks5(const std::string& strDest, int port, const ProxyCredentials 
     if ((recvr = InterruptibleRecv(pchRet3, 2, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
         return error("Error reading from proxy");
     }
-    LogPrint(BCLog::NET, "SOCKS5 connected %s\n", strDest);
+    LogPrint(MCLog::NET, "SOCKS5 connected %s\n", strDest);
     return true;
 }
 
@@ -493,7 +493,7 @@ bool ConnectSocketDirectly(const CService &addrConnect, const SOCKET& hSocket, i
             int nRet = select(hSocket + 1, nullptr, &fdset, nullptr, &timeout);
             if (nRet == 0)
             {
-                LogPrint(BCLog::NET, "connection to %s timeout\n", addrConnect.ToString());
+                LogPrint(MCLog::NET, "connection to %s timeout\n", addrConnect.ToString());
                 return false;
             }
             if (nRet == SOCKET_ERROR)

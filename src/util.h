@@ -83,7 +83,7 @@ struct CLogCategoryActive
     bool active;
 };
 
-namespace BCLog {
+namespace MCLog {
     enum LogFlags : uint32_t {
         NONE        = 0,
         NET         = (1 <<  0),

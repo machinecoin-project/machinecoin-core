@@ -364,7 +364,7 @@ static CAddress GetBindAddress(SOCKET sock)
         if (!getsockname(sock, (struct sockaddr*)&sockaddr_bind, &sockaddr_bind_len)) {
             addr_bind.SetSockAddr((const struct sockaddr*)&sockaddr_bind);
         } else {
-            LogPrint(BCLog::NET, "Warning: getsockname failed\n");
+            LogPrint(MCLog::NET, "Warning: getsockname failed\n");
         }
     }
     return addr_bind;

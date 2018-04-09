@@ -32,7 +32,7 @@ void InterruptHTTPServer();
 /** Stop HTTP server */
 void StopHTTPServer();
 
-/** Change logging level for libevent. Removes BCLog::LIBEVENT from logCategories if
+/** Change logging level for libevent. Removes MCLog::LIBEVENT from logCategories if
  * libevent doesn't support debug logging.*/
 bool UpdateHTTPServerLogging(bool enable);
 

@@ -267,7 +267,7 @@ bool GetLogCategory(uint32_t *f, const std::string *str)
 {
     if (f && str) {
         if (*str == "") {
-            *f = BCLog::ALL;
+            *f = MCLog::ALL;
             return true;
         }
         for (unsigned int i = 0; i < ARRAYLEN(LogCategories); i++) {
@@ -286,7 +286,7 @@ std::string ListLogCategories()
     int outcount = 0;
     for (unsigned int i = 0; i < ARRAYLEN(LogCategories); i++) {
         // Omit the special cases.
-        if (LogCategories[i].flag != BCLog::NONE && LogCategories[i].flag != BCLog::ALL) {
+        if (LogCategories[i].flag != MCLog::NONE && LogCategories[i].flag != MCLog::ALL) {
             if (outcount != 0) ret += ", ";
             ret += LogCategories[i].category;
             outcount++;
@@ -300,7 +300,7 @@ std::vector<CLogCategoryActive> ListActiveLogCategories()
     std::vector<CLogCategoryActive> ret;
     for (unsigned int i = 0; i < ARRAYLEN(LogCategories); i++) {
         // Omit the special cases.
-        if (LogCategories[i].flag != BCLog::NONE && LogCategories[i].flag != BCLog::ALL) {
+        if (LogCategories[i].flag != MCLog::NONE && LogCategories[i].flag != MCLog::ALL) {
             CLogCategoryActive catActive;
             catActive.category = LogCategories[i].category;
             catActive.active = LogAcceptCategory(LogCategories[i].flag);

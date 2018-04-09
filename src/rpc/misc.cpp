@@ -533,7 +533,7 @@ uint32_t getCategoryMask(UniValue cats) {
         if (!GetLogCategory(&flag, &cat)) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "unknown logging category " + cat);
         }
-        if (flag == BCLog::NONE) {
+        if (flag == MCLog::NONE) {
             return 0;
         }
         mask |= flag;
@@ -586,16 +586,16 @@ UniValue logging(const JSONRPCRequest& request)
         logCategories &= ~getCategoryMask(request.params[1]);
     }
 
-    // Update libevent logging if BCLog::LIBEVENT has changed.
+    // Update libevent logging if MCLog::LIBEVENT has changed.
     // If the library version doesn't allow it, UpdateHTTPServerLogging() returns false,
-    // in which case we should clear the BCLog::LIBEVENT flag.
+    // in which case we should clear the MCLog::LIBEVENT flag.
     // Throw an error if the user has explicitly asked to change only the libevent
     // flag and it failed.
     uint32_t changedLogCategories = originalLogCategories ^ logCategories;
-    if (changedLogCategories & BCLog::LIBEVENT) {
-        if (!UpdateHTTPServerLogging(logCategories & BCLog::LIBEVENT)) {
-            logCategories &= ~BCLog::LIBEVENT;
-            if (changedLogCategories == BCLog::LIBEVENT) {
+    if (changedLogCategories & MCLog::LIBEVENT) {
+        if (!UpdateHTTPServerLogging(logCategories & MCLog::LIBEVENT)) {
+            logCategories &= ~MCLog::LIBEVENT;
+            if (changedLogCategories == MCLog::LIBEVENT) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "libevent logging cannot be updated when using libevent before v2.1.1.");
             }
         }

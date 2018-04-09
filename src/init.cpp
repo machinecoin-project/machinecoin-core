@@ -1250,7 +1250,7 @@ bool AppInitMain()
 #ifndef WIN32
     CreatePidFile(GetPidFile(), getpid());
 #endif
-    if (gArgs.GetBoolArg("-shrinkdebugfile", logCategories == BCLog::NONE)) {
+    if (gArgs.GetBoolArg("-shrinkdebugfile", logCategories == MCLog::NONE)) {
         // Do this first since it both loads a bunch of debug.log into memory,
         // and because this needs to happen before any other debug.log printing
         ShrinkDebugFile();
