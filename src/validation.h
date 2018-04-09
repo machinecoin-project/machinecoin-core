@@ -33,6 +33,7 @@
 class CBlockIndex;
 class CBlockTreeDB;
 class CChainParams;
+class CCoin;
 class CCoinsViewDB;
 class CInv;
 class CConnman;
