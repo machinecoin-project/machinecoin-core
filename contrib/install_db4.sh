@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 
 # Install libdb4.8 (Berkeley DB).
 
