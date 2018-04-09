@@ -1,6 +1,6 @@
-Machinecoin Core version 0.9.1 is now available from:
+﻿Machinecoin Core version 0.9.1 is now available from:
 
-  https://machinecoin.io/bin/0.9.1/
+  https://machinecoin.org/bin/0.9.1/
 
 This is a security update. It is recommended to upgrade to this release
 as soon as possible.
@@ -13,7 +13,7 @@ hostile hosts.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 How to Upgrade
 --------------

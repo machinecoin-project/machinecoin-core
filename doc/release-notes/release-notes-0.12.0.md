@@ -1,12 +1,12 @@
-Machinecoin Core version 0.12.0 is now available from:
+﻿Machinecoin Core version 0.12.0 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.12.0/>
+  <https://machinecoin.org/bin/machinecoin-core-0.12.0/>
 
 This is a new major version release, bringing new features and other improvements.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 Upgrading and downgrading
 =========================
@@ -273,10 +273,10 @@ with `-txconfirmtarget=<m>` (default: `2`).
 
 Sometimes, it is not possible to give good estimates, or an estimate
 at all. Therefore, a fallback value can be set with `-fallbackfee=<f>`
-(default: `0.0002` BTC/kB).
+(default: `0.0002` MAC/kB).
 
 At all times, Machinecoin Core will cap fees at `-maxtxfee=<x>` (default:
-0.10) BTC.
+0.10) MAC.
 Furthermore, Machinecoin Core will never create transactions paying less than
 the current minimum relay fee.
 Finally, a user can set the minimum fee rate for all transactions with
@@ -331,7 +331,7 @@ practice. In future releases, a higher value may also help the network
 as a whole: stored blocks could be served to other nodes.
 
 For further information about pruning, you may also consult the [release
-notes of v0.11.0](https://github.com/machinecoin-project/machinecoin-core/blob/v0.11.0/doc/release-notes.md#block-file-pruning).
+notes of v0.11.0](https://github.com/machinecoin/machinecoin/blob/v0.11.0/doc/release-notes.md#block-file-pruning).
 
 `NODE_BLOOM` service bit
 ------------------------
@@ -410,9 +410,9 @@ arbitrary TCP connections inside SSL. On e.g. Ubuntu it can be installed with:
 
     sudo apt-get install stunnel4
 
-Then, to tunnel a SSL connection on 240332 to a RPC server bound on localhost on port 140332 do:
+Then, to tunnel a SSL connection on 28332 to a RPC server bound on localhost on port 18332 do:
 
-    stunnel -d 240332 -r 127.0.0.1:140332 -p stunnel.pem -P ''
+    stunnel -d 28332 -r 127.0.0.1:18332 -p stunnel.pem -P ''
 
 It can also be set up system-wide in inetd style.
 
@@ -430,8 +430,8 @@ caching. A sample config for apache2 could look like:
     SSLCertificateKeyFile /etc/apache2/ssl/server.key
 
     <Location /machinecoinrpc>
-        ProxyPass http://127.0.0.1:40332/
-        ProxyPassReverse http://127.0.0.1:40332/
+        ProxyPass http://127.0.0.1:8332/
+        ProxyPassReverse http://127.0.0.1:8332/
         # optional enable digest auth
         # AuthType Digest
         # ...
@@ -623,7 +623,7 @@ git merge commit are mentioned.
 ### Validation
 
 - #5927 `8d9f0a6` Reduce checkpoints' effect on consensus. (Pieter Wuille)
-- #6299 `24f2489` Bugfix: Don't check the genesis block header before accepting it (Jorge Tim??n)
+- #6299 `24f2489` Bugfix: Don't check the genesis block header before accepting it (Jorge Timón)
 - #6361 `d7ada03` Use real number of cores for default -par, ignore virtual cores (Wladimir J. van der Laan)
 - #6519 `87f37e2` Make logging for validation optional (Wladimir J. van der Laan)
 - #6351 `2a1090d` CHECKLOCKTIMEVERIFY (BIP65) IsSuperMajority() soft-fork (Peter Todd)
@@ -761,8 +761,8 @@ git merge commit are mentioned.
 ### Miscellaneous
 
 - #6213 `e54ff2f` [init] add -blockversion help and extend -upnp help (Diapolo)
-- #5975 `1fea667` Consensus: Decouple ContextualCheckBlockHeader from checkpoints (Jorge Tim??n)
-- #6061 `eba2f06` Separate Consensus::CheckTxInputs and GetSpendHeight in CheckInputs (Jorge Tim??n)
+- #5975 `1fea667` Consensus: Decouple ContextualCheckBlockHeader from checkpoints (Jorge Timón)
+- #6061 `eba2f06` Separate Consensus::CheckTxInputs and GetSpendHeight in CheckInputs (Jorge Timón)
 - #5994 `786ed11` detach wallet from miner (Jonas Schnelli)
 - #6387 `11576a5` [machinecoin-cli] improve error output (Jonas Schnelli)
 - #6401 `6db53b4` Add MACHINECOIND_SIGTERM_TIMEOUT to OpenRC init scripts (Florian Schmaus)
@@ -772,14 +772,14 @@ git merge commit are mentioned.
 - #6149 `633fe10` Buffer log messages and explicitly open logs (Adam Weiss)
 - #6488 `7cbed7f` Avoid leaking file descriptors in RegisterLoad (Casey Rodarmor)
 - #6497 `a2bf40d` Make sure LogPrintf strings are line-terminated (Wladimir J. van der Laan)
-- #6504 `b6fee6b` Rationalize currency unit to "BTC" (Ross Nicoll)
+- #6504 `b6fee6b` Rationalize currency unit to "MAC" (Ross Nicoll)
 - #6507 `9bb4dd8` Removed contrib/bitrpc (Casey Rodarmor)
 - #6527 `41d650f` Use unique name for AlertNotify tempfile (Casey Rodarmor)
 - #6561 `e08a7d9` limitedmap fixes and tests (Casey Rodarmor)
 - #6565 `a6f2aff` Make sure we re-acquire lock if a task throws (Casey Rodarmor)
 - #6599 `f4d88c4` Make sure LogPrint strings are line-terminated (Ross Nicoll)
 - #6630 `195942d` Replace boost::reverse_lock with our own (Casey Rodarmor)
-- #6103 `13b8282` Add ZeroMQ notifications (Jo??o Barbosa)
+- #6103 `13b8282` Add ZeroMQ notifications (João Barbosa)
 - #6692 `d5d1d2e` devtools: don't push if signing fails in github-merge (Wladimir J. van der Laan)
 - #6728 `2b0567b` timedata: Prevent warning overkill (Wladimir J. van der Laan)
 - #6713 `f6ce59c` SanitizeString: Allow hypen char (MarcoFalke)
@@ -839,8 +839,8 @@ Thanks to everyone who directly contributed to this release:
 - Johnathan Corgan
 - Jonas Schnelli
 - Jonathan Cross
-- Jo??o Barbosa
-- Jorge Tim??n
+- João Barbosa
+- Jorge Timón
 - Josh Lehan
 - J Ross Nicoll
 - kazcw
@@ -864,7 +864,7 @@ Thanks to everyone who directly contributed to this release:
 - Patrick Strateman
 - Paul Georgiou
 - Paul Rabahy
-- Pavel Jan??k / paveljanik
+- Pavel Janík / paveljanik
 - Pavel Vasin
 - Pavol Rusnak
 - Peter Josling

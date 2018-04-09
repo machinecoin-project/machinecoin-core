@@ -1,11 +1,11 @@
-Machinecoin-Qt version 0.8.2 is now available from:
+﻿Machinecoin-Qt version 0.8.2 is now available from:
   http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.8.2/
 
 This is a maintenance release that fixes many bugs and includes
 a few small new features.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 
 How to Upgrade
@@ -24,12 +24,12 @@ your machine.
 
 Fee Policy changes
 
-The default fee for low-priority transactions is lowered from 0.0005 BTC 
+The default fee for low-priority transactions is lowered from 0.0005 MAC 
 (for each 1,000 bytes in the transaction; an average transaction is
-about 500 bytes) to 0.0001 BTC.
+about 500 bytes) to 0.0001 MAC.
 
 Payments (transaction outputs) of 0.543 times the minimum relay fee
-(0.00005430 BTC) are now considered 'non-standard', because storing them
+(0.00005430 MAC) are now considered 'non-standard', because storing them
 costs the network more than they are worth and spending them will usually
 cost their owner more in transaction fees than they are worth.
 

@@ -1,4 +1,4 @@
-
+﻿
 ## <summary>policy for machinecoin</summary>
 
 
@@ -121,7 +121,7 @@ interface(`machinecoin_manage_lib_dirs',`
 ########################################
 ## <summary>
 ##	All of the rules required to administrate
-##	an machinecoin environment
+##	a machinecoin environment
 ## </summary>
 ## <param name="domain">
 ##	<summary>

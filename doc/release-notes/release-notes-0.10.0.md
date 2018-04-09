@@ -1,13 +1,13 @@
-Machinecoin Core version 0.10.0 is now available from:
+﻿Machinecoin Core version 0.10.0 is now available from:
 
-  https://machinecoin.io/bin/0.10.0/
+  https://machinecoin.org/bin/0.10.0/
 
 This is a new major version release, bringing both new features and
 bug fixes.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 Upgrading and downgrading
 =========================
@@ -142,10 +142,10 @@ unauthenticated access to public node data.
 It is served on the same port as RPC, but does not need a password, and uses
 plain HTTP instead of JSON-RPC.
 
-Assuming a local RPC server running on port 40332, it is possible to request:
-- Blocks: http://localhost:40332/rest/block/*HASH*.*EXT*
-- Blocks without transactions: http://localhost:40332/rest/block/notxdetails/*HASH*.*EXT*
-- Transactions (requires `-txindex`): http://localhost:40332/rest/tx/*HASH*.*EXT*
+Assuming a local RPC server running on port 8332, it is possible to request:
+- Blocks: http://localhost:8332/rest/block/*HASH*.*EXT*
+- Blocks without transactions: http://localhost:8332/rest/block/notxdetails/*HASH*.*EXT*
+- Transactions (requires `-txindex`): http://localhost:8332/rest/tx/*HASH*.*EXT*
 
 In every case, *EXT* can be `bin` (for raw binary data), `hex` (for hex-encoded
 binary) or `json`.
@@ -230,7 +230,7 @@ bindings such as [python-machinecoinlib](https://pypi.python.org/pypi/python-mac
 alternative node implementations.
 
 This library is called `libmachinecoinconsensus.so` (or, `.dll` for Windows).
-Its interface is defined in the C header [machinecoinconsensus.h](https://github.com/machinecoin-project/machinecoin-core/blob/0.10/src/script/machinecoinconsensus.h).
+Its interface is defined in the C header [machinecoinconsensus.h](https://github.com/machinecoin/machinecoin/blob/0.10/src/script/machinecoinconsensus.h).
 
 In its initial version the API includes two functions:
 

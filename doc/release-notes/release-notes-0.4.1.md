@@ -1,4 +1,4 @@
-Machinecoin version 0.4.1 is now available for download at:
+﻿Machinecoin version 0.4.1 is now available for download at:
 http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.4.1/
 
 This is a bugfix only release based on 0.4.0.

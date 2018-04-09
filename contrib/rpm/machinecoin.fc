@@ -1,4 +1,4 @@
-/usr/bin/machinecoin-cli		--	gen_context(system_u:object_r:machinecoin_exec_t,s0)
+﻿/usr/bin/machinecoin-cli		--	gen_context(system_u:object_r:machinecoin_exec_t,s0)
 /usr/sbin/machinecoind		--	gen_context(system_u:object_r:machinecoin_exec_t,s0)
 /usr/lib(64)?/machinecoin/machinecoind		--	gen_context(system_u:object_r:machinecoin_exec_t,s0)
 

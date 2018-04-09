@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2018 The Machinecoin Core developers
+﻿# Copyright (c) 2013-2018 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -105,7 +105,7 @@ test_test_machinecoin_LDADD += $(LIBMACHINECOIN_WALLET)
 endif
 test_test_machinecoin_LDADD += $(LIBMACHINECOIN_SERVER) $(LIBMACHINECOIN_CLI) $(LIBMACHINECOIN_COMMON) $(LIBMACHINECOIN_UTIL) $(LIBMACHINECOIN_CONSENSUS) $(LIBMACHINECOIN_CRYPTO) $(LIBUNIVALUE) \
   $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS)
-test_test_bitcoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+test_test_machinecoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 test_test_machinecoin_LDADD += $(LIBMACHINECOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
 test_test_machinecoin_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static

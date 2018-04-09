@@ -1,11 +1,11 @@
-Machinecoin version 0.5.3 is now available for download at:
+﻿Machinecoin version 0.5.3 is now available for download at:
 http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.5.3/
 
 This is a bugfix-only release based on 0.5.1.
 It also includes a few protocol updates.
 
 Please report bugs using the issue tracker at github:
-https://github.com/machinecoin-project/machinecoin-core/issues
+https://github.com/machinecoin/machinecoin/issues
 
 Stable source code is hosted at Gitorious:
 http://gitorious.org/machinecoin/machinecoind-stable/archive-tarball/v0.5.3#.tar.gz

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 The Bitcoin Core developers
+﻿// Copyright (c) 2011-2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,7 +6,7 @@
 #include <txmempool.h>
 #include <util.h>
 
-#include <test/test_bitcoin.h>
+#include <test/test_machinecoin.h>
 
 #include <boost/test/unit_test.hpp>
 #include <list>

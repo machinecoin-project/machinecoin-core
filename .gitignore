@@ -1,4 +1,4 @@
-*.tar.gz
+﻿*.tar.gz
 
 *.exe
 src/machinecoin
@@ -36,13 +36,19 @@ src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
 
-# src/univalue/gen
+src/univalue/gen
 
 src/qt/*.moc
 src/qt/moc_*.cpp
 src/qt/forms/ui_*.h
 
 src/qt/test/moc*.cpp
+
+src/qt/machinecoin-qt.config
+src/qt/machinecoin-qt.creator
+src/qt/machinecoin-qt.creator.user
+src/qt/machinecoin-qt.files
+src/qt/machinecoin-qt.includes
 
 .deps
 .dirstamp
@@ -55,7 +61,7 @@ src/qt/test/moc*.cpp
 *.pyc
 *.o
 *.o-*
-!*.patch
+*.patch
 *.a
 *.pb.cc
 *.pb.h
@@ -76,11 +82,11 @@ src/qt/test/moc*.cpp
 Makefile
 machinecoin-qt
 Machinecoin-Qt.app
+background.tiff*
 
 # Unit-tests
 Makefile.test
 machinecoin-qt_test
-src/test/buildenv.py
 
 # Resources cpp
 qrc_*.cpp
@@ -101,11 +107,10 @@ coverage_percent.txt
 linux-coverage-build
 linux-build
 win32-build
-qa/pull-tester/tests_config.py
-qa/cache/*
+test/config.ini
+test/cache/*
 
 !src/leveldb*/Makefile
-!depends/Makefile
 
 /doc/doxygen/
 

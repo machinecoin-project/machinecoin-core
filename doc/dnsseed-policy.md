@@ -1,4 +1,4 @@
-Expectations for DNS Seed operators
+﻿Expectations for DNS Seed operators
 ====================================
 
 Machinecoin Core attempts to minimize the level of trust in DNS seeds,
@@ -44,11 +44,11 @@ related to the DNS seed operation.
 If these expectations cannot be satisfied the operator should
 discontinue providing services and contact the active Machinecoin
 Core development team as well as posting on
-[machinecoin-dev](https://groups.google.com/forum/#!forum/machinecoin-dev).
+[machinecoin-dev](https://lists.linuxfoundation.org/mailman/listinfo/machinecoin-dev).
 
 Behavior outside of these expectations may be reasonable in some
 situations but should be discussed in public in advance.
 
 See also
 ----------
-- [machinecoin-seeder](https://github.com/pooler/machinecoin-seeder) is a reference implementation of a DNS seed.
+- [machinecoin-seeder](https://github.com/sipa/machinecoin-seeder) is a reference implementation of a DNS seed.

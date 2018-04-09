@@ -1,4 +1,4 @@
-Travis CI
+﻿Travis CI
 =========
 
 Support for using travis-ci has been added in order to automate pull-testing.

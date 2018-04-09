@@ -1,4 +1,4 @@
-Machinecoin version 0.5.0 is now available for download at:
+﻿Machinecoin version 0.5.0 is now available for download at:
 http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.5.0/
 
 The major change for this release is a completely new graphical interface that uses the Qt user interface toolkit.
@@ -7,7 +7,7 @@ This release include German, Spanish, Spanish-Castilian, Norwegian and Dutch tra
 https://www.transifex.net/projects/p/machinecoin/
 
 Please report bugs using the issue tracker at github:
-https://github.com/machinecoin-project/machinecoin-core/issues
+https://github.com/machinecoin/machinecoin/issues
 
 For Ubuntu users, there is a new ppa maintained by Matt Corallo which you can add to your system so that it will automatically keep machinecoin up-to-date.  Just type "sudo apt-add-repository ppa:machinecoin/machinecoin" in your terminal, then install the machinecoin-qt package.
 

@@ -1,16 +1,16 @@
-Release Process
+﻿Release Process
 ====================
 
 Before every release candidate:
 
-* Update translations (ping wumpus on IRC) see [translation_process.md](https://github.com/machinecoin-project/machinecoin-core/blob/master/doc/translation_process.md#synchronising-translations).
+* Update translations (ping wumpus on IRC) see [translation_process.md](https://github.com/machinecoin/machinecoin/blob/master/doc/translation_process.md#synchronising-translations).
 
-* Update manpages, see [gen-manpages.sh](https://github.com/machinecoin-project/machinecoin/blob/master/contrib/devtools/README.md#gen-manpagessh).
+* Update manpages, see [gen-manpages.sh](https://github.com/machinecoin/machinecoin/blob/master/contrib/devtools/README.md#gen-manpagessh).
 
 Before every minor and major release:
 
 * Update [bips.md](bips.md) to account for changes since the last release.
-* Update version in sources (see below)
+* Update version in `configure.ac` (don't forget to set `CLIENT_VERSION_IS_RELEASE` to `true`)
 * Write release notes (see below)
 * Update `src/chainparams.cpp` nMinimumChainWork with information from the getblockchaininfo rpc.
 * Update `src/chainparams.cpp` defaultAssumeValid  with information from the getblockhash rpc.
@@ -21,8 +21,10 @@ Before every minor and major release:
 
 Before every major release:
 
-* Update hardcoded [seeds](/contrib/seeds/README.md), see [this pull request](https://github.com/machinecoin-project/machinecoin-core/pull/7415) for an example.
+* Update hardcoded [seeds](/contrib/seeds/README.md), see [this pull request](https://github.com/machinecoin/machinecoin/pull/7415) for an example.
 * Update [`BLOCK_CHAIN_SIZE`](/src/qt/intro.cpp) to the current size plus some overhead.
+* Update `src/chainparams.cpp` chainTxData with statistics about the transaction count and rate.
+* Update version of `contrib/gitian-descriptors/*.yml`: usually one'd want to do this on master after branching off the release - but be sure to at least do it before a new major release
 
 ### First time / New builders
 
@@ -31,28 +33,12 @@ If you're using the automated script (found in [contrib/gitian-build.sh](/contri
 Check out the source code in the following directory hierarchy.
 
     cd /path/to/your/toplevel/build
-    git clone https://github.com/machinecoin-project/gitian.sigs.mac.git
-    git clone https://github.com/machinecoin-project/machinecoin-detached-sigs.git
+    git clone https://github.com/machinecoin-core/gitian.sigs.git
+    git clone https://github.com/machinecoin-core/machinecoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
-    git clone https://github.com/machinecoin-project/machinecoin.git
+    git clone https://github.com/machinecoin/machinecoin.git
 
-### Machinecoin maintainers/release engineers, update version in sources
-
-Update the following:
-
-- `configure.ac`:
-    - `_CLIENT_VERSION_MAJOR`
-    - `_CLIENT_VERSION_MINOR`
-    - `_CLIENT_VERSION_REVISION`
-    - Don't forget to set `_CLIENT_VERSION_IS_RELEASE` to `true`
-- `src/clientversion.h`: (this mirrors `configure.ac` - see issue #3539)
-    - `CLIENT_VERSION_MAJOR`
-    - `CLIENT_VERSION_MINOR`
-    - `CLIENT_VERSION_REVISION`
-    - Don't forget to set `CLIENT_VERSION_IS_RELEASE` to `true`
-- `doc/README.md` and `doc/README_windows.txt`
-- `doc/Doxyfile`: `PROJECT_NUMBER` contains the full version
-- `contrib/gitian-descriptors/*.yml`: usually one'd want to do this on master after branching off the release - but be sure to at least do it before a new major release
+### Machinecoin maintainers/release engineers, suggestion for writing release notes
 
 Write release notes. git shortlog helps a lot, for example:
 
@@ -82,9 +68,9 @@ Setup Gitian descriptors:
     git checkout v${VERSION}
     popd
 
-Ensure your gitian.sigs.mac are up-to-date if you wish to gverify your builds against other Gitian signatures.
+Ensure your gitian.sigs are up-to-date if you wish to gverify your builds against other Gitian signatures.
 
-    pushd ./gitian.sigs.mac
+    pushd ./gitian.sigs
     git pull
     popd
 
@@ -98,7 +84,7 @@ Ensure gitian-builder is up-to-date:
 
     pushd ./gitian-builder
     mkdir -p inputs
-    wget -P inputs https://machinecoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
+    wget -P inputs https://machinecoin.io/cfields/osslsigncode-Backports-to-1.7.1.patch
     wget -P inputs http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
     popd
 
@@ -125,17 +111,17 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 ### Build and sign Machinecoin Core for Linux, Windows, and OS X:
 
     pushd ./gitian-builder
-    ./bin/gbuild --memory 3000 --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gbuild --num-make 2 --memory 3000 --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
     mv build/out/machinecoin-*.tar.gz build/out/src/machinecoin-*.tar.gz ../
 
-    ./bin/gbuild --memory 3000 --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gbuild --num-make 2 --memory 3000 --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
     mv build/out/machinecoin-*-win-unsigned.tar.gz inputs/machinecoin-win-unsigned.tar.gz
     mv build/out/machinecoin-*.zip build/out/machinecoin-*.exe ../
 
-    ./bin/gbuild --memory 3000 --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gbuild --num-make 2 --memory 3000 --commit machinecoin=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
     mv build/out/machinecoin-*-osx-unsigned.tar.gz inputs/machinecoin-osx-unsigned.tar.gz
     mv build/out/machinecoin-*.tar.gz build/out/machinecoin-*.dmg ../
     popd
@@ -146,7 +132,7 @@ Build output expected:
   2. linux 32-bit and 64-bit dist tarballs (`machinecoin-${VERSION}-linux[32|64].tar.gz`)
   3. windows 32-bit and 64-bit unsigned installers and dist zips (`machinecoin-${VERSION}-win[32|64]-setup-unsigned.exe`, `machinecoin-${VERSION}-win[32|64].zip`)
   4. OS X unsigned installer and dist tarball (`machinecoin-${VERSION}-osx-unsigned.dmg`, `machinecoin-${VERSION}-osx64.tar.gz`)
-  5. Gitian signatures (in `gitian.sigs.mac/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
+  5. Gitian signatures (in `gitian.sigs/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
 
 ### Verify other gitian builders signatures to your own. (Optional)
 
@@ -158,34 +144,65 @@ Add other gitian builders keys to your gpg keyring, and/or refresh keys.
 Verify the signatures
 
     pushd ./gitian-builder
-    ./bin/gverify -v -d ../gitian.sigs.mac/ -r ${VERSION}-linux ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gverify -v -d ../gitian.sigs.mac/ -r ${VERSION}-win-unsigned ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gverify -v -d ../gitian.sigs.mac/ -r ${VERSION}-osx-unsigned ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../machinecoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../machinecoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../machinecoin/contrib/gitian-descriptors/gitian-osx.yml
     popd
 
 ### Next steps:
 
-Commit your signature to gitian.sigs.mac:
+Commit your signature to gitian.sigs:
 
-    pushd gitian.sigs.mac
+    pushd gitian.sigs
     git add ${VERSION}-linux/${SIGNER}
     git add ${VERSION}-win-unsigned/${SIGNER}
     git add ${VERSION}-osx-unsigned/${SIGNER}
     git commit -a
-    git push  # Assuming you can push to the gitian.sigs.mac tree
+    git push  # Assuming you can push to the gitian.sigs tree
     popd
 
-Wait for Windows/OS X detached signatures:
+Codesigner only: Create Windows/OS X detached signatures:
+- Only one person handles codesigning. Everyone else should skip to the next step.
+- Only once the Windows/OS X builds each have 3 matching signatures may they be signed with their respective release keys.
+
+Codesigner only: Sign the osx binary:
+
+    transfer machinecoin-osx-unsigned.tar.gz to osx for signing
+    tar xf machinecoin-osx-unsigned.tar.gz
+    ./detached-sig-create.sh -s "Key ID"
+    Enter the keychain password and authorize the signature
+    Move signature-osx.tar.gz back to the gitian host
+
+Codesigner only: Sign the windows binaries:
+
+    tar xf machinecoin-win-unsigned.tar.gz
+    ./detached-sig-create.sh -key /path/to/codesign.key
+    Enter the passphrase for the key when prompted
+    signature-win.tar.gz will be created
+
+Codesigner only: Commit the detached codesign payloads:
+
+    cd ~/machinecoin-detached-sigs
+    checkout the appropriate branch for this release series
+    rm -rf *
+    tar xf signature-osx.tar.gz
+    tar xf signature-win.tar.gz
+    git add -a
+    git commit -m "point to ${VERSION}"
+    git tag -s v${VERSION} HEAD
+    git push the current branch and new tag
+
+Non-codesigners: wait for Windows/OS X detached signatures:
 
 - Once the Windows/OS X builds each have 3 matching signatures, they will be signed with their respective release keys.
-- Detached signatures will then be committed to the [machinecoin-detached-sigs](https://github.com/machinecoin-project/machinecoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
+- Detached signatures will then be committed to the [machinecoin-detached-sigs](https://github.com/machinecoin-core/machinecoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
 
 Create (and optionally verify) the signed OS X binary:
 
     pushd ./gitian-builder
     ./bin/gbuild -i --commit signature=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    ./bin/gverify -v -d ../gitian.sigs.mac/ -r ${VERSION}-osx-signed ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../machinecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
     mv build/out/machinecoin-osx-signed.dmg ../machinecoin-${VERSION}-osx.dmg
     popd
 
@@ -193,19 +210,19 @@ Create (and optionally verify) the signed Windows binaries:
 
     pushd ./gitian-builder
     ./bin/gbuild -i --commit signature=v${VERSION} ../machinecoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.mac/ ../machinecoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    ./bin/gverify -v -d ../gitian.sigs.mac/ -r ${VERSION}-win-signed ../machinecoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs/ ../machinecoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-signed ../machinecoin/contrib/gitian-descriptors/gitian-win-signer.yml
     mv build/out/machinecoin-*win64-setup.exe ../machinecoin-${VERSION}-win64-setup.exe
     mv build/out/machinecoin-*win32-setup.exe ../machinecoin-${VERSION}-win32-setup.exe
     popd
 
 Commit your signature for the signed OS X/Windows binaries:
 
-    pushd gitian.sigs.mac
+    pushd gitian.sigs
     git add ${VERSION}-osx-signed/${SIGNER}
     git add ${VERSION}-win-signed/${SIGNER}
     git commit -a
-    git push  # Assuming you can push to the gitian.sigs.mac tree
+    git push  # Assuming you can push to the gitian.sigs tree
     popd
 
 ### After 3 or more people have gitian-built and their results match:
@@ -234,7 +251,7 @@ The `*-debug*` files generated by the gitian build contain debug symbols
 for troubleshooting by developers. It is assumed that anyone that is interested
 in debugging can run gitian to generate the files for themselves. To avoid
 end-user confusion about which file to pick, as well as save storage
-space *do not upload these to the machinecoin.io server, nor put them in the torrent*.
+space *do not upload these to the machinecoin.org server, nor put them in the torrent*.
 
 - GPG-sign it, delete the unsigned file:
 ```
@@ -244,24 +261,49 @@ rm SHA256SUMS
 (the digest algorithm is forced to sha256 to avoid confusion of the `Hash:` header that GPG adds with the SHA256 used for the files)
 Note: check that SHA256SUMS itself doesn't end up in SHA256SUMS, which is a spurious/nonsensical entry.
 
-- Upload zips and installers, as well as `SHA256SUMS.asc` from last step, to the machinecoin.io server.
+- Upload zips and installers, as well as `SHA256SUMS.asc` from last step, to the machinecoin.org server
+  into `/var/www/bin/machinecoin-core-${VERSION}`
 
+- A `.torrent` will appear in the directory after a few minutes. Optionally help seed this torrent. To get the `magnet:` URI use:
+```bash
+transmission-show -m <torrent file>
 ```
+Insert the magnet URI into the announcement sent to mailing lists. This permits
+people without access to `machinecoin.org` to download the binary distribution.
+Also put it into the `optional_magnetlink:` slot in the YAML file for
+machinecoin.org (see below for machinecoin.org update instructions).
 
-- Update machinecoin.io version
+- Update machinecoin.org version
+
+  - First, check to see if the Machinecoin.org maintainers have prepared a
+    release: https://github.com/machinecoin-dot-org/machinecoin.org/labels/Releases
+
+      - If they have, it will have previously failed their Travis CI
+        checks because the final release files weren't uploaded.
+        Trigger a Travis CI rebuild---if it passes, merge.
+
+  - If they have not prepared a release, follow the Machinecoin.org release
+    instructions: https://github.com/machinecoin-dot-org/machinecoin.org#release-notes
+
+  - After the pull request is merged, the website will automatically show the newest version within 15 minutes, as well
+    as update the OS download links. Ping @saivann/@harding (saivann/harding on Freenode) in case anything goes wrong
 
 - Announce the release:
 
-  - machinecoin-dev and machinecoin-dev mailing list
+  - machinecoin-dev and machinecoin-core-dev mailing list
 
-  - blog.machinecoin.io blog post
+  - Machinecoin Core announcements list https://machinecoin.io/en/list/announcements/join/
 
-  - Update title of #machinecoin and #machinecoin-dev on Freenode IRC
+  - machinecoin.io blog post
+
+  - Update title of #machinecoin on Freenode IRC
 
   - Optionally twitter, reddit /r/Machinecoin, ... but this will usually sort out itself
 
+  - Notify BlueMatt so that he can start building [the PPAs](https://launchpad.net/~machinecoin/+archive/ubuntu/machinecoin)
+
   - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-  - Create a [new GitHub release](https://github.com/machinecoin-project/machinecoin/releases/new) with a link to the archived release notes.
+  - Create a [new GitHub release](https://github.com/machinecoin/machinecoin/releases/new) with a link to the archived release notes.
 
   - Celebrate

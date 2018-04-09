@@ -1,4 +1,4 @@
-# /etc/conf.d/machinecoind: config file for /etc/init.d/machinecoind
+﻿# /etc/conf.d/machinecoind: config file for /etc/init.d/machinecoind
 
 # Config file location
 #MACHINECOIND_CONFIGFILE="/etc/machinecoin/machinecoin.conf"
@@ -23,7 +23,7 @@
 #MACHINECOIND_NICE=0
 
 # Additional options (avoid -conf and -datadir, use flags above)
-MACHINECOIND_OPTS="-disablewallet"
+#MACHINECOIND_OPTS=""
 
 # The timeout in seconds OpenRC will wait for machinecoind to terminate
 # after a SIGTERM has been raised.

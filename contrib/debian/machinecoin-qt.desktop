@@ -1,5 +1,5 @@
-[Desktop Entry]
-Encoding=UTF-8
+﻿[Desktop Entry]
+Version=1.0
 Name=Machinecoin Core
 Comment=Connect to the Machinecoin P2P Network
 Comment[de]=Verbinde mit dem Machinecoin peer-to-peer Netzwerk
@@ -11,3 +11,4 @@ Type=Application
 Icon=machinecoin128
 MimeType=x-scheme-handler/machinecoin;
 Categories=Office;Finance;
+StartupWMClass=Machinecoin-qt

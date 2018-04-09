@@ -1,17 +1,17 @@
-Machinecoin Core version 0.13.0 is now available from:
+﻿Machinecoin Core version 0.13.0 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.13.0/>
+  <https://machinecoin.org/bin/machinecoin-core-0.13.0/>
 
 This is a new major version release, including new features, various bugfixes
 and performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://machinecoincore.org/en/list/announcements/join/>
+  <https://machinecoin.io/en/list/announcements/join/>
 
 Compatibility
 ==============
@@ -22,7 +22,7 @@ updates will be released anymore. Without security updates, using a machinecoin
 wallet on a XP machine is irresponsible at least.
 
 In addition to that, with 0.12.x there have been varied reports of Machinecoin Core
-randomly crashing on Windows XP. It is [not clear](https://github.com/machinecoin-project/machinecoin-core/issues/7681#issuecomment-217439891)
+randomly crashing on Windows XP. It is [not clear](https://github.com/machinecoin/machinecoin/issues/7681#issuecomment-217439891)
 what the source of these crashes is, but it is likely that upstream
 libraries such as Qt are no longer being tested on XP.
 
@@ -158,7 +158,7 @@ There is no distinction between internal (change) and external keys.
 
 HD wallets are incompatible with older versions of Machinecoin Core.
 
-[Pull request](https://github.com/machinecoin-project/machinecoin-core/pull/8035/files), [BIP 32](https://github.com/machinecoin/bips/blob/master/bip-0032.mediawiki)
+[Pull request](https://github.com/machinecoin/machinecoin/pull/8035/files), [BIP 32](https://github.com/machinecoin/bips/blob/master/bip-0032.mediawiki)
 
 
 Segregated Witness
@@ -358,7 +358,7 @@ Low-level ZMQ changes
   listeners to detect lost notifications.
   The sequence number is always the last element in a multi-part ZMQ notification and
   therefore backward compatible. Each message type has its own counter.
-  PR [#7762](https://github.com/machinecoin-project/machinecoin-core/pull/7762).
+  PR [#7762](https://github.com/machinecoin/machinecoin/pull/7762).
 
 
 0.13.0 Change log
@@ -395,7 +395,7 @@ git merge commit are mentioned.
 - #7967 `8c1e49b` Add feerate option to `fundrawtransaction` (jonasschnelli)
 - #8118 `9b6a48c` Reduce unnecessary hashing in `signrawtransaction` (jonasnick)
 - #7957 `79004d4` Add support for transaction sequence number (jonasschnelli)
-- #8153 `75ec320` `fundrawtransaction` feeRate: Use BTC/kB (MarcoFalke)
+- #8153 `75ec320` `fundrawtransaction` feeRate: Use MAC/kB (MarcoFalke)
 - #7292 `7ce9ac5` Expose ancestor/descendant information over RPC (sdaftuar)
 - #8171 `62fcf27` Fix createrawtx sequence number unsigned int parsing (jonasschnelli)
 - #7892 `9c3d0fa` Add full UTF-8 support to RPC (laanwj)

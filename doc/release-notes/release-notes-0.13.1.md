@@ -1,6 +1,6 @@
-Machinecoin Core version 0.13.1 is now available from:
+﻿Machinecoin Core version 0.13.1 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.13.1/>
+  <https://machinecoin.org/bin/machinecoin-core-0.13.1/>
 
 This is a new minor version release, including activation parameters for the
 segwit softfork, various bugfixes and performance improvements, as well as
@@ -8,11 +8,11 @@ updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://machinecoincore.org/en/list/announcements/join/>
+  <https://machinecoin.io/en/list/announcements/join/>
 
 Compatibility
 ==============
@@ -23,7 +23,7 @@ updates will be released anymore. Without security updates, using a machinecoin
 wallet on a XP machine is irresponsible at least.
 
 In addition to that, with 0.12.x there have been varied reports of Machinecoin Core
-randomly crashing on Windows XP. It is [not clear](https://github.com/machinecoin-project/machinecoin-core/issues/7681#issuecomment-217439891)
+randomly crashing on Windows XP. It is [not clear](https://github.com/machinecoin/machinecoin/issues/7681#issuecomment-217439891)
 what the source of these crashes is, but it is likely that upstream
 libraries such as Qt are no longer being tested on XP.
 
@@ -159,13 +159,13 @@ For more information about segwit, please see the [segwit FAQ][], the
 operator, please see the [versionbits FAQ][] for information about
 signaling support for a soft fork.
 
-[Segwit FAQ]: https://machinecoincore.org/en/2016/01/26/segwit-benefits/
-[segwit wallet developers guide]: https://machinecoincore.org/en/segwit_wallet_dev/
+[Segwit FAQ]: https://machinecoin.io/en/2016/01/26/segwit-benefits/
+[segwit wallet developers guide]: https://machinecoin.io/en/segwit_wallet_dev/
 [BIP141]: https://github.com/machinecoin/bips/blob/master/bip-0141.mediawiki
 [BIP143]: https://github.com/machinecoin/bips/blob/master/bip-0143.mediawiki
 [BIP144]: https://github.com/machinecoin/bips/blob/master/bip-0144.mediawiki
 [BIP145]: https://github.com/machinecoin/bips/blob/master/bip-0145.mediawiki
-[versionbits FAQ]: https://machinecoincore.org/en/2016/06/08/version-bits-miners-faq/
+[versionbits FAQ]: https://machinecoin.io/en/2016/06/08/version-bits-miners-faq/
 
 
 Null dummy soft fork
@@ -365,7 +365,7 @@ Thanks to everyone who directly contributed to this release:
 
 - adlawren
 - Alexey Vesnin
-- Anders ??yvind Urke-S??tre
+- Anders Øyvind Urke-Sætre
 - Andrew Chow
 - Anthony Towns
 - BtcDrak
@@ -399,7 +399,7 @@ Thanks to everyone who directly contributed to this release:
 - Micha
 - Michael Ford
 - mruddy
-- Pavel Jan??k
+- Pavel Janík
 - Pieter Wuille
 - rodasmith
 - Sev

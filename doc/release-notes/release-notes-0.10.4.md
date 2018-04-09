@@ -1,6 +1,6 @@
-Machinecoin Core version 0.10.4 is now available from:
+﻿Machinecoin Core version 0.10.4 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.10.4/>
+  <https://machinecoin.org/bin/machinecoin-core-0.10.4/>
 
 This is a new minor version release, bringing bug fixes, the BIP65
 (CLTV) consensus change, and relay policy preparation for BIP113. It is
@@ -8,7 +8,7 @@ recommended to upgrade to this version as soon as possible.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 Upgrading and downgrading
 =========================
@@ -68,7 +68,7 @@ specified point in the future.
    blocks if they comply with the BIP65 rules for CLTV.
 
 For more information about the soft-forking change, please see
-<https://github.com/machinecoin-project/machinecoin-core/pull/6351>
+<https://github.com/machinecoin/machinecoin/pull/6351>
 
 Graphs showing the progress towards block version 4 adoption may be
 found at the URLs below:
@@ -107,7 +107,7 @@ remain unsafe, this release no longer relies on memory-mapped files for
 the UTXO database, which significantly reduced the frequency of unclean
 shutdowns leading to required reindexes during testing.
 
-For more information, see: <https://github.com/machinecoin-project/machinecoin-core/pull/6917>
+For more information, see: <https://github.com/machinecoin/machinecoin/pull/6917>
 
 Other fixes for database corruption on Windows are expected in the
 next major release.

@@ -1,4 +1,4 @@
-Machinecoin version 0.4.0 is now available for download at:
+﻿Machinecoin version 0.4.0 is now available for download at:
 http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.4.0/
 
 The main feature in this release is wallet private key encryption;

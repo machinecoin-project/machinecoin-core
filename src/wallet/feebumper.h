@@ -1,9 +1,9 @@
-// Copyright (c) 2017 The Bitcoin Core developers
+﻿// Copyright (c) 2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_FEEBUMPER_H
-#define BITCOIN_WALLET_FEEBUMPER_H
+#ifndef MACHINECOIN_WALLET_FEEBUMPER_H
+#define MACHINECOIN_WALLET_FEEBUMPER_H
 
 #include <primitives/transaction.h>
 
@@ -55,4 +55,4 @@ Result CommitTransaction(CWallet* wallet,
 
 } // namespace feebumper
 
-#endif // BITCOIN_WALLET_FEEBUMPER_H
+#endif // MACHINECOIN_WALLET_FEEBUMPER_H

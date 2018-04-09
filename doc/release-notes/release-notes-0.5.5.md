@@ -1,4 +1,4 @@
-machinecoind and Machinecoin-Qt version 0.5.5 are now available for download at:
+﻿machinecoind and Machinecoin-Qt version 0.5.5 are now available for download at:
 Windows: installer | zip (sig)
 Source: tar.gz
 machinecoind and Machinecoin-Qt version 0.6.0.7 are also tagged in git, but it is recommended to upgrade to 0.6.1.

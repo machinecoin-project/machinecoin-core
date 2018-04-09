@@ -1,17 +1,17 @@
-Machinecoin Core version 0.13.2 is now available from:
+﻿Machinecoin Core version 0.13.2 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.13.2/>
+  <https://machinecoin.org/bin/machinecoin-core-0.13.2/>
 
 This is a new minor version release, including various bugfixes and
 performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://machinecoincore.org/en/list/announcements/join/>
+  <https://machinecoin.io/en/list/announcements/join/>
 
 Compatibility
 ==============
@@ -22,7 +22,7 @@ updates will be released anymore. Without security updates, using a machinecoin
 wallet on a XP machine is irresponsible at least.
 
 In addition to that, with 0.12.x there have been varied reports of Machinecoin Core
-randomly crashing on Windows XP. It is [not clear](https://github.com/machinecoin-project/machinecoin-core/issues/7681#issuecomment-217439891)
+randomly crashing on Windows XP. It is [not clear](https://github.com/machinecoin/machinecoin/issues/7681#issuecomment-217439891)
 what the source of these crashes is, but it is likely that upstream
 libraries such as Qt are no longer being tested on XP.
 

@@ -1,7 +1,7 @@
-[main]
+﻿[main]
 host = https://www.transifex.com
 
-[machinecoin.qt-translation-014x]
+[machinecoin.qt-translation-016x]
 file_filter = src/qt/locale/machinecoin_<lang>.ts
 source_file = src/qt/locale/machinecoin_en.ts
 source_lang = en

@@ -1,6 +1,6 @@
-Machinecoin Core version 0.9.2 is now available from:
+﻿Machinecoin Core version 0.9.2 is now available from:
 
-  https://machinecoin.io/bin/0.9.2/
+  https://machinecoin.org/bin/0.9.2/
 
 This is a new minor version release, bringing mostly bug fixes and some minor
 improvements. OpenSSL has been updated because of a security issue (CVE-2014-0224).
@@ -8,7 +8,7 @@ Upgrading to this release is recommended.
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 How to Upgrade
 --------------
@@ -93,7 +93,7 @@ Protocol and network code:
 Wallet:
 
 - Make GetAvailableCredit run GetHash() only once per transaction (performance improvement)
-- Lower paytxfee warning threshold from 0.25 BTC to 0.01 BTC
+- Lower paytxfee warning threshold from 0.25 MAC to 0.01 MAC
 - Fix importwallet nTimeFirstKey (trigger necessary rescans)
 - Log BerkeleyDB version at startup
 - CWallet init fix

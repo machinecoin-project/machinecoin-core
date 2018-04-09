@@ -1,11 +1,11 @@
-Machinecoin-Qt version 0.8.0 is now available from:
+﻿Machinecoin-Qt version 0.8.0 is now available from:
   http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.8.0/
 
 This is a major release designed to improve performance and handle the
 increasing volume of transactions on the network.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 How to Upgrade
 --------------

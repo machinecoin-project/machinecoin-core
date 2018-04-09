@@ -1,15 +1,15 @@
-Machinecoin version 0.7.1 is now available from:
+﻿Machinecoin version 0.7.1 is now available from:
   http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.7.1/
 
 This is a bug-fix minor release.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 Project source code is hosted at github; you can get
 source-only tarballs/zipballs directly from there:
-  https://github.com/machinecoin-project/machinecoin-core/tarball/v0.7.1  # .tar.gz
-  https://github.com/machinecoin-project/machinecoin-core/zipball/v0.7.1  # .zip
+  https://github.com/machinecoin/machinecoin/tarball/v0.7.1  # .tar.gz
+  https://github.com/machinecoin/machinecoin/zipball/v0.7.1  # .zip
 
 Ubuntu Linux users can use the "Personal Package Archive" (PPA)
 maintained by Matt Corallo to automatically keep 
@@ -77,7 +77,7 @@ Bug fixes
 
 * Clicking on a machinecoin: URI on Windows should now launch Machinecoin-Qt properly.
 
-* When running -testnet, use RPC port 140332 by default.
+* When running -testnet, use RPC port 18332 by default.
 
 * Better detection and handling of corrupt wallet.dat and blkindex.dat files.
   Previous versions would crash with a DB_RUNRECOVERY exception, this

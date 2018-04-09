@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # Copyright (c) 2014-2017 Wladimir J. van der Laan
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -114,7 +114,7 @@ def process_nodes(g, f, structname, defaultport):
 def main():
     if len(sys.argv)<2:
         print(('Usage: %s <path_to_nodes_txt>' % sys.argv[0]), file=sys.stderr)
-        exit(1)
+        sys.exit(1)
     g = sys.stdout
     indir = sys.argv[1]
     g.write('#ifndef MACHINECOIN_CHAINPARAMSSEEDS_H\n')
@@ -127,10 +127,10 @@ def main():
     g.write(' * IPv4 as well as onion addresses are wrapped inside a IPv6 address accordingly.\n')
     g.write(' */\n')
     with open(os.path.join(indir,'nodes_main.txt'),'r') as f:
-        process_nodes(g, f, 'pnSeed6_main', 40333)
+        process_nodes(g, f, 'pnSeed6_main', 8333)
     g.write('\n')
     with open(os.path.join(indir,'nodes_test.txt'),'r') as f:
-        process_nodes(g, f, 'pnSeed6_test', 19335)
+        process_nodes(g, f, 'pnSeed6_test', 18333)
     g.write('#endif // MACHINECOIN_CHAINPARAMSSEEDS_H\n')
             
 if __name__ == '__main__':

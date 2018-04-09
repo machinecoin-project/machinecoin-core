@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-# Copyright (c) 2015-2016 The Machinecoin Core developers
+﻿#!/usr/bin/env python2
+# Copyright (c) 2015-2017 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''

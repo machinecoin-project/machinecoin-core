@@ -1,11 +1,11 @@
-Machinecoin-Qt/machinecoind version 0.8.1 is now available from:
+﻿Machinecoin-Qt/machinecoind version 0.8.1 is now available from:
   http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.8.1/
 
 This is a maintenance release that adds a new network rule to avoid
 a chain-forking incompatibility with versions 0.7.2 and earlier.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 
 How to Upgrade

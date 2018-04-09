@@ -1,17 +1,17 @@
-Machinecoin Core version 0.14.1 is now available from:
+﻿Machinecoin Core version 0.14.1 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.14.1/>
+  <https://machinecoin.org/bin/machinecoin-core-0.14.1/>
 
 This is a new minor version release, including various bugfixes and
 performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://machinecoincore.org/en/list/announcements/join/>
+  <https://machinecoin.io/en/list/announcements/join/>
 
 Compatibility
 ==============
@@ -140,3 +140,4 @@ Thanks to everyone who directly contributed to this release:
 - Wladimir J. van der Laan
 
 As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/machinecoin/).
+

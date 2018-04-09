@@ -1,22 +1,22 @@
-Please checkout the git integration branch from:
+﻿Please checkout the git integration branch from:
 
-https://github.com/machinecoin-project/machinecoin-core
+https://github.com/machinecoin/machinecoin
 
 ... and help test.  The new features that need testing are:
 
-* -nolisten : https://github.com/machinecoin-project/machinecoin-core/pull/11
+* -nolisten : https://github.com/machinecoin/machinecoin/pull/11
 * -rescan : scan block chain for missing wallet transactions
-* -printtoconsole : https://github.com/machinecoin-project/machinecoin-core/pull/37
-* RPC gettransaction details : https://github.com/machinecoin-project/machinecoin-core/pull/24
-* listtransactions new features : https://github.com/machinecoin-project/machinecoin-core/pull/10
+* -printtoconsole : https://github.com/machinecoin/machinecoin/pull/37
+* RPC gettransaction details : https://github.com/machinecoin/machinecoin/pull/24
+* listtransactions new features : https://github.com/machinecoin/machinecoin/pull/10
 
 Bug fixes that also need testing:
 
-* -maxconnections= : https://github.com/machinecoin-project/machinecoin-core/pull/42
-* RPC listaccounts minconf : https://github.com/machinecoin-project/machinecoin-core/pull/27
-* RPC move, add time to output : https://github.com/machinecoin-project/machinecoin-core/pull/21
+* -maxconnections= : https://github.com/machinecoin/machinecoin/pull/42
+* RPC listaccounts minconf : https://github.com/machinecoin/machinecoin/pull/27
+* RPC move, add time to output : https://github.com/machinecoin/machinecoin/pull/21
 * ...and several improvements to --help output.
 
 This needs more testing on Windows!  Please drop me a quick private message, email, or IRC message if you are able to do some testing.  If you find bugs, please open an issue at:
 
-https://github.com/machinecoin-project/machinecoin-core/issues
+https://github.com/machinecoin/machinecoin/issues

@@ -1,11 +1,11 @@
-Machinecoin-Qt version 0.8.4 is now available from:
+﻿Machinecoin-Qt version 0.8.4 is now available from:
   http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.8.4/
 
 This is a maintenance release to fix a critical bug and three
 security issues; we urge all users to upgrade.
 
 Please report bugs using the issue tracker at github:
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 
 How to Upgrade
@@ -34,7 +34,7 @@ Bloom filters were introduced with version 0.8, so versions 0.8.0
 through 0.8.3 are vulnerable to this critical denial-of-service attack.
 
 A constant-time algorithm is now used to check RPC password
-guess attempts; fixes https://github.com/machinecoin-project/machinecoin-core/issues/2838
+guess attempts; fixes https://github.com/machinecoin/machinecoin/issues/2838
 (CVE-2013-4165)
 
 Implement a better fix for the fill-memory-with-orphan-transactions

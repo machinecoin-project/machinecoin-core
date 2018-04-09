@@ -1,4 +1,4 @@
-Machinecoin-Qt version 0.8.6 final is now available from:
+﻿Machinecoin-Qt version 0.8.6 final is now available from:
 
   http://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.8.6/
 
@@ -6,7 +6,7 @@ This is a maintenance release to fix a critical bug; we urge all users to upgrad
 
 Please report bugs using the issue tracker at github:
 
-  https://github.com/machinecoin-project/machinecoin-core/issues
+  https://github.com/machinecoin/machinecoin/issues
 
 How to Upgrade
 --------------
@@ -63,4 +63,4 @@ Warning
   Hence it is recommended to use a 64-bit executable if possible.
   A 64-bit executable for Windows is planned for 0.9.
 
-Note: Gavin Andresen's GPG signing key for SHA256SUMS.asc has been changed from  key id 1FC730C1 to sub key 7BF6E212 (see https://github.com/machinecoin-project/machinecoin-core.org/pull/279).
+Note: Gavin Andresen's GPG signing key for SHA256SUMS.asc has been changed from  key id 1FC730C1 to sub key 7BF6E212 (see https://github.com/machinecoin/machinecoin.org/pull/279).

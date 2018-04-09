@@ -1,9 +1,9 @@
-// Copyright (c) 2015-2017 The Bitcoin Core developers
+﻿// Copyright (c) 2015-2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
-#define BITCOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
+#ifndef MACHINECOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
+#define MACHINECOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
 
 #include <zmq/zmqconfig.h>
 
@@ -41,4 +41,4 @@ protected:
     std::string address;
 };
 
-#endif // BITCOIN_ZMQ_ZMQABSTRACTNOTIFIER_H
+#endif // MACHINECOIN_ZMQ_ZMQABSTRACTNOTIFIER_H

@@ -185,7 +185,7 @@ public:
     
     // fConnectToMasternode should be 'true' only if you want this node to allow to connect to itself
     // and/or you want it to be disconnected on CMasternodeMan::ProcessMasternodeConnections()
-    // Unfortunately, can't make this method private like in Bitcoin,
+    // Unfortunately, can't make this method private like in Machinecoin,
     // because it's used in many Machinecoin-specific places (masternode).
     CNode* ConnectNode(CAddress addrConnect, const char *pszDest = NULL, bool fCountFailure = false, bool fConnectToMasternode = false);
 

@@ -1,4 +1,4 @@
-dist_man1_MANS=
+﻿dist_man1_MANS=
 
 if BUILD_MACHINECOIND
   dist_man1_MANS+=machinecoind.1

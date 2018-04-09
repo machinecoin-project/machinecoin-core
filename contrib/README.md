@@ -1,4 +1,4 @@
-Repository Tools
+﻿Repository Tools
 ---------------------
 
 ### [Developer tools](/contrib/devtools) ###
@@ -26,7 +26,7 @@ Contains files used to package machinecoind/machinecoin-qt
 for Debian-based Linux systems. If you compile machinecoind/machinecoin-qt yourself, there are some useful files here.
 
 ### [Gitian-descriptors](/contrib/gitian-descriptors) ###
-Notes on getting Gitian builds up and running using KVM.
+Files used during the gitian build process. For more information about gitian, see the [the Machinecoin Core documentation repository](https://github.com/machinecoin-core/docs).
 
 ### [Gitian-keys](/contrib/gitian-keys)
 PGP keys used for signing Machinecoin Core [Gitian release](/doc/release-process.md) results.
@@ -35,7 +35,7 @@ PGP keys used for signing Machinecoin Core [Gitian release](/doc/release-process
 Scripts and notes for Mac builds. 
 
 ### [RPM](/contrib/rpm) ###
-RPM spec file for building machinecoin-core on RPM based distributions
+RPM spec file for building machinecoin-core on RPM based distributions.
 
 ### [Gitian-build](/contrib/gitian-build.sh) ###
 Script for running full Gitian builds.
@@ -47,4 +47,4 @@ Test and Verify Tools
 Utilities to generate test vectors for the data-driven Machinecoin tests.
 
 ### [Verify Binaries](/contrib/verifybinaries) ###
-This script attempts to download and verify the signature file SHA256SUMS.asc from machinecoin.io.
+This script attempts to download and verify the signature file SHA256SUMS.asc from machinecoin.org.

@@ -1,4 +1,4 @@
-%define bdbv 4.8.30
+﻿%define bdbv 4.8.30
 %global selinux_variants mls strict targeted
 
 %if 0%{?_no_gui:1}
@@ -20,8 +20,8 @@ Summary:	Peer to Peer Cryptographic Currency
 
 Group:		Applications/System
 License:	MIT
-URL:		https://machinecoin.io/
-Source0:	https://machinecoin.io/bin/machinecoin-core-%{version}/machinecoin-%{version}.tar.gz
+URL:		https://machinecoin.org/
+Source0:	https://machinecoin.org/bin/machinecoin-core-%{version}/machinecoin-%{version}.tar.gz
 Source1:	http://download.oracle.com/berkeley-db/db-%{bdbv}.NC.tar.gz
 
 Source10:	https://raw.githubusercontent.com/machinecoin/machinecoin/v%{version}/contrib/debian/examples/machinecoin.conf
@@ -311,10 +311,8 @@ rm -f %{buildroot}%{_bindir}/test_*
 
 %check
 make check
-pushd src
-srcdir=. test/machinecoin-util-test.py
-popd
-qa/pull-tester/rpc-tests.py -extended
+srcdir=src test/machinecoin-util-test.py
+test/functional/test_runner.py --extended
 
 %post libs -p /sbin/ldconfig
 
@@ -334,10 +332,12 @@ if [ `%{_sbindir}/sestatus |grep -c "disabled"` -eq 0 ]; then
 for selinuxvariant in %{selinux_variants}; do
 	%{_sbindir}/semodule -s ${selinuxvariant} -i %{_datadir}/selinux/${selinuxvariant}/machinecoin.pp &> /dev/null || :
 done
-%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 40332
-%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 40333
-%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 140332
-%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 140333
+%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 8332
+%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 8333
+%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 18332
+%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 18333
+%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 18443
+%{_sbindir}/semanage port -a -t machinecoin_port_t -p tcp 18444
 %{_sbindir}/fixfiles -R machinecoin-server restore &> /dev/null || :
 %{_sbindir}/restorecon -R %{_localstatedir}/lib/machinecoin || :
 fi
@@ -353,10 +353,12 @@ fi
 # SELinux
 if [ $1 -eq 0 ]; then
 	if [ `%{_sbindir}/sestatus |grep -c "disabled"` -eq 0 ]; then
-	%{_sbindir}/semanage port -d -p tcp 40332
-	%{_sbindir}/semanage port -d -p tcp 40333
-	%{_sbindir}/semanage port -d -p tcp 140332
-	%{_sbindir}/semanage port -d -p tcp 140333
+	%{_sbindir}/semanage port -d -p tcp 8332
+	%{_sbindir}/semanage port -d -p tcp 8333
+	%{_sbindir}/semanage port -d -p tcp 18332
+	%{_sbindir}/semanage port -d -p tcp 18333
+	%{_sbindir}/semanage port -d -p tcp 18443
+	%{_sbindir}/semanage port -d -p tcp 18444
 	for selinuxvariant in %{selinux_variants}; do
 		%{_sbindir}/semodule -s ${selinuxvariant} -r machinecoin &> /dev/null || :
 	done

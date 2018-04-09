@@ -1,13 +1,13 @@
-Machinecoin Core version 0.11.0 is now available from:
+﻿Machinecoin Core version 0.11.0 is now available from:
 
-  <https://machinecoin.io/bin/machinecoin-core-0.11.0/>
+  <https://machinecoin.org/bin/machinecoin-core-0.11.0/>
 
 This is a new major version release, bringing both new features and
 bug fixes.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/machinecoin-project/machinecoin-core/issues>
+  <https://github.com/machinecoin/machinecoin/issues>
 
 Upgrading and downgrading
 =========================
@@ -58,7 +58,7 @@ possible to change a few configuration options to work around this. The growth
 of the mempool can be monitored with the RPC command `getmempoolinfo`.
 
 One is to increase the minimum transaction relay fee `minrelaytxfee`, which
-defaults to 0.00001. This will cause transactions with fewer BTC/kB fee to be
+defaults to 0.00001. This will cause transactions with fewer MAC/kB fee to be
 rejected, and thus fewer transactions entering the mempool.
 
 The other is to restrict the relaying of free transactions with
@@ -458,7 +458,7 @@ Thanks to everyone who directly contributed to this release:
 - Jeff Garzik
 - Jonas Schnelli
 - Jonathan Brown
-- Jorge Tim??n
+- Jorge Timón
 - joshr
 - jtimon
 - Julian Yap
@@ -474,7 +474,7 @@ Thanks to everyone who directly contributed to this release:
 - mrbandrews
 - Nicolas Benoit
 - paveljanik
-- Pavel Jan??k
+- Pavel Janík
 - Pavel Vasin
 - Peter Todd
 - Philip Kaufmann

@@ -1,9 +1,9 @@
-#include <boost/test/unit_test.hpp>
+﻿#include <boost/test/unit_test.hpp>
 
 #include "stdlib.h"
 
 #include "rpc/blockchain.cpp"
-#include "test/test_bitcoin.h"
+#include "test/test_machinecoin.h"
 
 /* Equality between doubles is imprecise. Comparison should be done
  * with a small threshold of tolerance, rather than exact equality.

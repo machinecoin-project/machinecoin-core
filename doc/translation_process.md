@@ -1,4 +1,4 @@
-Translations
+﻿Translations
 ============
 
 The Machinecoin-Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, Machinecoin-Core makes use of the Transifex online translation management tool.

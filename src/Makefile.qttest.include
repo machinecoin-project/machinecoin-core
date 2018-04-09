@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2018 The Machinecoin Core developers
+﻿# Copyright (c) 2013-2018 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,7 +30,7 @@ TEST_MACHINECOIN_CPP = \
 TEST_MACHINECOIN_H = \
   test/test_machinecoin.h
 
-qt_test_test_machinecoin_qt_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
+qt_test_test_machinecoin_qt_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES) $(MACHINECOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(QT_TEST_INCLUDES) $(PROTOBUF_CFLAGS)
 
 qt_test_test_machinecoin_qt_SOURCES = \

@@ -1,4 +1,4 @@
-// Copyright 2014 BitPay Inc.
+﻿// Copyright 2014 BitPay Inc.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -41,8 +41,8 @@ static void initJsonEscape()
 static void outputEscape()
 {
 	printf(	"// Automatically generated file. Do not modify.\n"
-		"#ifndef BITCOIN_UNIVALUE_UNIVALUE_ESCAPES_H\n"
-		"#define BITCOIN_UNIVALUE_UNIVALUE_ESCAPES_H\n"
+		"#ifndef MACHINECOIN_UNIVALUE_UNIVALUE_ESCAPES_H\n"
+		"#define MACHINECOIN_UNIVALUE_UNIVALUE_ESCAPES_H\n"
 		"static const char *escapes[256] = {\n");
 
 	for (unsigned int i = 0; i < 256; i++) {
@@ -72,7 +72,7 @@ static void outputEscape()
 	}
 
 	printf(	"};\n"
-		"#endif // BITCOIN_UNIVALUE_UNIVALUE_ESCAPES_H\n");
+		"#endif // MACHINECOIN_UNIVALUE_UNIVALUE_ESCAPES_H\n");
 }
 
 int main (int argc, char *argv[])

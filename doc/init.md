@@ -1,4 +1,4 @@
-Sample init scripts and service configuration for machinecoind
+﻿Sample init scripts and service configuration for machinecoind
 ==========================================================
 
 Sample scripts and configuration files for systemd, Upstart and OpenRC
@@ -10,14 +10,14 @@ can be found in the contrib/init folder.
     contrib/init/machinecoind.conf:       Upstart service configuration file
     contrib/init/machinecoind.init:       CentOS compatible SysV style init script
 
-1. Service User
+Service User
 ---------------------------------
 
 All three Linux startup configurations assume the existence of a "machinecoin" user
 and group.  They must be created before attempting to use these scripts.
 The OS X configuration assumes machinecoind will be set up for the current user.
 
-2. Configuration
+Configuration
 ---------------------------------
 
 At a bare minimum, machinecoind requires that the rpcpassword setting be set
@@ -46,10 +46,10 @@ relative to the data directory. `wallet` *only* supports relative paths.
 For an example configuration file that describes the configuration settings,
 see `contrib/debian/examples/machinecoin.conf`.
 
-3. Paths
+Paths
 ---------------------------------
 
-3a) Linux
+### Linux
 
 All three configurations assume several paths that might need to be adjusted.
 
@@ -65,17 +65,17 @@ reasons to make the configuration file and data directory only readable by the
 machinecoin user and group.  Access to machinecoin-cli and other machinecoind rpc clients
 can then be controlled by group membership.
 
-3b) Mac OS X
+### Mac OS X
 
 Binary:              `/usr/local/bin/machinecoind`  
 Configuration file:  `~/Library/Application Support/Machinecoin/machinecoin.conf`  
-Data directory:      `~/Library/Application Support/Machinecoin`
-Lock file:           `~/Library/Application Support/Machinecoin/.lock`
+Data directory:      `~/Library/Application Support/Machinecoin`  
+Lock file:           `~/Library/Application Support/Machinecoin/.lock`  
 
-4. Installing Service Configuration
+Installing Service Configuration
 -----------------------------------
 
-4a) systemd
+### systemd
 
 Installing this .service file consists of just copying it to
 /usr/lib/systemd/system directory, followed by the command
@@ -84,14 +84,14 @@ Installing this .service file consists of just copying it to
 To test, run `systemctl start machinecoind` and to enable for system startup run
 `systemctl enable machinecoind`
 
-4b) OpenRC
+### OpenRC
 
 Rename machinecoind.openrc to machinecoind and drop it in /etc/init.d.  Double
 check ownership and permissions and make it executable.  Test it with
 `/etc/init.d/machinecoind start` and configure it to run on startup with
 `rc-update add machinecoind`
 
-4c) Upstart (for Debian/Ubuntu based distributions)
+### Upstart (for Debian/Ubuntu based distributions)
 
 Drop machinecoind.conf in /etc/init.  Test by running `service machinecoind start`
 it will automatically start on reboot.
@@ -99,7 +99,7 @@ it will automatically start on reboot.
 NOTE: This script is incompatible with CentOS 5 and Amazon Linux 2014 as they
 use old versions of Upstart and do not supply the start-stop-daemon utility.
 
-4d) CentOS
+### CentOS
 
 Copy machinecoind.init to /etc/init.d/machinecoind. Test by running `service machinecoind start`.
 
@@ -107,7 +107,7 @@ Using this script, you can adjust the path and flags to the machinecoind program
 setting the MACHINECOIND and FLAGS environment variables in the file
 /etc/sysconfig/machinecoind. You can also use the DAEMONOPTS environment variable here.
 
-4e) Mac OS X
+### Mac OS X
 
 Copy org.machinecoin.machinecoind.plist into ~/Library/LaunchAgents. Load the launch agent by
 running `launchctl load ~/Library/LaunchAgents/org.machinecoin.machinecoind.plist`.
@@ -118,7 +118,7 @@ NOTE: This approach is intended for those wanting to run machinecoind as the cur
 You will need to modify org.machinecoin.machinecoind.plist if you intend to use it as a
 Launch Daemon with a dedicated machinecoin user.
 
-5. Auto-respawn
+Auto-respawn
 -----------------------------------
 
 Auto respawning is currently only configured for Upstart and systemd.

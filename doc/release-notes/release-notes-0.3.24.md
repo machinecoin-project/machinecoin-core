@@ -1,7 +1,7 @@
-Machinecoin v0.3.24 is now available for download at
+﻿Machinecoin v0.3.24 is now available for download at
 https://sourceforge.net/projects/machinecoin/files/Machinecoin/machinecoin-0.3.24/
 
-This is another bug fix release.  We had hoped to have wallet encryption ready for release, but more urgent fixes for existing clients were needed -- most notably block download problems were getting severe.  Wallet encryption is ready for testing at https://github.com/machinecoin-project/machinecoin-core/pull/352 for the git-savvy, and hopefully will follow shortly in the next release, v0.4.
+This is another bug fix release.  We had hoped to have wallet encryption ready for release, but more urgent fixes for existing clients were needed -- most notably block download problems were getting severe.  Wallet encryption is ready for testing at https://github.com/machinecoin/machinecoin/pull/352 for the git-savvy, and hopefully will follow shortly in the next release, v0.4.
 
 Notable fixes in v0.3.24, and the main reasons for this release:
 

@@ -1,10 +1,10 @@
-#!/bin/bash
+﻿#!/bin/bash
 # Copyright (c) 2013 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 if [ -d "$1" ]; then
-  cd "$1"
+  cd "$1" || exit 1
 else
   echo "Usage: $0 <datadir>" >&2
   echo "Removes obsolete Machinecoin database files" >&2

@@ -1,5 +1,5 @@
-Machinecoin Core 0.14.3
-=====================
+﻿Machinecoin Core
+=============
 
 Intro
 -----
@@ -19,5 +19,5 @@ depending on the speed of your computer and network connection, the synchronizat
 process can take anywhere from a few hours to a day or more.
 
 See the machinecoin wiki at:
-  https://machinecoin.info/
+  https://en.machinecoin.it/wiki/Main_Page
 for more help and information.

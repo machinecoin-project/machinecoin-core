@@ -1,22 +1,25 @@
+﻿# It is not recommended to modify this file in-place, because it will
+# be overwritten during package upgrades. If you want to add further
+# options or overwrite existing ones then use
+# $ systemctl edit machinecoind.service
+# See "man systemd.service" for details.
+
+# Note that almost all daemon options could be specified in
+# /etc/machinecoin/machinecoin.conf
+
 [Unit]
-Description=Machinecoin's distributed currency daemon
+Description=Machinecoin daemon
 After=network.target
 
 [Service]
+ExecStart=/usr/bin/machinecoind -daemon -conf=/etc/machinecoin/machinecoin.conf -pid=/run/machinecoind/machinecoind.pid
+# Creates /run/machinecoind owned by machinecoin
+RuntimeDirectory=machinecoind
 User=machinecoin
-Group=machinecoin
-
 Type=forking
-PIDFile=/var/lib/machinecoind/machinecoind.pid
-ExecStart=/usr/bin/machinecoind -daemon -pid=/var/lib/machinecoind/machinecoind.pid \
--conf=/etc/machinecoin/machinecoin.conf -datadir=/var/lib/machinecoind -disablewallet
-
-Restart=always
+PIDFile=/run/machinecoind/machinecoind.pid
+Restart=on-failure
 PrivateTmp=true
-TimeoutStopSec=60s
-TimeoutStartSec=2s
-StartLimitInterval=120s
-StartLimitBurst=5
 
 [Install]
 WantedBy=multi-user.target

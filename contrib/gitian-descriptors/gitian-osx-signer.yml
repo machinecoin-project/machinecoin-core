@@ -1,4 +1,4 @@
----
+﻿---
 name: "machinecoin-dmg-signer"
 suites:
 - "trusty"
@@ -7,7 +7,7 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/machinecoin-project/machinecoin-detached-sigs.git"
+- "url": "https://github.com/machinecoin-core/machinecoin-detached-sigs.git"
   "dir": "signature"
 files:
 - "machinecoin-osx-unsigned.tar.gz"
