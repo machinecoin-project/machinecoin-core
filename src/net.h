@@ -497,6 +497,7 @@ private:
     std::unique_ptr<CSemaphore> semAddnode;
     int nMaxConnections;
     int nMaxOutbound;
+    int nMaxMasternodeOutbound;
     int nMaxAddnode;
     int nMaxFeeler;
     std::atomic<int> nBestHeight;
