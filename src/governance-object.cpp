@@ -113,7 +113,7 @@ bool CGovernanceObject::ProcessVote(CNode* pfrom,
             LogPrintf("%s\n", ostr.str());
         }
         else {
-            LogPrint("gobject", "%s\n", ostr.str());
+            LogPrint(MCLog::GOV, "%s\n", ostr.str());
         }
         return false;
     }
@@ -127,7 +127,7 @@ bool CGovernanceObject::ProcessVote(CNode* pfrom,
     if(eSignal == VOTE_SIGNAL_NONE) {
         std::ostringstream ostr;
         ostr << "CGovernanceObject::ProcessVote -- Vote signal: none";
-        LogPrint("gobject", "%s\n", ostr.str());
+        LogPrint(MCLog::GOV, "%s\n", ostr.str());
         exception = CGovernanceException(ostr.str(), GOVERNANCE_EXCEPTION_WARNING);
         return false;
     }
@@ -148,7 +148,7 @@ bool CGovernanceObject::ProcessVote(CNode* pfrom,
     if(vote.GetTimestamp() < voteInstance.nCreationTime) {
         std::ostringstream ostr;
         ostr << "CGovernanceObject::ProcessVote -- Obsolete vote";
-        LogPrint("gobject", "%s\n", ostr.str());
+        LogPrint(MCLog::GOV, "%s\n", ostr.str());
         exception = CGovernanceException(ostr.str(), GOVERNANCE_EXCEPTION_NONE);
         return false;
     }
@@ -163,7 +163,7 @@ bool CGovernanceObject::ProcessVote(CNode* pfrom,
                  << ", MN outpoint = " << vote.GetMasternodeOutpoint().ToStringShort()
                  << ", governance object hash = " << GetHash().ToString()
                  << ", time delta = " << nTimeDelta;
-            LogPrint("gobject", "%s\n", ostr.str());
+            LogPrint(MCLog::GOV, "%s\n", ostr.str());
             exception = CGovernanceException(ostr.str(), GOVERNANCE_EXCEPTION_TEMPORARY_ERROR);
             nVoteTimeUpdate = nNow;
             return false;
@@ -186,7 +186,7 @@ bool CGovernanceObject::ProcessVote(CNode* pfrom,
         ostr << "CGovernanceObject::ProcessVote -- Unable to add governance vote"
              << ", MN outpoint = " << vote.GetMasternodeOutpoint().ToStringShort()
              << ", governance object hash = " << GetHash().ToString();
-        LogPrint("gobject", "%s\n", ostr.str());
+        LogPrint(MCLog::GOV, "%s\n", ostr.str());
         exception = CGovernanceException(ostr.str(), GOVERNANCE_EXCEPTION_PERMANENT_ERROR);
         return false;
     }
@@ -247,7 +247,7 @@ bool CGovernanceObject::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
         return false;
     }
 
-    LogPrint("gobject", "CGovernanceObject::Sign -- pubkey id = %s, vin = %s\n",
+    LogPrint(MCLog::GOV, "CGovernanceObject::Sign -- pubkey id = %s, vin = %s\n",
              pubKeyMasternode.GetID().ToString(), vinMasternode.prevout.ToStringShort());
 
 
@@ -633,7 +633,7 @@ void CGovernanceObject::Relay(CConnman& connman)
 {
     // Do not relay until fully synced
     if(!masternodeSync.IsSynced()) {
-        LogPrint("gobject", "CGovernanceObject::Relay -- won't relay until fully synced\n");
+        LogPrint(MCLog::GOV, "CGovernanceObject::Relay -- won't relay until fully synced\n");
         return;
     }
 

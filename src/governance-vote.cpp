@@ -230,7 +230,7 @@ void CGovernanceVote::Relay(CConnman& connman) const
 {
     // Do not relay until fully synced
     if(!masternodeSync.IsSynced()) {
-        LogPrint("gobject", "CGovernanceVote::Relay -- won't relay until fully synced\n");
+        LogPrint(MCLog::GOV, "CGovernanceVote::Relay -- won't relay until fully synced\n");
         return;
     }
 
@@ -264,27 +264,27 @@ bool CGovernanceVote::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 bool CGovernanceVote::IsValid(bool fSignatureCheck) const
 {
     if(nTime > GetAdjustedTime() + (60*60)) {
-        LogPrint("gobject", "CGovernanceVote::IsValid -- vote is too far ahead of current time - %s - nTime %lli - Max Time %lli\n", GetHash().ToString(), nTime, GetAdjustedTime() + (60*60));
+        LogPrint(MCLog::GOV, "CGovernanceVote::IsValid -- vote is too far ahead of current time - %s - nTime %lli - Max Time %lli\n", GetHash().ToString(), nTime, GetAdjustedTime() + (60*60));
         return false;
     }
 
     // support up to 50 actions (implemented in sentinel)
     if(nVoteSignal > MAX_SUPPORTED_VOTE_SIGNAL)
     {
-        LogPrint("gobject", "CGovernanceVote::IsValid -- Client attempted to vote on invalid signal(%d) - %s\n", nVoteSignal, GetHash().ToString());
+        LogPrint(MCLog::GOV, "CGovernanceVote::IsValid -- Client attempted to vote on invalid signal(%d) - %s\n", nVoteSignal, GetHash().ToString());
         return false;
     }
 
     // 0=none, 1=yes, 2=no, 3=abstain. Beyond that reject votes
     if(nVoteOutcome > 3)
     {
-        LogPrint("gobject", "CGovernanceVote::IsValid -- Client attempted to vote on invalid outcome(%d) - %s\n", nVoteSignal, GetHash().ToString());
+        LogPrint(MCLog::GOV, "CGovernanceVote::IsValid -- Client attempted to vote on invalid outcome(%d) - %s\n", nVoteSignal, GetHash().ToString());
         return false;
     }
 
     masternode_info_t infoMn;
     if(!mnodeman.GetMasternodeInfo(vinMasternode.prevout, infoMn)) {
-        LogPrint("gobject", "CGovernanceVote::IsValid -- Unknown Masternode - %s\n", vinMasternode.prevout.ToStringShort());
+        LogPrint(MCLog::GOV, "CGovernanceVote::IsValid -- Unknown Masternode - %s\n", vinMasternode.prevout.ToStringShort());
         return false;
     }
 
