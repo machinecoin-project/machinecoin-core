@@ -405,7 +405,7 @@ public:
     bool ProcessVoteAndRelay(const CGovernanceVote& vote, CGovernanceException& exception) {
         bool fOK = ProcessVote(NULL, vote, exception);
         if(fOK) {
-            vote.Relay();
+            vote.Relay(connman);
         }
         return fOK;
     }

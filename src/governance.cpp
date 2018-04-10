@@ -262,7 +262,7 @@ void CGovernanceManager::ProcessMessage(CNode* pfrom, const std::string& strComm
         if(ProcessVote(pfrom, vote, exception)) {
             LogPrint(MCLog::GOV, "MNGOVERNANCEOBJECTVOTE -- %s new\n", strHash);
             masternodeSync.BumpAssetLastTime("MNGOVERNANCEOBJECTVOTE");
-            vote.Relay();
+            vote.Relay(connman);
         }
         else {
             LogPrint(MCLog::GOV, "MNGOVERNANCEOBJECTVOTE -- Rejected vote, error = %s\n", exception.what());
@@ -293,7 +293,7 @@ void CGovernanceManager::CheckOrphanVotes(CGovernanceObject& govobj, CGovernance
             fRemove = true;
         }
         else if(govobj.ProcessVote(NULL, vote, exception)) {
-            vote.Relay();
+            vote.Relay(connman);
             fRemove = true;
         }
         if(fRemove) {
@@ -366,7 +366,7 @@ void CGovernanceManager::AddGovernanceObject(CGovernanceObject& govobj, CNode* p
     }
 
     LogPrintf("AddGovernanceObject -- %s new, received form %s\n", strHash, pfrom? pfrom->addrName : "NULL");
-    govobj.Relay();
+    govobj.Relay(connman);
 
     // Update the rate buffer
     MasternodeRateUpdate(govobj);
@@ -1076,7 +1076,7 @@ void CGovernanceManager::CheckPostponedObjects()
             if(fValid) {
                 if(fReady) {
                     LogPrintf("CGovernanceManager::CheckPostponedObjects -- additional relay: hash = %s\n", govobj.GetHash().ToString());
-                    govobj.Relay();
+                    govobj.Relay(connman);
                 } else {
                     it++;
                     continue;
