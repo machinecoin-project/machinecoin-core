@@ -58,7 +58,6 @@
 #include <masternodeman.h>
 #include <masternodeconfig.h>
 #include <messagesigner.h>
-#include <netfulfilledman.h>
 
 #include <stdint.h>
 #include <stdio.h>
