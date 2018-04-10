@@ -166,7 +166,7 @@ void CActiveMasternode::ManageStateInitial(CConnman& connman)
         return;
     }
 
-    const auto defaultChainParams = CreateChainParams(CBaseChainParams::MAIN).GetDefaultPort();
+    int defaultChainParams = CreateChainParams(CBaseChainParams::MAIN)->GetDefaultPort();
     if(Params().NetworkIDString() == CBaseChainParams::MAIN) {
         if(service.GetPort() != mainnetDefaultPort) {
             nState = ACTIVE_MASTERNODE_NOT_CAPABLE;
