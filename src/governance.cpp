@@ -292,7 +292,7 @@ void CGovernanceManager::CheckOrphanVotes(CGovernanceObject& govobj, CGovernance
         if(pairVote.second < nNow) {
             fRemove = true;
         }
-        else if(govobj.ProcessVote(NULL, vote, exception)) {
+        else if(govobj.ProcessVote(NULL, vote, exception, connman)) {
             vote.Relay(connman);
             fRemove = true;
         }
