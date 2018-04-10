@@ -9,6 +9,7 @@
 #include <util.h>
 #include <utilmoneystr.h>
 #include <validation.h>
+#include <primitives/transaction.h>
 #include <wallet/rpcwallet.h>
 #include <wallet/wallet.h>
 #include <wallet/walletutil.h>
@@ -288,6 +289,16 @@ bool OpenWallets()
     }
 
     return true;
+}
+
+void MasternodeLock(COutPoint outpoint) {
+    for (CWalletRef pwallet : vpwallets) {
+        if(pwallet->IsMine(CTxIn(outpoint)) != ISMINE_SPENDABLE) {
+            LogPrintf("Masternode Output is not spendable -- cannot get locked: %s", outpoint.hash.GetHex());
+            continue;
+        }
+        pwallet->LockCoin(outpoint);
+    }
 }
 
 void StartWallets(CScheduler& scheduler) {
