@@ -529,7 +529,7 @@ bool CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool f
     int nCountTenth = 0;
     arith_uint256 nHighest = 0;
     CMasternode *pBestMasternode = NULL;
-    BOOST_FOREACH (PAIRTYPE(int, CMasternode*)& s, vecMasternodeLastPaid){
+    for (PAIRTYPE(int, CMasternode*)& s : vecMasternodeLastPaid){
         arith_uint256 nScore = s.second->CalculateScore(blockHash);
         if(nScore > nHighest){
             nHighest = nScore;
@@ -568,10 +568,10 @@ masternode_info_t CMasternodeMan::FindRandomNotInVec(const std::vector<COutPoint
     bool fExclude;
 
     // loop through
-    BOOST_FOREACH(CMasternode* pmn, vpMasternodesShuffled) {
+    for (CMasternode* pmn : vpMasternodesShuffled) {
         if(pmn->nProtocolVersion < nProtocolVersion || !pmn->IsEnabled()) continue;
         fExclude = false;
-        BOOST_FOREACH(const COutPoint &outpointToExclude, vecToExclude) {
+        for (const COutPoint &outpointToExclude : vecToExclude) {
             if(pmn->vin.prevout == outpointToExclude) {
                 fExclude = true;
                 break;
@@ -993,7 +993,7 @@ void CMasternodeMan::CheckSameAddr()
 
         sort(vSortedByAddr.begin(), vSortedByAddr.end(), CompareByAddr());
 
-        BOOST_FOREACH(CMasternode* pmn, vSortedByAddr) {
+        for (CMasternode* pmn : vSortedByAddr) {
             // check only (pre)enabled masternodes
             if(!pmn->IsEnabled() && !pmn->IsPreEnabled()) continue;
             // initial step
@@ -1021,7 +1021,7 @@ void CMasternodeMan::CheckSameAddr()
     }
 
     // ban duplicates
-    BOOST_FOREACH(CMasternode* pmn, vBan) {
+    for (CMasternode* pmn : vBan) {
         LogPrintf("CMasternodeMan::CheckSameAddr -- increasing PoSe ban score for masternode %s\n", pmn->vin.prevout.ToStringShort());
         pmn->IncreasePoSeBanScore();
     }
@@ -1194,7 +1194,7 @@ void CMasternodeMan::ProcessVerifyReply(CNode* pnode, CMasternodeVerification& m
         LogPrintf("CMasternodeMan::ProcessVerifyReply -- verified real masternode %s for addr %s\n",
                     prealMasternode->vin.prevout.ToStringShort(), pnode->addr.ToString());
         // increase ban score for everyone else
-        BOOST_FOREACH(CMasternode* pmn, vpMasternodesToBan) {
+        for (CMasternode* pmn : vpMasternodesToBan) {
             pmn->IncreasePoSeBanScore();
             LogPrint(MCLog::MN, "CMasternodeMan::ProcessVerifyReply -- increased PoSe ban score for %s addr %s, new score %d\n",
                         prealMasternode->vin.prevout.ToStringShort(), pnode->addr.ToString(), pmn->nPoSeBanScore);

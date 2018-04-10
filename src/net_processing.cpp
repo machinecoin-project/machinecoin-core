@@ -1274,9 +1274,9 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                 BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
                 LOCK(cs_mapMasternodeBlocks);
                 if (mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.count(mi->second->nHeight)) {
-                    BOOST_FOREACH(CMasternodePayee& payee, mnpayments.mapMasternodeBlocks[mi->second->nHeight].vecPayees) {
+                    for (CMasternodePayee& payee : mnpayments.mapMasternodeBlocks[mi->second->nHeight].vecPayees) {
                         std::vector<uint256> vecVoteHashes = payee.GetVoteHashes();
-                        BOOST_FOREACH(uint256& hash, vecVoteHashes) {
+                        for (uint256& hash : vecVoteHashes) {
                             if(mnpayments.HasVerifiedPaymentVote(hash)) {
                                 CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                                 ss.reserve(1000);
@@ -2994,7 +2994,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         bool found = false;
 
         const std::vector<std::string> &allMessages = getAllNetMessageTypes();
-        BOOST_FOREACH(const std::string msg, allMessages) {
+        for (const std::string msg : allMessages) {
             if(msg == strCommand) {
                 found = true;
                 break;

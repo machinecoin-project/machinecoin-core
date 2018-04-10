@@ -248,7 +248,7 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     CTransactionRef tx;
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
-        BOOST_FOREACH(CTxOut out, tx->vout)
+        for (CTxOut out : tx->vout)
             if(out.nValue == 100*COIN && out.scriptPubKey == payee) return true;
     }
 
@@ -323,7 +323,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
 
-            BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout)
+            for (CTxOut txout : block.vtx[0]->vout)
                 if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
                     nBlockLastPaid = BlockReading->nHeight;
                     nTimeLastPaid = BlockReading->nTime;
