@@ -220,7 +220,7 @@ public: // Types
     typedef hash_time_m_t::const_iterator hash_time_m_cit;
 
 private:
-    CConnman* const connman;
+    CConnman& connman;
 
     static const int MAX_CACHE_SIZE = 1000000;
 
