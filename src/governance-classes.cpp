@@ -373,7 +373,7 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
 
             // TODO: PRINT NICE N.N MAC OUTPUT
 
-            LogPrintf("NEW Superblock : output %d (addr %s, amount %d)\n", i, address1.ToString(), payment.nAmount);
+            LogPrintf("NEW Superblock : output %d (addr %s, amount %d)\n", i, EncodeDestination(address1), payment.nAmount);
         }
     }
 }
@@ -623,7 +623,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, address1.ToString());
+            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, EncodeDestination(address1));
 
             return false;
         }
@@ -664,10 +664,10 @@ std::string CSuperblockManager::GetRequiredPaymentsString(int nBlockHeight)
             // RETURN NICE OUTPUT FOR CONSOLE
 
             if(ret != "Unknown") {
-                ret += ", " + address1.ToString();
+                ret += ", " + EncodeDestination(address1);
             }
             else {
-                ret = address1.ToString();
+                ret = EncodeDestination(address1);
             }
         }
     }
