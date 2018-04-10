@@ -983,7 +983,7 @@ void CGovernanceManager::CheckMasternodeOrphanVotes()
     ScopedLockBool guard(cs, fRateChecksEnabled, false);
 
     for(object_m_it it = mapObjects.begin(); it != mapObjects.end(); ++it) {
-        it->second.CheckOrphanVotes();
+        it->second.CheckOrphanVotes(connman);
     }
 }
 
@@ -1355,7 +1355,7 @@ void CGovernanceManager::UpdatedBlockTip(const CBlockIndex *pindex)
 
 void CGovernanceManager::RequestOrphanObjects()
 {
-    std::vector<CNode*> vNodesCopy = connman.CopyNodeVector();
+    std::vector<CNode*> vNodesCopy = connman->CopyNodeVector();
 
     std::vector<uint256> vecHashesFiltered;
     {
@@ -1382,7 +1382,7 @@ void CGovernanceManager::RequestOrphanObjects()
         }
     }
 
-    connman.ReleaseNodeVector(vNodesCopy);
+    connman->ReleaseNodeVector(vNodesCopy);
 }
 
 void CGovernanceManager::CleanOrphanObjects()
