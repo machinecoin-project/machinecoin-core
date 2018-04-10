@@ -662,7 +662,7 @@ std::string CSuperblockManager::GetRequiredPaymentsString(int nBlockHeight)
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            CMachinecoinAddress address2(address1);
+            CTxDestination address2 = DecodeDestination(address1);
 
             // RETURN NICE OUTPUT FOR CONSOLE
 
