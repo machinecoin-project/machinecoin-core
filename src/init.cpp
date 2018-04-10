@@ -1899,7 +1899,7 @@ bool AppInitMain()
     return true;
 }
 
-void ThreadCheckMasternode(CConnman& connman)
+void ThreadCheckMasternode(CConnman* connman)
 {
     if(fLiteMode) return; // disable all Machinecoin specific functionality
 

@@ -12,7 +12,7 @@
 // Keep track of the active Masternode
 CActiveMasternode activeMasternode;
 
-void CActiveMasternode::ManageState(CConnman& connman)
+void CActiveMasternode::ManageState(CConnman* connman)
 {
     LogPrint(MCLog::MN, "CActiveMasternode::ManageState -- Start\n");
     if(!fMasterNode) {
@@ -81,7 +81,7 @@ std::string CActiveMasternode::GetTypeString() const
     return strType;
 }
 
-bool CActiveMasternode::SendMasternodePing(CConnman& connman)
+bool CActiveMasternode::SendMasternodePing(CConnman* connman)
 {
     if(!fPingerEnabled) {
         LogPrint(MCLog::MN, "CActiveMasternode::SendMasternodePing -- %s: masternode ping service is disabled, skipping...\n", GetStateString());
@@ -126,7 +126,7 @@ bool CActiveMasternode::UpdateSentinelPing(int version)
     return true;
 }
 
-void CActiveMasternode::ManageStateInitial(CConnman& connman)
+void CActiveMasternode::ManageStateInitial(CConnman* connman)
 {
     LogPrint(MCLog::MN, "CActiveMasternode::ManageStateInitial -- status = %s, type = %s, pinger enabled = %d\n", GetStatus(), GetTypeString(), fPingerEnabled);
 
