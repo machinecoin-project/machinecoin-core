@@ -370,11 +370,11 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            std::string address2 = DecodeDestination(address1);
+            CTxDestination address2 = DecodeDestination(address1);
 
             // TODO: PRINT NICE N.N MAC OUTPUT
 
-            LogPrintf("NEW Superblock : output %d (addr %s, amount %d)\n", i, address2, payment.nAmount);
+            LogPrintf("NEW Superblock : output %d (addr %s, amount %d)\n", i, address1, payment.nAmount);
         }
     }
 }
@@ -495,7 +495,7 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
     */
 
     for (int i = 0; i < (int)vecParsed1.size(); i++) {
-        std::string address = DecodeDestination(vecParsed1[i]);
+        CTxDestination address = DecodeDestination(vecParsed1[i]);
         if (!address.IsValid()) {
             std::ostringstream ostr;
             ostr << "CSuperblock::ParsePaymentSchedule -- Invalid Machinecoin Address : " <<  vecParsed1[i];
@@ -512,7 +512,7 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
         else {
             vecPayments.clear();
             std::ostringstream ostr;
-            ostr << "CSuperblock::ParsePaymentSchedule -- Invalid payment found: address = " << address.ToString()
+            ostr << "CSuperblock::ParsePaymentSchedule -- Invalid payment found: address = " << vecParsed1[i]
                  << ", amount = " << nAmount;
             LogPrintf("%s\n", ostr.str());
             throw std::runtime_error(ostr.str());
@@ -624,8 +624,8 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            std::string address2 = DecodeDestination(address1);
-            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, address2);
+            CTxDestination address2 = DecodeDestination(address1);
+            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, address1);
 
             return false;
         }
