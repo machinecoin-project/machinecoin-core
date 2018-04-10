@@ -148,6 +148,8 @@ class CGovernanceManager
     friend class CGovernanceObject;
 
 public: // Types
+    explicit CGovernanceManager(CConnman* connman);
+
     struct last_object_rec {
         last_object_rec(bool fStatusOKIn = true)
             : triggerBuffer(),
