@@ -495,7 +495,7 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
 
     for (int i = 0; i < (int)vecParsed1.size(); i++) {
         CTxDestination address = DecodeDestination(vecParsed1[i]);
-        if (!address.IsValid()) {
+        if (!IsValidDestinationString(address)) {
             std::ostringstream ostr;
             ostr << "CSuperblock::ParsePaymentSchedule -- Invalid Machinecoin Address : " <<  vecParsed1[i];
             LogPrintf("%s\n", ostr.str());
@@ -504,7 +504,7 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
 
         CAmount nAmount = ParsePaymentAmount(vecParsed2[i]);
 
-        CGovernancePayment payment(address, nAmount);
+        CGovernancePayment payment(vecParsed1[i], nAmount);
         if(payment.IsValid()) {
             vecPayments.push_back(payment);
         }
