@@ -963,7 +963,7 @@ bool CGovernanceManager::ProcessVote(CNode* pfrom, const CGovernanceVote& vote, 
         return false;
     }
 
-    bool fOk = govobj.ProcessVote(pfrom, vote, exception);
+    bool fOk = govobj.ProcessVote(pfrom, vote, exception, connman);
     if(fOk) {
         mapVoteToObject.Insert(nHashVote, &govobj);
 
