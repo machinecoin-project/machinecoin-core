@@ -226,7 +226,7 @@ CGovernanceVote::CGovernanceVote(COutPoint outpointMasternodeIn, uint256 nParent
       vchSig()
 {}
 
-void CGovernanceVote::Relay(CConnman* const connman) const
+void CGovernanceVote::Relay(CConnman& connman) const
 {
     // Do not relay until fully synced
     if(!masternodeSync.IsSynced()) {
