@@ -6,6 +6,8 @@
 #ifndef MACHINECOIN_WALLET_INIT_H
 #define MACHINECOIN_WALLET_INIT_H
 
+#include <primitives/transaction.h>
+
 #include <string>
 
 class CRPCTable;

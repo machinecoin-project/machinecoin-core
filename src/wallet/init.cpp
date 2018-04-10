@@ -9,7 +9,6 @@
 #include <util.h>
 #include <utilmoneystr.h>
 #include <validation.h>
-#include <primitives/transaction.h>
 #include <wallet/rpcwallet.h>
 #include <wallet/wallet.h>
 #include <wallet/walletutil.h>
