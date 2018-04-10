@@ -24,8 +24,9 @@ const std::string CGovernanceManager::SERIALIZATION_VERSION_STRING = "CGovernanc
 const int CGovernanceManager::MAX_TIME_FUTURE_DEVIATION = 60*60;
 const int CGovernanceManager::RELIABLE_PROPAGATION_TIME = 60;
 
-CGovernanceManager::CGovernanceManager()
-    : nTimeLastDiff(0),
+CGovernanceManager::CGovernanceManager(CConnman* connmanIn)
+    : connman(connmanIn)
+      nTimeLastDiff(0),
       nCachedBlockHeight(0),
       mapObjects(),
       mapErasedGovernanceObjects(),
