@@ -525,7 +525,7 @@ bool CGovernanceObject::IsCollateralValid(std::string& strError, bool& fMissingC
 
     bool foundOpReturn = false;
     for (const CTxOut o : txCollateral->vout) {
-        if(!o.scriptPubKey.IsPayToPublicKeyHash() && !o.scriptPubKey.IsUnspendable()) {
+        if(!o.scriptPubKey.IsPayToScriptHash() && !o.scriptPubKey.IsUnspendable()) {
             //strError = strprintf("Invalid Script %s", txCollateral.GetHash().ToString());
             LogPrintf ("CGovernanceObject::IsCollateralValid -- %s\n", strError);
             return false;
