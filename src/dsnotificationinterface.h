@@ -11,7 +11,7 @@
 class CDSNotificationInterface : public CValidationInterface
 {
 public:
-    CDSNotificationInterface(CConnman* connmanIn): connman(connmanIn) {}
+    CDSNotificationInterface(CConnman& connmanIn): connman(connmanIn) {}
     virtual ~CDSNotificationInterface() = default;
 
     // a small helper to initialize current block height in sub-modules on startup
@@ -25,7 +25,7 @@ protected:
     void SyncTransaction(const CTransaction &tx, const CBlock *pblock);
 
 private:
-    CConnman* connman;
+    CConnman& connman;
 };
 
 #endif // MACHINECOIN_DSNOTIFICATIONINTERFACE_H

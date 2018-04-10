@@ -1433,7 +1433,7 @@ bool AppInitMain()
     uint64_t nMaxOutboundLimit = 0; //unlimited unless -maxuploadtarget is set
     uint64_t nMaxOutboundTimeframe = MAX_UPLOAD_TIMEFRAME;
 
-    pdsNotificationInterface = new CDSNotificationInterface(*g_connman);
+    pdsNotificationInterface = new CDSNotificationInterface(connman);
     RegisterValidationInterface(pdsNotificationInterface);
   
     if (gArgs.IsArgSet("-maxuploadtarget")) {
