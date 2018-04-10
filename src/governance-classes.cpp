@@ -370,7 +370,7 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            CTxDestination address2 = DecodeDestination(address1);
+            CTxDestination address2 = address1;
 
             // TODO: PRINT NICE N.N MAC OUTPUT
 
@@ -624,7 +624,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            CTxDestination address2 = DecodeDestination(address1);
+            CTxDestination address2 = address2;
             LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, address1);
 
             return false;
@@ -662,7 +662,7 @@ std::string CSuperblockManager::GetRequiredPaymentsString(int nBlockHeight)
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            CTxDestination address2 = DecodeDestination(address1);
+            CTxDestination address2 = address1;
 
             // RETURN NICE OUTPUT FOR CONSOLE
 
