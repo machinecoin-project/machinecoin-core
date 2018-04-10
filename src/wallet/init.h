@@ -31,7 +31,7 @@ bool VerifyWallets();
 bool OpenWallets();
 
 //! Lock masternode coins on startup.
-void MasternodeLock(COutpoint outpoint);
+void MasternodeLock(COutPoint outpoint);
 
 //! Complete startup of wallets.
 void StartWallets(CScheduler& scheduler);
