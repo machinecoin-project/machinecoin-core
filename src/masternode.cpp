@@ -658,7 +658,7 @@ void CMasternodeBroadcast::Relay(CConnman& connman)
     }
 
     CInv inv(MSG_MASTERNODE_ANNOUNCE, GetHash());
-    connman->RelayInv(inv);
+    connman.RelayInv(inv);
 }
 
 CMasternodePing::CMasternodePing(const COutPoint& outpoint)
@@ -823,7 +823,7 @@ void CMasternodePing::Relay(CConnman& connman)
     }
 
     CInv inv(MSG_MASTERNODE_PING, GetHash());
-    connman->RelayInv(inv);
+    connman.RelayInv(inv);
 }
 
 void CMasternode::AddGovernanceVote(uint256 nGovernanceObjectHash)

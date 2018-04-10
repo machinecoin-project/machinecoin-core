@@ -105,8 +105,8 @@ void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman&
     mWeAskedForMasternodeListEntry[outpoint][pnode->addr] = GetTime() + DSEG_UPDATE_SECONDS;
 
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn(outpoint)));
-    // connman->PushMessage(pnode, NetMsgType::DSEG, CTxIn(outpoint));
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn(outpoint)));
+    // connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn(outpoint));
 }
 
 bool CMasternodeMan::PoSeBan(const COutPoint &outpoint)
@@ -389,8 +389,8 @@ void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
   
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
 
-    // connman->PushMessage(pnode, NetMsgType::DSEG, CTxIn());
-    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn()));
+    // connman.PushMessage(pnode, NetMsgType::DSEG, CTxIn());
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn()));
     int64_t askAgain = GetTime() + DSEG_UPDATE_SECONDS;
     mWeAskedForMasternodeList[pnode->addr] = askAgain;
 
@@ -676,7 +676,7 @@ void CMasternodeMan::ProcessMasternodeConnections(CConnman& connman)
     //we don't care about this for regtest
     if(Params().NetworkIDString() == CBaseChainParams::REGTEST) return;
 
-    connman->ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
+    connman.ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
 #ifdef ENABLE_WALLET
         if(pnode->fMasternode) {
 #else
@@ -735,7 +735,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         if (CheckMnbAndUpdateMasternodeList(pfrom, mnb, nDos, connman)) {
             // use announced Masternode as a peer
-            connman->AddNewAddress(CAddress(mnb.addr, NODE_NETWORK), pfrom->addr, 2*60*60);
+            connman.AddNewAddress(CAddress(mnb.addr, NODE_NETWORK), pfrom->addr, 2*60*60);
         } else if(nDos > 0) {
             Misbehaving(pfrom->GetId(), nDos);
         }
@@ -855,10 +855,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         if(vin == CTxIn()) {
             const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
-            // connman->PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
-            // connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST), nInvCount);
-            // connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST));
-            connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount));  
+            // connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
+            // connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST), nInvCount);
+            // connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST));
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount));  
           
             LogPrintf("DSEG -- Sent %d Masternode invs to peer %d\n", nInvCount, pfrom->id);
             return;
@@ -1035,7 +1035,7 @@ bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<C
         return false;
     }
 
-    CNode* pnode = connman->ConnectNode(addr, NULL, false, true);
+    CNode* pnode = connman.ConnectNode(addr, NULL, false, true);
     if(pnode == NULL) {
         LogPrintf("CMasternodeMan::SendVerifyRequest -- can't connect to node to verify it, addr=%s\n", addr.ToString());
         return false;
@@ -1048,8 +1048,8 @@ bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<C
     LogPrintf("CMasternodeMan::SendVerifyRequest -- verifying node using nonce %d addr=%s\n", mnv.nonce, addr.ToString());
     
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
-    // connman->PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
+    // connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
 
     return true;
 }
@@ -1091,8 +1091,8 @@ void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv,
     }
 
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
-    // connman->PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
+    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
+    // connman.PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
     netfulfilledman.AddFulfilledRequest(pnode->addr, strprintf("%s", NetMsgType::MNVERIFY)+"-reply");
 }
 
