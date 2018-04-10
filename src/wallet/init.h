@@ -28,6 +28,9 @@ bool VerifyWallets();
 //! Load wallet databases.
 bool OpenWallets();
 
+//! Lock masternode coins on startup.
+void MasternodeLock(COutpoint& outpoint);
+
 //! Complete startup of wallets.
 void StartWallets(CScheduler& scheduler);
 

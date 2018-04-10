@@ -291,7 +291,7 @@ bool OpenWallets()
     return true;
 }
 
-void MasternodeLock(COutPoint outpoint) {
+void MasternodeLock(COutPoint& outpoint) {
     for (CWalletRef pwallet : vpwallets) {
         if(pwallet->IsMine(CTxIn(outpoint)) != ISMINE_SPENDABLE) {
             LogPrintf("Masternode Output is not spendable -- cannot get locked: %s", outpoint.hash.GetHex());
