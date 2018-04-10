@@ -1712,11 +1712,11 @@ bool AppInitMain()
 
     LogPrintf("Using masternode config file %s\n", GetMasternodeConfigFile().string());
   
-    if(gArgs.GetBoolArg("-mnconflock", true) && pwalletMain && (masternodeConfig.getCount() > 0)) {
+    if(gArgs.GetBoolArg("-mnconflock", true) && (masternodeConfig.getCount() > 0)) {
         LogPrintf("Locking Masternodes:\n");
         uint256 mnTxHash;
         int outputIndex;
-        for (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        for (CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {
             mnTxHash.SetHex(mne.getTxHash());
             outputIndex = boost::lexical_cast<unsigned int>(mne.getOutputIndex());
             COutPoint outpoint = COutPoint(mnTxHash, outputIndex);
