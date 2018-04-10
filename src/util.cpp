@@ -873,8 +873,6 @@ void ShrinkDebugFile()
 #ifdef WIN32
 fs::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
-    namespace fs = boost::filesystem;
-
     char pszPath[MAX_PATH] = "";
 
     if(SHGetSpecialFolderPathA(nullptr, pszPath, nFolder, fCreate))
