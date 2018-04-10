@@ -218,6 +218,8 @@ public: // Types
     typedef hash_time_m_t::const_iterator hash_time_m_cit;
 
 private:
+    CConnman* const connman;
+
     static const int MAX_CACHE_SIZE = 1000000;
 
     static const std::string SERIALIZATION_VERSION_STRING;
