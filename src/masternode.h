@@ -6,11 +6,13 @@
 #ifndef MASTERNODE_H
 #define MASTERNODE_H
 
+#include <coins.h>
 #include <key.h>
 #include <validation.h>
 
 class CMasternode;
 class CMasternodeBroadcast;
+class CCoin;
 class CConnman;
 
 static const int MASTERNODE_CHECK_SECONDS               =   5;
