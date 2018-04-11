@@ -3002,7 +3002,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             mnodeman.ProcessMessage(pfrom, strCommand, vRecv, connman);
             mnpayments.ProcessMessage(pfrom, strCommand, vRecv, connman);
             masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
-            governance.ProcessMessage(pfrom, strCommand, vRecv, connman);
+            governance.ProcessMessage(pfrom, strCommand, vRecv);
         }
         else
         {
