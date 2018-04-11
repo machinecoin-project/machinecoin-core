@@ -168,7 +168,7 @@ UniValue masternode(const JSONRPCRequest& request)
         obj.push_back(Pair("IP:port",       mnInfo.addr.ToString()));
         obj.push_back(Pair("protocol",      (int64_t)mnInfo.nProtocolVersion));
         obj.push_back(Pair("outpoint",      mnInfo.vin.prevout.ToStringShort()));
-        obj.push_back(Pair("payee",         CMachinecoinAddress(mnInfo.pubKeyCollateralAddress.GetID()).ToString()));
+        obj.push_back(Pair("payee",         EncodeDestination(GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()))));
         obj.push_back(Pair("lastseen",      mnInfo.nTimeLastPing));
         obj.push_back(Pair("activeseconds", mnInfo.nTimeLastPing - mnInfo.sigTime));
         return obj;
@@ -180,8 +180,9 @@ UniValue masternode(const JSONRPCRequest& request)
         if (request.params.size() < 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Please specify an alias");
 
-        {
-            EnsureWalletIsUnlocked();
+        for (CWalletRef pwallet : vpwallets) {
+            EnsureWalletIsUnlocked(pwallet);
+            LOCK(pwallet->cs_wallet);
         }
 
         std::string strAlias = request.params[1].get_str();
@@ -222,8 +223,9 @@ UniValue masternode(const JSONRPCRequest& request)
 
     if (strCommand == "start-all" || strCommand == "start-missing" || strCommand == "start-disabled")
     {
-        {
-            EnsureWalletIsUnlocked();
+        for (CWalletRef pwallet : vpwallets) {
+            EnsureWalletIsUnlocked(pwallet);
+            LOCK(pwallet->cs_wallet);
         }
 
         if((strCommand == "start-missing" || strCommand == "start-disabled") && !masternodeSync.IsMasternodeListSynced()) {
@@ -332,7 +334,7 @@ UniValue masternode(const JSONRPCRequest& request)
 
         CMasternode mn;
         if(mnodeman.Get(activeMasternode.outpoint, mn)) {
-            mnObj.push_back(Pair("payee", CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString()));
+            mnObj.push_back(Pair("payee", EncodeDestination(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()))));
         }
 
         mnObj.push_back(Pair("status", activeMasternode.GetStatus()));
@@ -456,7 +458,7 @@ UniValue masternodelist(const JSONRPCRequest& request)
                 streamFull << std::setw(18) <<
                                mn.GetStatus() << " " <<
                                mn.nProtocolVersion << " " <<
-                               CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString() << " " <<
+                               EncodeDestination(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID())) << " " <<
                                (int64_t)mn.lastPing.sigTime << " " << std::setw(8) <<
                                (int64_t)(mn.lastPing.sigTime - mn.sigTime) << " " << std::setw(10) <<
                                mn.GetLastPaidTime() << " "  << std::setw(6) <<
@@ -471,7 +473,7 @@ UniValue masternodelist(const JSONRPCRequest& request)
                 streamInfo << std::setw(18) <<
                                mn.GetStatus() << " " <<
                                mn.nProtocolVersion << " " <<
-                               CMachinecoinAddress(mn.pubKeyCollateralAddress.GetID()).ToString() << " " <<
+                               EncodeDestination(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID())) << " " <<
                                (int64_t)mn.lastPing.sigTime << " " << std::setw(8) <<
                                (int64_t)(mn.lastPing.sigTime - mn.sigTime) << " " <<
                                SafeIntVersionToString(mn.lastPing.nSentinelVersion) << " "  <<
@@ -491,8 +493,8 @@ UniValue masternodelist(const JSONRPCRequest& request)
                 if (strFilter !="" && strOutpoint.find(strFilter) == std::string::npos) continue;
                 obj.push_back(Pair(strOutpoint, (int64_t)mn.lastPing.sigTime));
             } else if (strMode == "payee") {
-                CMachinecoinAddress address(mn.pubKeyCollateralAddress.GetID());
-                std::string strPayee = address.ToString();
+                CTxDestination address = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()) << " " <<
+                std::string strPayee = EncodeDestination(address);
                 if (strFilter !="" && strPayee.find(strFilter) == std::string::npos &&
                     strOutpoint.find(strFilter) == std::string::npos) continue;
                 obj.push_back(Pair(strOutpoint, strPayee));
@@ -567,9 +569,9 @@ UniValue masternodebroadcast(const JSONRPCRequest& request)
         if (request.params.size() < 2)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Please specify an alias");
 
-        {
-            LOCK(pwalletMain->cs_wallet);
-            EnsureWalletIsUnlocked();
+        for (CWalletRef pwallet : vpwallets) {
+            EnsureWalletIsUnlocked(pwallet);
+            LOCK(pwallet->cs_wallet);
         }
 
         bool fFound = false;
@@ -616,9 +618,9 @@ UniValue masternodebroadcast(const JSONRPCRequest& request)
         if (fImporting || fReindex)
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Wait for reindex and/or import to finish");
 
-        {
-            LOCK(pwalletMain->cs_wallet);
-            EnsureWalletIsUnlocked();
+        for (CWalletRef pwallet : vpwallets) {
+            EnsureWalletIsUnlocked(pwallet);
+            LOCK(pwallet->cs_wallet);
         }
 
         std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
@@ -684,8 +686,8 @@ UniValue masternodebroadcast(const JSONRPCRequest& request)
                 nSuccessful++;
                 resultObj.push_back(Pair("outpoint", mnb.vin.prevout.ToStringShort()));
                 resultObj.push_back(Pair("addr", mnb.addr.ToString()));
-                resultObj.push_back(Pair("pubKeyCollateralAddress", CMachinecoinAddress(mnb.pubKeyCollateralAddress.GetID()).ToString()));
-                resultObj.push_back(Pair("pubKeyMasternode", CMachinecoinAddress(mnb.pubKeyMasternode.GetID()).ToString()));
+                resultObj.push_back(Pair("pubKeyCollateralAddress", EncodeDestination(GetScriptForDestination(mnb.pubKeyCollateralAddress.GetID()))));
+                resultObj.push_back(Pair("pubKeyMasternode", EncodeDestination(GetScriptForDestination(mnb.pubKeyMasternode.GetID()))));
                 resultObj.push_back(Pair("vchSig", EncodeBase64(&mnb.vchSig[0], mnb.vchSig.size())));
                 resultObj.push_back(Pair("sigTime", mnb.sigTime));
                 resultObj.push_back(Pair("protocolVersion", mnb.nProtocolVersion));
