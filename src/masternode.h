@@ -6,7 +6,6 @@
 #ifndef MASTERNODE_H
 #define MASTERNODE_H
 
-#include <coins.h>
 #include <key.h>
 #include <validation.h>
 
