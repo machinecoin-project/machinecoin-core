@@ -434,7 +434,6 @@ void MaybeSetPeerAsAnnouncingHeaderAndIDs(NodeId nodeid, CConnman* connman) {
                 });
                 lNodesAnnouncingHeaderAndIDs.pop_front();
             }
-            fAnnounceUsingCMPCTBLOCK = true;
             connman->PushMessage(pfrom, CNetMsgMaker(pfrom->GetSendVersion()).Make(NetMsgType::SENDCMPCT, /*fAnnounceUsingCMPCTBLOCK=*/true, nCMPCTBLOCKVersion));
             lNodesAnnouncingHeaderAndIDs.push_back(pfrom->GetId());
             return true;
