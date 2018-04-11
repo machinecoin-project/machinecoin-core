@@ -364,13 +364,13 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     if (!CMessageSigner::GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew))
         return Log(strprintf("Invalid masternode key %s", strKeyMasternode));
 
-    bool gotWallet = false;
+    CWalletRef gotWallet = nullptr;
     for (CWalletRef pwallet : vpwallets) {
-        if (!gotWallet)
+        if (gotWallet == nullptr)
             if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
                 gotWallet = pwallet;
     }
-    if (!gotWallet)
+    if (gotWallet == nullptr)
         return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
 
     CService service;

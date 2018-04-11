@@ -179,13 +179,13 @@ UniValue gobject(const JSONRPCRequest& request)
         }
 
         CWalletTx wtx;        
-        bool gotWallet = false;
+        CWalletRef gotWallet = nullptr;
         for (CWalletRef pwallet : vpwallets) {
-            if (!gotWallet)
+            if (gotWallet == nullptr)
                 if(pwallet->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee()))
                     gotWallet = pwallet;
         }
-        if (!gotWallet)
+        if (gotWallet == nullptr)
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Error making collateral transaction for governance object. Please check your wallet balance and make sure your wallet is unlocked.");
 
         // -- make our change address
