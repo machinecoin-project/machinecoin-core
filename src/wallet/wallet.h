@@ -852,7 +852,7 @@ public:
     /**
      * populate vCoins with vector of available COutputs eligible for Masternodes.
      */
-    void AvailableMNCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl = NULL, bool fIncludeZeroValue=false) const;
+    void AvailableMNCoins(std::vector<COutput>& vCoins, bool fOnlySafe=true, const CCoinControl *coinControl = nullptr, const CAmount& nMinimumAmount = 2500000000000, const CAmount& nMaximumAmount = MAX_MONEY, const CAmount& nMinimumSumAmount = MAX_MONEY, const uint64_t nMaximumCount = 0, const int nMinDepth = 0, const int nMaxDepth = 9999999) const;
     
     bool GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAmount amount);
     bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount amount);
