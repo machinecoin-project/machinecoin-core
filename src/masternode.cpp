@@ -387,7 +387,7 @@ bool CMasternodeBroadcast::Create(const COutPoint& outpoint, const CService& ser
 
     LogPrint(MCLog::MN, "CMasternodeBroadcast::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
              EncodeDestination(GetScriptForDestination(pubKeyCollateralAddressNew.GetID())),
-             EncodeDestination(GetScriptForDestination(pubKeyMasternodeNew.GetID()));
+             EncodeDestination(GetScriptForDestination(pubKeyMasternodeNew.GetID())));
 
     auto Log = [&strErrorRet,&mnbRet](std::string sErr)->bool
     {
