@@ -2459,7 +2459,7 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
     CScript pubScript;
 
     outpointRet = COutPoint(out.tx->GetHash(), out.i);
-    pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
+    pubScript = out.tx->tx->vout[out.i].scriptPubKey; // the inputs PubKey
 
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
@@ -2475,8 +2475,7 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
         return false;
     }
     
-    CKeyID keyID;
-    keyID = GetKeyForDestination(gotWallet, address1);
+    CKeyID keyID = GetKeyForDestination(*gotWallet, address1);
 
     pubKeyRet = keyRet.GetPubKey();
     return true;
