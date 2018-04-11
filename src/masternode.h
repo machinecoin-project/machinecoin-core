@@ -14,6 +14,7 @@ class CMasternode;
 class CMasternodeBroadcast;
 class CCoin;
 class CConnman;
+class CWallet;
 
 static const int MASTERNODE_CHECK_SECONDS               =   5;
 static const int MASTERNODE_MIN_MNB_SECONDS             =   5 * 60;
