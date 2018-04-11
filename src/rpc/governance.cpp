@@ -5,6 +5,7 @@
 
 #include <typeinfo>
 
+#include <core_io.h>
 #include <consensus/validation.h>
 #include <activemasternode.h>
 #include <governance.h>
@@ -193,7 +194,7 @@ UniValue gobject(const JSONRPCRequest& request)
         // -- send the tx to the network
         // pwalletMain->CommitTransaction(wtx, reservekey, g_connman->get(), NetMsgType::TX);
         CValidationState state;
-        gotWallet.CommitTransaction(wtx, reservekey, g_connman.get(), state);
+        gotWallet->CommitTransaction(wtx, reservekey, g_connman.get(), state);
 
         return wtx.GetHash().ToString();
     }
