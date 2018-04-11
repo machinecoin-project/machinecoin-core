@@ -169,8 +169,7 @@ bool CProposalValidator::ValidatePaymentAddress()
         return false;
     }
 
-    CMachinecoinAddress address(strPaymentAddress);
-    if(!address.IsValid()) {
+    if(IsValidDestinationString(strPaymentAddress)) {
         strErrorMessages += "payment_address is invalid;";
         return false;
     }
