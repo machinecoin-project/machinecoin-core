@@ -206,7 +206,7 @@ bool operator<(const CInv& a, const CInv& b)
 // Machinecoin
 CInv::CInv(int typeIn, const uint256& hashIn)
 {
-    unsigned int i;
+    int i;
     for (i = 1; i < ARRAYLEN(ppszTypeName); i++)
     {
         if (typeIn == i)
