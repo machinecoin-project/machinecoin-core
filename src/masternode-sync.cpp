@@ -179,7 +179,7 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
     // gradually request the rest of the votes after sync finished
     if(IsSynced()) {
         std::vector<CNode*> vNodesCopy = connman.CopyNodeVector();
-        governance.RequestGovernanceObjectVotes(vNodesCopy, connman);
+        governance.RequestGovernanceObjectVotes(vNodesCopy);
         connman.ReleaseNodeVector(vNodesCopy);
         return;
     }
@@ -280,7 +280,7 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
             // MNW : SYNC MASTERNODE PAYMENT VOTES FROM OTHER CONNECTED CLIENTS
 
             if(nRequestedMasternodeAssets == MASTERNODE_SYNC_MNW) {
-                LogPrint("mnpayments", "CMasternodeSync::ProcessTick -- nTick %d nRequestedMasternodeAssets %d nTimeLastBumped %lld GetTime() %lld diff %lld\n", nTick, nRequestedMasternodeAssets, nTimeLastBumped, GetTime(), GetTime() - nTimeLastBumped);
+                LogPrint(MCLog::MN, "CMasternodeSync::ProcessTick -- nTick %d nRequestedMasternodeAssets %d nTimeLastBumped %lld GetTime() %lld diff %lld\n", nTick, nRequestedMasternodeAssets, nTimeLastBumped, GetTime(), GetTime() - nTimeLastBumped);
                 // check for timeout first
                 // This might take a lot longer than MASTERNODE_SYNC_TIMEOUT_SECONDS due to new blocks,
                 // but that should be OK and it should timeout eventually.
@@ -345,7 +345,7 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
 
                 // only request obj sync once from each peer, then request votes on per-obj basis
                 if(netfulfilledman.HasFulfilledRequest(pnode->addr, "governance-sync")) {
-                    int nObjsLeftToAsk = governance.RequestGovernanceObjectVotes(pnode, connman);
+                    int nObjsLeftToAsk = governance.RequestGovernanceObjectVotes(pnode);
                     static int64_t nTimeNoObjectsLeft = 0;
                     // check for data
                     if(nObjsLeftToAsk == 0) {
