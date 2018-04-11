@@ -1332,7 +1332,7 @@ bool AppInitMain()
 
     assert(!g_connman);
     g_connman = std::unique_ptr<CConnman>(new CConnman(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max())));
-    CConnman* connman = *g_connman;
+    CConnman& connman = *g_connman;
 
     peerLogic.reset(new PeerLogicValidation(&connman, scheduler));
     RegisterValidationInterface(peerLogic.get());
@@ -1808,7 +1808,7 @@ bool AppInitMain()
   
     // ********************************************************* Step 11d: start mac-ps-<smth> threads
 
-    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(*g_connman)));
+    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(&g_connman)));
 
     // ********************************************************* Step 11: start node
 
