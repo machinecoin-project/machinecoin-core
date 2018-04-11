@@ -265,7 +265,7 @@ Result CommitTransaction(CWallet* wallet, const uint256& txid, CMutableTransacti
     wtxBumped.fTimeReceivedIsTxTime = true;
     wtxBumped.fFromMe = true;
     CValidationState state;
-    if (!wallet->CommitTransaction(wtxBumped, reservekey, g_connman->get(), state)) {
+    if (!wallet->CommitTransaction(wtxBumped, reservekey, g_connman.get(), state)) {
         // NOTE: CommitTransaction never returns false, so this should never happen.
         errors.push_back(strprintf("The transaction was rejected: %s", state.GetRejectReason()));
         return Result::WALLET_ERROR;
