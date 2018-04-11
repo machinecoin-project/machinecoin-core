@@ -204,9 +204,8 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
 
     CTxDestination address1;
     ExtractDestination(payee, address1);
-    CMachinecoinAddress address2(address1);
 
-    LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, address2.ToString());
+    LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(address1));
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto() {
@@ -313,10 +312,9 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
 
         CTxDestination address1;
         ExtractDestination(vote.payee, address1);
-        CMachinecoinAddress address2(address1);
 
         LogPrint(MCLog::MN, "MASTERNODEPAYMENTVOTE -- vote: address=%s, nBlockHeight=%d, nHeight=%d, prevout=%s, hash=%s new\n",
-                    address2.ToString(), vote.nBlockHeight, nCachedBlockHeight, vote.vinMasternode.prevout.ToStringShort(), nHash.ToString());
+                    EncodeDestination(address1), vote.nBlockHeight, nCachedBlockHeight, vote.vinMasternode.prevout.ToStringShort(), nHash.ToString());
 
         if(AddPaymentVote(vote)){
             vote.Relay(connman);
@@ -483,12 +481,11 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
 
             CTxDestination address1;
             ExtractDestination(payee.GetPayee(), address1);
-            CMachinecoinAddress address2(address1);
 
             if(strPayeesPossible == "") {
-                strPayeesPossible = address2.ToString();
+                strPayeesPossible = EncodeDestination(address1);
             } else {
-                strPayeesPossible += "," + address2.ToString();
+                strPayeesPossible += "," + EncodeDestination(address1);
             }
         }
     }
@@ -507,12 +504,11 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
     {
         CTxDestination address1;
         ExtractDestination(payee.GetPayee(), address1);
-        CMachinecoinAddress address2(address1);
 
         if (strRequiredPayments != "Unknown") {
-            strRequiredPayments += ", " + address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
+            strRequiredPayments += ", " + EncodeDestination(address1) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
         } else {
-            strRequiredPayments = address2.ToString() + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
+            strRequiredPayments = EncodeDestination(address1) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
         }
     }
 
@@ -661,9 +657,8 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight, CConnman& connman)
 
     CTxDestination address1;
     ExtractDestination(payee, address1);
-    CMachinecoinAddress address2(address1);
 
-    LogPrintf("CMasternodePayments::ProcessBlock -- vote: payee=%s, nBlockHeight=%d\n", address2.ToString(), nBlockHeight);
+    LogPrintf("CMasternodePayments::ProcessBlock -- vote: payee=%s, nBlockHeight=%d\n", EncodeDestination(address1), nBlockHeight);
 
     // SIGN MESSAGE TO NETWORK WITH OUR MASTERNODE KEYS
 
@@ -729,10 +724,9 @@ void CMasternodePayments::CheckPreviousBlockVotes(int nPrevBlockHeight)
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
-        CMachinecoinAddress address2(address1);
 
         debugStr += strprintf("CMasternodePayments::CheckPreviousBlockVotes --   %s - voted for %s\n",
-                              mn.second.vin.prevout.ToStringShort(), address2.ToString());
+                              mn.second.vin.prevout.ToStringShort(), EncodeDestination(address1));
     }
     debugStr += "CMasternodePayments::CheckPreviousBlockVotes -- Masternodes which missed a vote in the past:\n";
     for (auto it : mapMasternodesDidNotVote) {
