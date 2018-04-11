@@ -10,9 +10,9 @@
 #include <key.h>
 #include <validation.h>
 
+class CCoin;
 class CMasternode;
 class CMasternodeBroadcast;
-class CCoin;
 class CConnman;
 class CWallet;
 
