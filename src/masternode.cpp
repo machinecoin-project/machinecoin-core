@@ -108,7 +108,7 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
 {
     AssertLockHeld(cs_main);
 
-    CCoin& coin;
+    Coin coin;
     if(!GetUTXOCoin(outpoint, coin)) {
         return COLLATERAL_UTXO_NOT_FOUND;
     }
