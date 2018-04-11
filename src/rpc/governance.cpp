@@ -29,6 +29,8 @@
 
 #include <univalue.h>
 
+CConnman& connman = *g_connman;
+
 using namespace std;
 
 UniValue gobject(const JSONRPCRequest& request)
@@ -176,15 +178,11 @@ UniValue gobject(const JSONRPCRequest& request)
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "Governance object is not valid - " + govobj.GetHash().ToString() + " - " + strError);
         }
 
-        CWalletTx wtx;
-        if(!pwalletMain->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee())) {
-            throw JSONRPCError(RPC_INTERNAL_ERROR, "Error making collateral transaction for governance object. Please check your wallet balance and make sure your wallet is unlocked.");
-        }
-        
+        CWalletTx wtx;        
         bool gotWallet = false;
         for (CWalletRef pwallet : vpwallets) {
             if (!gotWallet)
-                if(pwalletMain->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee()))
+                if(pwallet->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee()))
                     gotWallet = pwallet;
         }
         if (!gotWallet)
@@ -195,7 +193,7 @@ UniValue gobject(const JSONRPCRequest& request)
         // -- send the tx to the network
         // pwalletMain->CommitTransaction(wtx, reservekey, g_connman->get(), NetMsgType::TX);
         CValidationState state;
-        gotWallet->CommitTransaction(wtx, reservekey, g_connman.get(), state);
+        gotWallet.CommitTransaction(wtx, reservekey, g_connman.get(), state);
 
         return wtx.GetHash().ToString();
     }
@@ -288,7 +286,7 @@ UniValue gobject(const JSONRPCRequest& request)
 
         if(fMissingConfirmations) {
             governance.AddPostponedObject(govobj);
-            govobj.Relay();
+            govobj.Relay(&connman);
         } else {
             governance.AddGovernanceObject(govobj);
         }
