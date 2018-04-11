@@ -16,6 +16,7 @@
 #include <crypto/sha256.h>
 #include <primitives/transaction.h>
 #include <netbase.h>
+#include <netmessagemaker.h>
 #include <scheduler.h>
 #include <ui_interface.h>
 #include <utilstrencodings.h>
@@ -1980,7 +1981,7 @@ void CConnman::ThreadOpenAddedConnections()
     }
 }
 
-void CConnman::ThreadMnbRequestConnections()
+void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connect)
 {
     // Connecting to specific addresses, no masternode connections available
     if (!connect.empty())
@@ -2424,7 +2425,7 @@ bool CConnman::Start(CScheduler& scheduler, const Options& connOptions)
 
     // Initiate masternode connections
     // maybe move this into if statement above
-    threadMnbRequestConnections = std::thread(&TraceThread<std::function<void()> >, "mnbcon", std::function<void()>(std::bind(&CConnman::ThreadMnbRequestConnections, this)));
+    threadMnbRequestConnections = std::thread(&TraceThread<std::function<void()> >, "mnbcon", std::function<void()>(std::bind(&CConnman::ThreadMnbRequestConnections, this, connOptions.m_specified_outgoing)));
   
     // Process messages
     threadMessageHandler = std::thread(&TraceThread<std::function<void()> >, "msghand", std::function<void()>(std::bind(&CConnman::ThreadMessageHandler, this)));

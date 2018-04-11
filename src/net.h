@@ -421,7 +421,6 @@ private:
     void AcceptConnection(const ListenSocket& hListenSocket);
     void ThreadSocketHandler();
     void ThreadDNSAddressSeed();
-    void ThreadMnbRequestConnections();
 
     uint64_t CalculateKeyedNetGroup(const CAddress& ad) const;
 
