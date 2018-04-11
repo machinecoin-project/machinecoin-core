@@ -1228,7 +1228,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
     const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
     {
         LOCK(cs_main);
-        while (it != pfrom->vRecvGetData.end() && (it.IsKnownType() || it->type == MSG_TX || it->type == MSG_WITNESS_TX)) {
+        while (it != pfrom->vRecvGetData.end() && (it->IsKnownType() || it->type == MSG_TX || it->type == MSG_WITNESS_TX)) {            
             if (interruptMsgProc)
                 return;
             // Don't bother if send buffer is too full to respond anyway
@@ -1236,6 +1236,10 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                 break;
 
             const CInv &inv = *it;
+
+            //if (!(inv.IsKnownType() || it->type == MSG_TX || it->type == MSG_WITNESS_TX))
+            //    return;
+
             it++;
 
             // Send stream from relay memory
@@ -2007,7 +2011,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         for (CInv &inv : vInv)
         {
             if(!inv.IsKnownType()) {
-                LogPrint("net", "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->GetId());
+                LogPrint(MCLog::NET, "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->GetId());
                 continue;
             }
 
