@@ -1332,7 +1332,7 @@ bool AppInitMain()
 
     assert(!g_connman);
     g_connman = std::unique_ptr<CConnman>(new CConnman(GetRand(std::numeric_limits<uint64_t>::max()), GetRand(std::numeric_limits<uint64_t>::max())));
-    CConnman& connman = *g_connman;
+    CConnman* connman = *g_connman;
 
     peerLogic.reset(new PeerLogicValidation(&connman, scheduler));
     RegisterValidationInterface(peerLogic.get());
@@ -1899,7 +1899,7 @@ bool AppInitMain()
     return true;
 }
 
-void ThreadCheckMasternode(CConnman& connman)
+void ThreadCheckMasternode(CConnman* connman)
 {
     if(fLiteMode) return; // disable all Machinecoin specific functionality
 

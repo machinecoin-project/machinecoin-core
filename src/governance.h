@@ -148,7 +148,7 @@ class CGovernanceManager
     friend class CGovernanceObject;
 
 public: // Types
-    explicit CGovernanceManager(CConnman& connman);
+    explicit CGovernanceManager(CConnman* connman);
 
     struct last_object_rec {
         last_object_rec(bool fStatusOKIn = true)
@@ -220,7 +220,7 @@ public: // Types
     typedef hash_time_m_t::const_iterator hash_time_m_cit;
 
 private:
-    CConnman& connman;
+    CConnman* connman;
 
     static const int MAX_CACHE_SIZE = 1000000;
 

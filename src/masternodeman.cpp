@@ -78,7 +78,7 @@ bool CMasternodeMan::Add(CMasternode &mn)
     return true;
 }
 
-void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman& connman)
+void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman* connman)
 {
     if(!pnode) return;
 
@@ -132,7 +132,7 @@ void CMasternodeMan::Check()
     }
 }
 
-void CMasternodeMan::CheckAndRemove(CConnman& connman)
+void CMasternodeMan::CheckAndRemove(CConnman* connman)
 {
     if(!masternodeSync.IsMasternodeListSynced()) return;
 
@@ -373,7 +373,7 @@ int CMasternodeMan::CountByIP(int nNetworkType)
 }
 */
 
-void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman& connman)
+void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman* connman)
 {
     LOCK(cs);
 
@@ -672,7 +672,7 @@ bool CMasternodeMan::GetMasternodeRanks(CMasternodeMan::rank_pair_vec_t& vecMast
     return true;
 }
 
-void CMasternodeMan::ProcessMasternodeConnections(CConnman& connman)
+void CMasternodeMan::ProcessMasternodeConnections(CConnman* connman)
 {
     //we don't care about this for regtest
     if(Params().NetworkIDString() == CBaseChainParams::REGTEST) return;
@@ -717,7 +717,7 @@ std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestCo
 }
 
 
-void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
+void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman* connman)
 {  
     if(fLiteMode) return; // disable all Machinecoin specific functionality
 
@@ -858,10 +858,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         if(vin == CTxIn()) {
             const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
-            // connman.PushMessage(pfrom, NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount);
-            // connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST), nInvCount);
-            // connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST));
-            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount));  
+            connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount));  
           
             LogPrintf("DSEG -- Sent %d Masternode invs to peer %d\n", nInvCount, pfrom->GetId());
             return;
@@ -896,7 +893,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
 // Verification of masternodes via unique direct requests.
 
-void CMasternodeMan::DoFullVerificationStep(CConnman& connman)
+void CMasternodeMan::DoFullVerificationStep(CConnman* connman)
 {
     if(activeMasternode.outpoint == COutPoint()) return;
     if(!masternodeSync.IsSynced()) return;
@@ -1030,7 +1027,7 @@ void CMasternodeMan::CheckSameAddr()
     }
 }
 
-bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<CMasternode*>& vSortedByAddr, CConnman& connman)
+bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<CMasternode*>& vSortedByAddr, CConnman* connman)
 {
     if(netfulfilledman.HasFulfilledRequest(addr, strprintf("%s", NetMsgType::MNVERIFY)+"-request")) {
         // we already asked for verification, not a good idea to do this too often, skip it
@@ -1057,7 +1054,7 @@ bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<C
     return true;
 }
 
-void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv, CConnman& connman)
+void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv, CConnman* connman)
 {
     // only masternodes can sign this, why would someone ask regular node?
     if(!fMasterNode) {
@@ -1324,7 +1321,7 @@ std::string CMasternodeMan::ToString() const
     return info.str();
 }
 
-void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb, CConnman& connman)
+void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb, CConnman* connman)
 {
     LOCK2(cs_main, cs);
     mapSeenMasternodePing.insert(std::make_pair(mnb.lastPing.GetHash(), mnb.lastPing));
@@ -1346,7 +1343,7 @@ void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb, CConnman& co
     }
 }
 
-bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBroadcast mnb, int& nDos, CConnman& connman)
+bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBroadcast mnb, int& nDos, CConnman* connman)
 {
     // Need to lock cs_main here to ensure consistent locking order because the SimpleCheck call below locks cs_main
     LOCK(cs_main);
@@ -1551,7 +1548,7 @@ void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex)
     }
 }
 
-void CMasternodeMan::NotifyMasternodeUpdates(CConnman& connman)
+void CMasternodeMan::NotifyMasternodeUpdates(CConnman* connman)
 {
     // Avoid double locking
     bool fMasternodesAddedLocal = false;

@@ -52,7 +52,7 @@ CMasternode::CMasternode(const CMasternodeBroadcast& mnb) :
 //
 // When a new masternode broadcast is sent, update our information
 //
-bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb, CConnman& connman)
+bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb, CConnman* connman)
 {
     if(mnb.sigTime <= sigTime && !mnb.fRecovery) return false;
 
@@ -477,7 +477,7 @@ bool CMasternodeBroadcast::SimpleCheck(int& nDos)
     return true;
 }
 
-bool CMasternodeBroadcast::Update(CMasternode* pmn, int& nDos, CConnman& connman)
+bool CMasternodeBroadcast::Update(CMasternode* pmn, int& nDos, CConnman* connman)
 {
     nDos = 0;
 
@@ -651,7 +651,7 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos)
     return true;
 }
 
-void CMasternodeBroadcast::Relay(CConnman& connman)
+void CMasternodeBroadcast::Relay(CConnman* connman)
 {
     // Do not relay until fully synced
     if(!masternodeSync.IsSynced()) {
@@ -735,7 +735,7 @@ bool CMasternodePing::SimpleCheck(int& nDos)
     return true;
 }
 
-bool CMasternodePing::CheckAndUpdate(CMasternode* pmn, bool fFromNewBroadcast, int& nDos, CConnman& connman)
+bool CMasternodePing::CheckAndUpdate(CMasternode* pmn, bool fFromNewBroadcast, int& nDos, CConnman* connman)
 {
     // don't ban by default
     nDos = 0;
@@ -816,7 +816,7 @@ bool CMasternodePing::CheckAndUpdate(CMasternode* pmn, bool fFromNewBroadcast, i
     return true;
 }
 
-void CMasternodePing::Relay(CConnman& connman)
+void CMasternodePing::Relay(CConnman* connman)
 {
     // Do not relay until fully synced
     if(!masternodeSync.IsSynced()) {

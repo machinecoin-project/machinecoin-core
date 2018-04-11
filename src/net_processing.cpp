@@ -1237,9 +1237,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
 
             const CInv &inv = *it;
 
-            //if (!(inv.IsKnownType() || it->type == MSG_TX || it->type == MSG_WITNESS_TX))
-            //    return;
-
             it++;
 
             // Send stream from relay memory
