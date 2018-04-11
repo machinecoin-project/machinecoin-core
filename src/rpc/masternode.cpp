@@ -438,7 +438,7 @@ UniValue masternodelist(const JSONRPCRequest& request)
     if (strMode == "rank") {
         CMasternodeMan::rank_pair_vec_t vMasternodeRanks;
         mnodeman.GetMasternodeRanks(vMasternodeRanks);
-        typedef std::pair<int, CMasternode*> PairType;
+        typedef std::pair<int, CMasternode> PairType;
         for (PairType& s : vMasternodeRanks){
             std::string strOutpoint = s.second.vin.prevout.ToStringShort();
             if (strFilter !="" && strOutpoint.find(strFilter) == std::string::npos) continue;
@@ -795,13 +795,13 @@ UniValue sentinelping(const JSONRPCRequest& request)
 }
 
 static const CRPCCommand commands[] =
-{ //  category              name                      actor (function)         okSafeMode
+{ //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
-    { "masternodes",        "getpoolinfo",            &getpoolinfo,            true,  {} },
-    { "masternodes",        "masternode",             &masternode,             true,  {"args"} },
-    { "masternodes",        "masternodelist",         &masternodelist,         true,  {"args"} },
-    { "masternodes",        "masternodebroadcast",    &masternodebroadcast,    true,  {"args"} },
-    { "masternodes",        "sentinelping",           &sentinelping,           true,  {"args"} },
+    { "masternodes",        "getpoolinfo",            &getpoolinfo,            {} },
+    { "masternodes",        "masternode",             &masternode,             {"args"} },
+    { "masternodes",        "masternodelist",         &masternodelist,         {"args"} },
+    { "masternodes",        "masternodebroadcast",    &masternodebroadcast,    {"args"} },
+    { "masternodes",        "sentinelping",           &sentinelping,           {"args"} },
 };
 
 void RegisterMNRPCCommands(CRPCTable &t)
