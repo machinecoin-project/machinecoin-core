@@ -1808,7 +1808,7 @@ bool AppInitMain()
   
     // ********************************************************* Step 11d: start mac-ps-<smth> threads
 
-    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(&connman)));
+    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, &connman));
 
     // ********************************************************* Step 11: start node
 
