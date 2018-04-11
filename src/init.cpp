@@ -1433,7 +1433,7 @@ bool AppInitMain()
     uint64_t nMaxOutboundLimit = 0; //unlimited unless -maxuploadtarget is set
     uint64_t nMaxOutboundTimeframe = MAX_UPLOAD_TIMEFRAME;
 
-    pdsNotificationInterface = new CDSNotificationInterface(connman);
+    pdsNotificationInterface = new CDSNotificationInterface(&connman);
     RegisterValidationInterface(pdsNotificationInterface);
   
     if (gArgs.IsArgSet("-maxuploadtarget")) {
@@ -1808,7 +1808,7 @@ bool AppInitMain()
   
     // ********************************************************* Step 11d: start mac-ps-<smth> threads
 
-    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(&g_connman)));
+    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(*g_connman)));
 
     // ********************************************************* Step 11: start node
 
