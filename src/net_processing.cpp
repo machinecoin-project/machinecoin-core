@@ -3359,7 +3359,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
 
         if (SendRejectsAndCheckIfBanned(pto, connman))
             return true;
-        CNodeState &state = *State(pto->6etId());
+        CNodeState &state = *State(pto->GetId());
 
         // Address refresh broadcast
         int64_t nNow = GetTimeMicros();
