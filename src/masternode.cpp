@@ -5,7 +5,6 @@
 
 #include <activemasternode.h>
 #include <base58.h>
-#include <coins.h>
 #include <init.h>
 #include <netbase.h>
 #include <masternode.h>
@@ -14,7 +13,6 @@
 #include <masternodeman.h>
 #include <messagesigner.h>
 #include <script/standard.h>
-#include <txdb.h> // for CCoin
 #include <util.h>
 #ifdef ENABLE_WALLET
 #include <wallet/wallet.h>
