@@ -2459,22 +2459,24 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
     CScript pubScript;
 
     outpointRet = COutPoint(out.tx->GetHash(), out.i);
-    pubScript = out.tx->GetOutpoints()[out.i].scriptPubKey; // the inputs PubKey
+    pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
 
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
-    CMachinecoinAddress address2(address1);
 
-    CKeyID keyID;
-    if (!address2.GetKeyID(keyID)) {
-        LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Address does not refer to a key\n");
-        return false;
+    CWalletRef gotWallet = nullptr;
+    for (CWalletRef pwallet : vpwallets) {
+        if (gotWallet == nullptr)
+            if(GetKeyForDestination(*pwallet, address1))
+                gotWallet = pwallet;
     }
-
-    if (!GetKey(keyID, keyRet)) {
+    if (gotWallet == nullptr) {
         LogPrintf ("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
         return false;
     }
+    
+    CKeyID keyID;
+    keyID = GetKeyForDestination(gotWallet, address1);
 
     pubKeyRet = keyRet.GetPubKey();
     return true;
@@ -2501,7 +2503,7 @@ bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount a
     CAmount nFeeRet = 0;
     int nChangePosRet = -1;
     std::string strFail = "";
-    vector< CRecipient > vecSend;
+    std::vector< CRecipient > vecSend;
     vecSend.push_back((CRecipient){scriptChange, amount, false});
 
     CCoinControl *coinControl=NULL;
