@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+CConnman& connman = *g_connman;
+
 UniValue getpoolinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)
@@ -199,12 +201,12 @@ UniValue masternode(const JSONRPCRequest& request)
 
                 statusObj.push_back(Pair("result", fResult ? "successful" : "failed"));
                 if(fResult) {
-                    mnodeman.UpdateMasternodeList(mnb, &g_connman);
-                    mnb.Relay(&g_connman);
+                    mnodeman.UpdateMasternodeList(mnb, &connman);
+                    mnb.Relay(&connman);
                 } else {
                     statusObj.push_back(Pair("errorMessage", strError));
                 }
-                mnodeman.NotifyMasternodeUpdates(&g_connman);
+                mnodeman.NotifyMasternodeUpdates(&connman);
                 break;
             }
         }
@@ -252,8 +254,8 @@ UniValue masternode(const JSONRPCRequest& request)
 
             if (fResult) {
                 nSuccessful++;
-                mnodeman.UpdateMasternodeList(mnb, &g_connman);
-                mnb.Relay(&g_connman);
+                mnodeman.UpdateMasternodeList(mnb, &connman);
+                mnb.Relay(&connman);
             } else {
                 nFailed++;
                 statusObj.push_back(Pair("errorMessage", strError));
@@ -261,7 +263,7 @@ UniValue masternode(const JSONRPCRequest& request)
 
             resultsObj.push_back(Pair("status", statusObj));
         }
-        mnodeman.NotifyMasternodeUpdates(&g_connman);
+        mnodeman.NotifyMasternodeUpdates(&connman);
 
         UniValue returnObj(UniValue::VOBJ);
         returnObj.push_back(Pair("overall", strprintf("Successfully started %d masternodes, failed to start %d, total %d", nSuccessful, nFailed, nSuccessful + nFailed)));
@@ -738,13 +740,13 @@ UniValue masternodebroadcast(const JSONRPCRequest& request)
             bool fResult;
             if (mnb.CheckSignature(nDos)) {
                 if (fSafe) {
-                    fResult = mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDos, &g_connman);
+                    fResult = mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDos, &connman);
                 } else {
-                    mnodeman.UpdateMasternodeList(mnb, &g_connman);
-                    mnb.Relay(&g_connman);
+                    mnodeman.UpdateMasternodeList(mnb, &connman);
+                    mnb.Relay(&connman);
                     fResult = true;
                 }
-                mnodeman.NotifyMasternodeUpdates(&g_connman);
+                mnodeman.NotifyMasternodeUpdates(&connman);
             } else fResult = false;
 
             if(fResult) {
