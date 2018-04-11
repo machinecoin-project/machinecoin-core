@@ -180,13 +180,22 @@ UniValue gobject(const JSONRPCRequest& request)
         if(!pwalletMain->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee())) {
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Error making collateral transaction for governance object. Please check your wallet balance and make sure your wallet is unlocked.");
         }
+        
+        bool gotWallet = false;
+        for (CWalletRef pwallet : vpwallets) {
+            if (!gotWallet)
+                if(pwalletMain->GetBudgetSystemCollateralTX(wtx, govobj.GetHash(), govobj.GetMinCollateralFee()))
+                    gotWallet = pwallet;
+        }
+        if (!gotWallet)
+            throw JSONRPCError(RPC_INTERNAL_ERROR, "Error making collateral transaction for governance object. Please check your wallet balance and make sure your wallet is unlocked.");
 
         // -- make our change address
-        CReserveKey reservekey(pwalletMain);
+        CReserveKey reservekey(gotWallet);
         // -- send the tx to the network
         // pwalletMain->CommitTransaction(wtx, reservekey, g_connman->get(), NetMsgType::TX);
         CValidationState state;
-        pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), state);
+        gotWallet->CommitTransaction(wtx, reservekey, g_connman.get(), state);
 
         return wtx.GetHash().ToString();
     }
@@ -279,9 +288,9 @@ UniValue gobject(const JSONRPCRequest& request)
 
         if(fMissingConfirmations) {
             governance.AddPostponedObject(govobj);
-            govobj.Relay(*g_connman);
+            govobj.Relay();
         } else {
-            governance.AddGovernanceObject(govobj, *g_connman);
+            governance.AddGovernanceObject(govobj);
         }
 
         return govobj.GetHash().ToString();
@@ -347,7 +356,7 @@ UniValue gobject(const JSONRPCRequest& request)
         }
 
         CGovernanceException exception;
-        if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
+        if(governance.ProcessVoteAndRelay(vote, exception)) {
             nSuccessful++;
             statusObj.push_back(Pair("result", "success"));
         }
@@ -449,7 +458,7 @@ UniValue gobject(const JSONRPCRequest& request)
             }
 
             CGovernanceException exception;
-            if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
+            if(governance.ProcessVoteAndRelay(vote, exception)) {
                 nSuccessful++;
                 statusObj.push_back(Pair("result", "success"));
             }
@@ -574,7 +583,7 @@ UniValue gobject(const JSONRPCRequest& request)
             // UPDATE LOCAL DATABASE WITH NEW OBJECT SETTINGS
 
             CGovernanceException exception;
-            if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
+            if(governance.ProcessVoteAndRelay(vote, exception)) {
                 nSuccessful++;
                 statusObj.push_back(Pair("result", "success"));
             }
@@ -888,7 +897,7 @@ UniValue voteraw(const JSONRPCRequest& request)
     }
 
     CGovernanceException exception;
-    if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
+    if(governance.ProcessVoteAndRelay(vote, exception)) {
         return "Voted successfully";
     }
     else {
@@ -984,12 +993,12 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
 }
 
 static const CRPCCommand commands[] =
-{ //  category              name                      actor (function)         okSafeMode
+{ //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
-    { "governance",         "gobject",                &gobject,                true,  {"command"} },
-    { "governance",         "getgovernanceinfo",      &getgovernanceinfo,      true,  {"command"} },
-    { "governance",         "getsuperblockbudget",    &getsuperblockbudget,    true,  {"command"} },
-    { "governance",         "voteraw",                &voteraw,                true,  {"command"} },
+    { "governance",         "gobject",                &gobject,                {"command"} },
+    { "governance",         "getgovernanceinfo",      &getgovernanceinfo,      {"command"} },
+    { "governance",         "getsuperblockbudget",    &getsuperblockbudget,    {"command"} },
+    { "governance",         "voteraw",                &voteraw,                {"command"} },
 };
 
 void RegisterGovRPCCommands(CRPCTable &t)

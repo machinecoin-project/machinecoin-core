@@ -367,11 +367,11 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     bool gotWallet = false;
     for (CWalletRef pwallet : vpwallets) {
         if (!gotWallet)
-            if (!pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
-                return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
-            else
-                gotWallet = true;
+            if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
+                gotWallet = pwallet;
     }
+    if (!gotWallet)
+        return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
 
     CService service;
     if (!Lookup(strService.c_str(), service, 0, false))
