@@ -139,8 +139,8 @@ public:
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50); // Machinecoin M
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
         
         bech32_hrp = "mc";
 
@@ -152,15 +152,15 @@ public:
         
         checkpointData = {
             {
-                { 23021, uint256S("0x0268f4e816aac0874c911c83e263353289854c94a21cf97675652419893e7d8f")}  // Machinecoin: checkpoint at 23021
-                { 53600, uint256S("0x327ec569aa2439c16542ed9402884f5ce691d08f49168d672f19f817ace7a06b")}  // Machinecoin: checkpoint at 53600
-                {112715, uint256S("0x4fba0d1f891a35a7e0b7370d13b777e75fd2826423ef777ccca2f63d6acc70c5")}  // Machinecoin: checkpoint at 112715
-                {130938, uint256S("0x3fc5ccce46b45775ea3cb9f0d10169227bbd019518ebb90e5d6b8a770bf85d1d")}  // Machinecoin: checkpoint at 130938
-                {148401, uint256S("0x0c6b00515da19b9a95571e8cc61447442f6ade0f2e10e3b9ee6df133a76a809f")}  // Machinecoin: checkpoint at 148401
-                {305275, uint256S("0x4222db35707d9af172ea5c23582338874d1f2956b1850f857c50a3e6f2c6f313")}  // Machinecoin: checkpoint at 305275
-                {329528, uint256S("0x6fc60fe0c0133dfbb7fd7fae48e689c344e513a109cb4724913f768070f02a11")}  // Machinecoin: checkpoint at 329528
-                {410476, uint256S("0x8da1c7f79018fac8acac69a57b2f8b5d2743af67976a4525fdedc8c85a3a1418")}  // Machinecoin: checkpoint at 410476
-                {467593, uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975")}  // Machinecoin: checkpoint at 467593
+                { 23021, uint256S("0x0268f4e816aac0874c911c83e263353289854c94a21cf97675652419893e7d8f")},  // Machinecoin: checkpoint at 23021
+                { 53600, uint256S("0x327ec569aa2439c16542ed9402884f5ce691d08f49168d672f19f817ace7a06b")},  // Machinecoin: checkpoint at 53600
+                {112715, uint256S("0x4fba0d1f891a35a7e0b7370d13b777e75fd2826423ef777ccca2f63d6acc70c5")},  // Machinecoin: checkpoint at 112715
+                {130938, uint256S("0x3fc5ccce46b45775ea3cb9f0d10169227bbd019518ebb90e5d6b8a770bf85d1d")},  // Machinecoin: checkpoint at 130938
+                {148401, uint256S("0x0c6b00515da19b9a95571e8cc61447442f6ade0f2e10e3b9ee6df133a76a809f")},  // Machinecoin: checkpoint at 148401
+                {305275, uint256S("0x4222db35707d9af172ea5c23582338874d1f2956b1850f857c50a3e6f2c6f313")},  // Machinecoin: checkpoint at 305275
+                {329528, uint256S("0x6fc60fe0c0133dfbb7fd7fae48e689c344e513a109cb4724913f768070f02a11")},  // Machinecoin: checkpoint at 329528
+                {410476, uint256S("0x8da1c7f79018fac8acac69a57b2f8b5d2743af67976a4525fdedc8c85a3a1418")},  // Machinecoin: checkpoint at 410476
+                {467593, uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975")},  // Machinecoin: checkpoint at 467593
             }
         };
 
@@ -248,8 +248,8 @@ public:
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,53); // Machinecoin N
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "tm";
         
@@ -261,8 +261,8 @@ public:
 
         checkpointData = {
             {
-                { 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f")}  // Machinecoin Testnet: checkpoint at 0
-                { 209, uint256S("0x3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3")}  // Machinecoin Testnet: checkpoint at 209
+                { 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f")},  // Machinecoin Testnet: checkpoint at 0
+                { 209, uint256S("0x3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3")},  // Machinecoin Testnet: checkpoint at 209
             }
         };
         
@@ -355,7 +355,7 @@ public:
 
         checkpointData = {
             {
-                { 0, uint256S("0x62214f698865bf3308a4cddec2a18c1e9a98f272189f696e0f99d5d1b137912b")}  // Machinecoin Regtest: checkpoint at 0
+                { 0, uint256S("0x62214f698865bf3308a4cddec2a18c1e9a98f272189f696e0f99d5d1b137912b")},  // Machinecoin Regtest: checkpoint at 0
             }
         };
 
@@ -377,8 +377,8 @@ public:
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55); // Machinecoin N
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
         
         bech32_hrp = "mcrt";
     }
