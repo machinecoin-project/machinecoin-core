@@ -714,8 +714,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     if(pblock->txoutMasternode != CTxOut()) {
         CTxDestination address1;
         ExtractDestination(pblock->txoutMasternode.scriptPubKey, address1);
-        CMachinecoinAddress address2(address1);
-        masternodeObj.push_back(Pair("payee", address2.ToString().c_str()));
+        masternodeObj.push_back(Pair("payee", EncodeDestination(address2).c_str()));
         masternodeObj.push_back(Pair("script", HexStr(pblock->txoutMasternode.scriptPubKey.begin(), pblock->txoutMasternode.scriptPubKey.end())));
         masternodeObj.push_back(Pair("amount", pblock->txoutMasternode.nValue));
     }
@@ -729,8 +728,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             UniValue entry(UniValue::VOBJ);
             CTxDestination address1;
             ExtractDestination(txout.scriptPubKey, address1);
-            CMachinecoinAddress address2(address1);
-            entry.push_back(Pair("payee", address2.ToString().c_str()));
+            entry.push_back(Pair("payee", EncodeDestination(address2).c_str()));
             entry.push_back(Pair("script", HexStr(txout.scriptPubKey.begin(), txout.scriptPubKey.end())));
             entry.push_back(Pair("amount", txout.nValue));
             superblockObjArray.push_back(entry);
