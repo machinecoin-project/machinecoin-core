@@ -423,7 +423,7 @@ bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints* lp, bool 
 
 // Masternodes
 // TODO check ~ maybe replaced by newer function
-bool GetUTXOCoin(const COutPoint& outpoint, CCoin& coin)
+bool GetUTXOCoin(const COutPoint& outpoint, Coin& coin)
 {
     LOCK(cs_main);
     if (!pcoinsTip->GetCoin(outpoint.hash, coin))
@@ -436,7 +436,7 @@ bool GetUTXOCoin(const COutPoint& outpoint, CCoin& coin)
 int GetUTXOHeight(const COutPoint& outpoint)
 {
     // -1 means UTXO is yet unknown or already spent
-    CCoin coin;
+    Coin coin;
     return GetUTXOCoin(outpoint, coin) ? coin.nHeight : -1;
 }
 
