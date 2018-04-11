@@ -2464,18 +2464,11 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
 
-    CWalletRef gotWallet = nullptr;
+    CKeyID keyID;
     for (CWalletRef pwallet : vpwallets) {
-        if (gotWallet == nullptr)
-            if(GetKeyForDestination(*pwallet, address1))
-                gotWallet = pwallet;
+        keyID = GetKeyForDestination(*pwallet, address1)
     }
-    if (gotWallet == nullptr) {
-        LogPrintf ("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
-        return false;
-    }
-    
-    CKeyID keyID = GetKeyForDestination(*gotWallet, address1);
+    /*LogPrintf ("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");*/
 
     pubKeyRet = keyRet.GetPubKey();
     return true;
@@ -2505,7 +2498,7 @@ bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount a
     std::vector< CRecipient > vecSend;
     vecSend.push_back((CRecipient){scriptChange, amount, false});
 
-    CCoinControl *coinControl=NULL;
+    CCoinControl coinControl=NULL;
     bool success = CreateTransaction(vecSend, tx, reservekey, nFeeRet, nChangePosRet, strFail, coinControl, true);
     if(!success){
         LogPrintf("CWallet::GetBudgetSystemCollateralTX -- Error: %s\n", strFail);
