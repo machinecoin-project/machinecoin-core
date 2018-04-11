@@ -184,9 +184,9 @@ UniValue gobject(const JSONRPCRequest& request)
         // -- make our change address
         CReserveKey reservekey(pwalletMain);
         // -- send the tx to the network
-        // pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), NetMsgType::TX);
+        // pwalletMain->CommitTransaction(wtx, reservekey, g_connman->get(), NetMsgType::TX);
         CValidationState state;
-        pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), state);
+        pwalletMain->CommitTransaction(wtx, reservekey, g_connman->get(), state);
 
         return wtx.GetHash().ToString();
     }
