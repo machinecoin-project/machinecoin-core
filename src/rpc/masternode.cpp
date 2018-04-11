@@ -311,7 +311,10 @@ UniValue masternode(const JSONRPCRequest& request)
     if (strCommand == "outputs") {
         // Find possible candidates
         std::vector<COutput> vPossibleCoins;
-        pwalletMain->AvailableMNCoins(vPossibleCoins, true, NULL, false);
+        
+        for (CWalletRef pwallet : vpwallets) {
+            pwallet->AvailableMNCoins(vPossibleCoins, true, NULL, false);
+        }
 
         UniValue obj(UniValue::VOBJ);
         for (COutput& out : vPossibleCoins) {
@@ -435,7 +438,8 @@ UniValue masternodelist(const JSONRPCRequest& request)
     if (strMode == "rank") {
         CMasternodeMan::rank_pair_vec_t vMasternodeRanks;
         mnodeman.GetMasternodeRanks(vMasternodeRanks);
-        for (PAIRTYPE(int, CMasternode)& s : vMasternodeRanks) {
+        typedef std::pair<int, CMasternode*> PairType;
+        for (PairType& s : vMasternodeRanks){
             std::string strOutpoint = s.second.vin.prevout.ToStringShort();
             if (strFilter !="" && strOutpoint.find(strFilter) == std::string::npos) continue;
             obj.push_back(Pair(strOutpoint, s.first));
@@ -493,7 +497,7 @@ UniValue masternodelist(const JSONRPCRequest& request)
                 if (strFilter !="" && strOutpoint.find(strFilter) == std::string::npos) continue;
                 obj.push_back(Pair(strOutpoint, (int64_t)mn.lastPing.sigTime));
             } else if (strMode == "payee") {
-                CTxDestination address = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()) << " " <<
+                CTxDestination address = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
                 std::string strPayee = EncodeDestination(address);
                 if (strFilter !="" && strPayee.find(strFilter) == std::string::npos &&
                     strOutpoint.find(strFilter) == std::string::npos) continue;
