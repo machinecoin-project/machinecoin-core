@@ -70,6 +70,8 @@
 #include <malloc.h>
 #endif
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/case_conv.hpp> // for to_lower()
 #include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
 #include <boost/interprocess/sync/file_lock.hpp>

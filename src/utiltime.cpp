@@ -7,6 +7,7 @@
 #include <config/machinecoin-config.h>
 #endif
 
+#include <tinyformat.h>
 #include <utiltime.h>
 
 #include <atomic>
