@@ -132,7 +132,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, const std::string& strCommand
         int nCount;
         vRecv >> nItemID >> nCount;
 
-        LogPrintf("SYNCSTATUSCOUNT -- got inventory count: nItemID=%d  nCount=%d  peer=%d\n", nItemID, nCount, pfrom->id);
+        LogPrintf("SYNCSTATUSCOUNT -- got inventory count: nItemID=%d  nCount=%d  peer=%d\n", nItemID, nCount, pfrom->GetId());
     }
 }
 

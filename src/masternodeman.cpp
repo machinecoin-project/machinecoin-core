@@ -820,7 +820,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
                 std::map<CNetAddr, int64_t>::iterator it = mAskedUsForMasternodeList.find(pfrom->addr);
                 if (it != mAskedUsForMasternodeList.end() && it->second > GetTime()) {
                     Misbehaving(pfrom->GetId(), 34);
-                    LogPrintf("DSEG -- peer already asked me for the list, peer=%d\n", pfrom->id);
+                    LogPrintf("DSEG -- peer already asked me for the list, peer=%d\n", pfrom->GetId());
                     return;
                 }
                 int64_t askAgain = GetTime() + DSEG_UPDATE_SECONDS;
@@ -848,7 +848,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
             mapSeenMasternodePing.insert(std::make_pair(hashMNP, mnp));
 
             if (vin.prevout == mnpair.first) {
-                LogPrintf("DSEG -- Sent 1 Masternode inv to peer %d\n", pfrom->id);
+                LogPrintf("DSEG -- Sent 1 Masternode inv to peer %d\n", pfrom->GetId());
                 return;
             }
         }
@@ -860,11 +860,11 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
             // connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST));
             connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_LIST, nInvCount));  
           
-            LogPrintf("DSEG -- Sent %d Masternode invs to peer %d\n", nInvCount, pfrom->id);
+            LogPrintf("DSEG -- Sent %d Masternode invs to peer %d\n", nInvCount, pfrom->GetId());
             return;
         }
         // smth weird happen - someone asked us for vin we have no idea about?
-        LogPrint(MCLog::MN, "DSEG -- No invs sent to peer %d\n", pfrom->id);
+        LogPrint(MCLog::MN, "DSEG -- No invs sent to peer %d\n", pfrom->GetId());
 
     } else if (strCommand == NetMsgType::MNVERIFY) { // Masternode Verify
 

@@ -2012,7 +2012,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         for (CInv &inv : vInv)
         {
             if(!inv.IsKnownType()) {
-                LogPrint("net", "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->id);
+                LogPrint("net", "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->GetId());
                 continue;
             }
 
