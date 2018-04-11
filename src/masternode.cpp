@@ -14,6 +14,7 @@
 #include <masternodeman.h>
 #include <messagesigner.h>
 #include <script/standard.h>
+#include <txdb.h> // for CCoin
 #include <util.h>
 #ifdef ENABLE_WALLET
 #include <wallet/wallet.h>
