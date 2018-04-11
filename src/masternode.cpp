@@ -386,8 +386,8 @@ bool CMasternodeBroadcast::Create(const COutPoint& outpoint, const CService& ser
     if (fImporting || fReindex) return false;
 
     LogPrint(MCLog::MN, "CMasternodeBroadcast::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
-             CMachinecoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
-             pubKeyMasternodeNew.GetID().ToString());
+             EncodeDestination(GetScriptForDestination(pubKeyCollateralAddressNew.GetID())),
+             EncodeDestination(GetScriptForDestination(pubKeyMasternodeNew.GetID()));
 
     auto Log = [&strErrorRet,&mnbRet](std::string sErr)->bool
     {
@@ -638,7 +638,7 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos)
                     pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
                     boost::lexical_cast<std::string>(nProtocolVersion);
 
-    LogPrint(MCLog::MN, "CMasternodeBroadcast::CheckSignature -- strMessage: %s  pubKeyCollateralAddress address: %s  sig: %s\n", strMessage, CMachinecoinAddress(pubKeyCollateralAddress.GetID()).ToString(), EncodeBase64(&vchSig[0], vchSig.size()));
+    LogPrint(MCLog::MN, "CMasternodeBroadcast::CheckSignature -- strMessage: %s  pubKeyCollateralAddress address: %s  sig: %s\n", strMessage, EncodeDestination(GetScriptForDestination(pubKeyCollateralAddress.GetID())), EncodeBase64(&vchSig[0], vchSig.size()));
 
     if(!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, vchSig, strMessage, strError)){
         LogPrintf("CMasternodeBroadcast::CheckSignature -- Got bad Masternode announce signature, error: %s\n", strError);
