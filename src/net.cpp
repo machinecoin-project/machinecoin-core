@@ -2942,7 +2942,7 @@ int64_t PoissonNextSend(int64_t nNow, int average_interval_seconds) {
 std::vector<CNode*> CConnman::CopyNodeVector()
 {
     LOCK(cs_vNodes);
-    vNodesCopy = vNodes;
+    std::vector<CNode*> vNodesCopy = vNodes;
     for (CNode* pnode : vNodesCopy)
         pnode->AddRef();
     return vNodesCopy;
@@ -2951,8 +2951,8 @@ std::vector<CNode*> CConnman::CopyNodeVector()
 void CConnman::ReleaseNodeVector(const std::vector<CNode*>& vecNodes)
 {
     LOCK(cs_vNodes);
-            for (CNode* pnode : vNodesCopy)
-                pnode->Release();
+    for (CNode* pnode : vecNodes)
+        pnode->Release();
 }
 
 CSipHasher CConnman::GetDeterministicRandomizer(uint64_t id) const
