@@ -34,6 +34,8 @@ using namespace std;
 
 UniValue gobject(const JSONRPCRequest& request)
 {
+    CConnman& connman = *g_connman;
+
     std::string strCommand;
     if (request.params.size() >= 1)
         strCommand = request.params[0].get_str();
@@ -843,6 +845,8 @@ UniValue gobject(const JSONRPCRequest& request)
 
 UniValue voteraw(const JSONRPCRequest& request)
 {
+    CConnman& connman = *g_connman;
+
     if (request.fHelp || request.params.size() != 7)
         throw std::runtime_error(
                 "voteraw <masternode-tx-hash> <masternode-tx-index> <governance-hash> <vote-signal> [yes|no|abstain] <time> <vote-sig>\n"
