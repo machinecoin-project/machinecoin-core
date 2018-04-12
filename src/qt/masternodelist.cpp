@@ -2,9 +2,9 @@
 #include <qt/forms/ui_masternodelist.h>
 
 #include <activemasternode.h>
-#include <clientmodel.h>
+#include <qt/clientmodel.h>
 #include <init.h>
-#include <guiutil.h>
+#include <qt/guiutil.h>
 #include <masternode-sync.h>
 #include <masternodeconfig.h>
 #include <masternodeman.h>
