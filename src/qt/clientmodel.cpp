@@ -20,8 +20,8 @@
 #include <util.h>
 #include <warnings.h>
 
-<include "masternodeman.h>
-<include "masternode-sync.h>
+#include <masternodeman.h>
+#include <masternode-sync.h>
 
 #include <stdint.h>
 
