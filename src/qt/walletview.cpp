@@ -28,6 +28,7 @@
 #include <QHBoxLayout>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QSettings>
 #include <QVBoxLayout>
 
 WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
