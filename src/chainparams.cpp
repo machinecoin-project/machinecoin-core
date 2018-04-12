@@ -262,13 +262,6 @@ public:
         checkpointData = {
             {
                 { 0, uint256S("0x72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f")},  // Machinecoin Testnet: checkpoint at 0
-                { 209, uint256S("0x3c63f32416111dca75775eb0361b110be82f4603a83bb3f2e8d88326a5ccf2f3")},  // Machinecoin Testnet: checkpoint at 209
-            }
-        };
-        
-        checkpointData = {
-            {
-                {546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")},
             }
         };
 
