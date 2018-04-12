@@ -1128,7 +1128,7 @@ void CGovernanceManager::RequestGovernanceObject(CNode* pfrom, const uint256& nH
     connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, nHash, filter));
 }
 
-int CGovernanceManager::RequestGovernanceObjectVotes(CNode* pnode)
+int CGovernanceManager::RequestGovernanceObjectVotes(CNode* pnode, CConnman* connman)
 {
     if(pnode->nVersion < MIN_GOVERNANCE_PEER_PROTO_VERSION) return -3;
     std::vector<CNode*> vNodesCopy;
@@ -1352,7 +1352,7 @@ void CGovernanceManager::UpdatedBlockTip(const CBlockIndex *pindex, CConnman* co
     CheckPostponedObjects(connman);
 }
 
-void CGovernanceManager::RequestOrphanObjects()
+void CGovernanceManager::RequestOrphanObjects(CConnman* connman)
 {
     std::vector<CNode*> vNodesCopy = connman->CopyNodeVector();
 
