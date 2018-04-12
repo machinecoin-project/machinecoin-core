@@ -1,5 +1,5 @@
 #include <qt/masternodelist.h>
-#include <qt/ui_masternodelist.h>
+#include <ui_masternodelist.h>
 
 #include <activemasternode.h>
 #include <clientmodel.h>
