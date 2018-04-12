@@ -1560,8 +1560,8 @@ void CMasternodeMan::NotifyMasternodeUpdates(CConnman* connman)
     }
 
     if(fMasternodesAddedLocal) {
-        governance.CheckMasternodeOrphanObjects();
-        governance.CheckMasternodeOrphanVotes();
+        governance.CheckMasternodeOrphanObjects(connman);
+        governance.CheckMasternodeOrphanVotes(connman);
     }
     if(fMasternodesRemovedLocal) {
         governance.UpdateCachesAndClean();
