@@ -70,6 +70,7 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     if (settings.value("fShowMasternodesTab").toBool()) {
         masternodeListPage = new MasternodeList(platformStyle);
         addWidget(masternodeListPage);
+    }
     
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
