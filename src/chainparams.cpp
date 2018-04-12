@@ -281,8 +281,8 @@ public:
         };
       
         // Masternodes
-        consensus.nMasternodePaymentsStartBlock = 0;
-        consensus.nSuperblockStartBlock = 1;
+        consensus.nMasternodePaymentsStartBlock = 120;
+        consensus.nSuperblockStartBlock = 120;
         consensus.nSuperblockCycle = 24;
         consensus.nGovernanceMinQuorum = 1;
         consensus.nGovernanceFilterElements = 500;
