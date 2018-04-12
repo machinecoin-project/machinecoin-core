@@ -10,7 +10,7 @@
 #include <masternodeman.h>
 #include <sync.h>
 #include <wallet/wallet.h>
-#include <walletmodel.h>
+#include <qt/walletmodel.h>
 
 #include <QTimer>
 #include <QMessageBox>
