@@ -54,25 +54,6 @@ const char *MNGOVERNANCEOBJECTVOTE="govobjvote";
 const char *MNVERIFY="mnv";
 } // namespace NetMsgType
 
-const static std::string ppszTypeName[] =
-{
-    "ERROR", // Should never occur
-    NetMsgType::TX,
-    NetMsgType::BLOCK,
-    NetMsgType::MERKLEBLOCK,
-    NetMsgType::CMPCTBLOCK,
-    // Machinecoin message types
-    // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
-    NetMsgType::MASTERNODEPAYMENTVOTE,
-    NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
-    NetMsgType::MNQUORUM, // not implemented
-    NetMsgType::MNANNOUNCE,
-    NetMsgType::MNPING,
-    NetMsgType::MNGOVERNANCEOBJECT,
-    NetMsgType::MNGOVERNANCEOBJECTVOTE,
-    NetMsgType::MNVERIFY,
-};
-
 /** All known message types. Keep this in the same order as the list of
  * messages above and in protocol.h.
  */
@@ -196,33 +177,16 @@ CInv::CInv()
     hash.SetNull();
 }
 
-// CInv::CInv(int typeIn, const uint256& hashIn) : type(typeIn), hash(hashIn) {}
+CInv::CInv(int typeIn, const uint256& hashIn) : type(typeIn), hash(hashIn) {}
 
 bool operator<(const CInv& a, const CInv& b)
 {
     return (a.type < b.type || (a.type == b.type && a.hash < b.hash));
 }
 
-// Machinecoin
-CInv::CInv(int typeIn, const uint256& hashIn)
-{
-    int i;
-    for (i = 1; i < ARRAYLEN(ppszTypeName); i++)
-    {
-        if (typeIn == i)
-        {
-            type = i;
-            break;
-        }
-    }
-    if (i == ARRAYLEN(ppszTypeName))
-        throw std::out_of_range(strprintf("CInv::CInv(int, uint256): unknown type '%s'", typeIn));
-    hash = hashIn;
-}
-
 bool CInv::IsKnownType() const
 {
-    return (type >= 1 && type < (int)ARRAYLEN(ppszTypeName));
+    return (type >= 1 && type < (int)ARRAYLEN(allNetMessageTypes));
 }
 
 std::string CInv::GetCommand() const
@@ -240,7 +204,7 @@ std::string CInv::GetCommand() const
     default:
         if (!IsKnownType())
             throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
-        return ppszTypeName[type];
+        return allNetMessageTypes[type];
     }
 }
 
