@@ -179,7 +179,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
     // gradually request the rest of the votes after sync finished
     if(IsSynced()) {
         std::vector<CNode*> vNodesCopy = connman->CopyNodeVector();
-        governance.RequestGovernanceObjectVotes(vNodesCopy);
+        governance.RequestGovernanceObjectVotes(vNodesCopy, connman);
         connman->ReleaseNodeVector(vNodesCopy);
         return;
     }
@@ -345,7 +345,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
 
                 // only request obj sync once from each peer, then request votes on per-obj basis
                 if(netfulfilledman.HasFulfilledRequest(pnode->addr, "governance-sync")) {
-                    int nObjsLeftToAsk = governance.RequestGovernanceObjectVotes(pnode);
+                    int nObjsLeftToAsk = governance.RequestGovernanceObjectVotes(pnode, connman);
                     static int64_t nTimeNoObjectsLeft = 0;
                     // check for data
                     if(nObjsLeftToAsk == 0) {
