@@ -30,8 +30,6 @@
 
 #include <univalue.h>
 
-CConnman& connman = *g_connman;
-
 using namespace std;
 
 UniValue gobject(const JSONRPCRequest& request)

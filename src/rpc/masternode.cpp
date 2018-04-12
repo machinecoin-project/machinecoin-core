@@ -25,8 +25,6 @@
 
 #include <algorithm>
 
-CConnman& connman = *g_connman;
-
 UniValue getpoolinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 0)

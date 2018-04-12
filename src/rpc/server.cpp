@@ -23,6 +23,8 @@
 #include <memory> // for unique_ptr
 #include <unordered_map>
 
+CConnman& connman = *g_connman;
+
 static bool fRPCRunning = false;
 static bool fRPCInWarmup = true;
 static std::string rpcWarmupStatus("RPC server started");
