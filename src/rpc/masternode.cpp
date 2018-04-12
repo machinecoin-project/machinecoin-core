@@ -45,6 +45,8 @@ UniValue getpoolinfo(const JSONRPCRequest& request)
 
 UniValue masternode(const JSONRPCRequest& request)
 {
+    CConnman& connman = *g_connman;
+
     std::string strCommand;
     if (request.params.size() >= 1) {
         strCommand = request.params[0].get_str();
@@ -537,6 +539,8 @@ bool DecodeHexVecMnb(std::vector<CMasternodeBroadcast>& vecMnb, std::string strH
 
 UniValue masternodebroadcast(const JSONRPCRequest& request)
 {
+    CConnman& connman = *g_connman;
+
     std::string strCommand;
     if (request.params.size() >= 1)
         strCommand = request.params[0].get_str();
