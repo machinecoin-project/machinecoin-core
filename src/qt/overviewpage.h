@@ -5,7 +5,7 @@
 #ifndef MACHINECOIN_QT_OVERVIEWPAGE_H
 #define MACHINECOIN_QT_OVERVIEWPAGE_H
 
-#include "amount.h"
+#include <amount.h>
 
 #include <QWidget>
 #include <memory>

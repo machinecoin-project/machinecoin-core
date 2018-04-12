@@ -3,44 +3,42 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/machinecoin-config.h"
+#include <config/machinecoin-config.h>
 #endif
 
-#include "machinecoingui.h"
+#include <qt/machinecoingui.h>
 
-#include "chainparams.h"
-#include "clientmodel.h"
-#include "guiconstants.h"
-#include "guiutil.h"
-#include "intro.h"
-#include "net.h"
-#include "networkstyle.h"
-#include "optionsmodel.h"
-#include "platformstyle.h"
-#include "splashscreen.h"
-#include "utilitydialog.h"
-#include "winshutdownmonitor.h"
+#include <chainparams.h>
+#include <qt/clientmodel.h>
+#include <fs.h>
+#include <qt/guiconstants.h>
+#include <qt/guiutil.h>
+#include <qt/intro.h>
+#include <qt/networkstyle.h>
+#include <qt/optionsmodel.h>
+#include <qt/platformstyle.h>
+#include <qt/splashscreen.h>
+#include <qt/utilitydialog.h>
+#include <qt/winshutdownmonitor.h>
 
 #ifdef ENABLE_WALLET
-#include "paymentserver.h"
-#include "walletmodel.h"
+#include <qt/paymentserver.h>
+#include <qt/walletmodel.h>
 #endif
-#include "masternodeconfig.h"
+#include <masternodeconfig.h>
 
-#include "init.h"
-#include "rpc/server.h"
-#include "scheduler.h"
-#include "ui_interface.h"
-#include "util.h"
-#include "warnings.h"
+#include <init.h>
+#include <rpc/server.h>
+#include <ui_interface.h>
+#include <util.h>
+#include <warnings.h>
 
 #ifdef ENABLE_WALLET
-#include "wallet/wallet.h"
+#include <wallet/wallet.h>
 #endif
 
 #include <stdint.h>
 
-#include <boost/filesystem/operations.hpp>
 #include <boost/thread.hpp>
 
 #include <QApplication>
@@ -48,7 +46,6 @@
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QMessageBox>
-#include <QProcess>
 #include <QSettings>
 #include <QThread>
 #include <QTimer>
@@ -109,7 +106,7 @@ static QString GetLangTerritory()
     if(!lang_territory_qsettings.isEmpty())
         lang_territory = lang_territory_qsettings;
     // 3) -lang command line argument
-    lang_territory = QString::fromStdString(GetArg("-lang", lang_territory.toStdString()));
+    lang_territory = QString::fromStdString(gArgs.GetArg("-lang", lang_territory.toStdString()));
     return lang_territory;
 }
 
@@ -155,15 +152,21 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
 #if QT_VERSION < 0x050000
 void DebugMessageHandler(QtMsgType type, const char *msg)
 {
-    const char *category = (type == QtDebugMsg) ? "qt" : NULL;
-    LogPrint(category, "GUI: %s\n", msg);
+    if (type == QtDebugMsg) {
+        LogPrint(MCLog::QT, "GUI: %s\n", msg);
+    } else {
+        LogPrintf("GUI: %s\n", msg);
+    }
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString &msg)
 {
     Q_UNUSED(context);
-    const char *category = (type == QtDebugMsg) ? "qt" : NULL;
-    LogPrint(category, "GUI: %s\n", msg.toStdString());
+    if (type == QtDebugMsg) {
+        LogPrint(MCLog::QT, "GUI: %s\n", msg.toStdString());
+    } else {
+        LogPrintf("GUI: %s\n", msg.toStdString());
+    }
 }
 #endif
 
@@ -175,20 +178,21 @@ class MachinecoinCore: public QObject
     Q_OBJECT
 public:
     explicit MachinecoinCore();
+    /** Basic initialization, before starting initialization/shutdown thread.
+     * Return true on success.
+     */
+    static bool baseInitialize();
 
 public Q_SLOTS:
     void initialize();
     void shutdown();
 
 Q_SIGNALS:
-    void initializeResult(int retval);
-    void shutdownResult(int retval);
+    void initializeResult(bool success);
+    void shutdownResult();
     void runawayException(const QString &message);
 
 private:
-    boost::thread_group threadGroup;
-    CScheduler scheduler;
-
     /// Pass fatal exception message to UI thread
     void handleRunawayException(const std::exception *e);
 };
@@ -220,14 +224,14 @@ public:
     void requestShutdown();
 
     /// Get process return value
-    int getReturnValue() { return returnValue; }
+    int getReturnValue() const { return returnValue; }
 
     /// Get window identifier of QMainWindow (MachinecoinGUI)
     WId getMainWinId() const;
 
 public Q_SLOTS:
-    void initializeResult(int retval);
-    void shutdownResult(int retval);
+    void initializeResult(bool success);
+    void shutdownResult();
     /// Handle runaway exceptions. Shows a message box with the problem and quits the program.
     void handleRunawayException(const QString &message);
 
@@ -254,7 +258,7 @@ private:
     void startThread();
 };
 
-#include "machinecoin.moc"
+#include <qt/machinecoin.moc>
 
 MachinecoinCore::MachinecoinCore():
     QObject()
@@ -267,32 +271,39 @@ void MachinecoinCore::handleRunawayException(const std::exception *e)
     Q_EMIT runawayException(QString::fromStdString(GetWarnings("gui")));
 }
 
+bool MachinecoinCore::baseInitialize()
+{
+    if (!AppInitBasicSetup())
+    {
+        return false;
+    }
+    if (!AppInitParameterInteraction())
+    {
+        return false;
+    }
+    if (!AppInitSanityChecks())
+    {
+        return false;
+    }
+    if (!AppInitLockDataDirectory())
+    {
+        return false;
+    }
+    return true;
+}
+
 void MachinecoinCore::initialize()
 {
     try
     {
-        qDebug() << __func__ << ": Running AppInit2 in thread";
-        if (!AppInitBasicSetup())
-        {
-            Q_EMIT initializeResult(false);
-            return;
-        }
-        if (!AppInitParameterInteraction())
-        {
-            Q_EMIT initializeResult(false);
-            return;
-        }
-        if (!AppInitSanityChecks())
-        {
-            Q_EMIT initializeResult(false);
-            return;
-        }
-        int rv = AppInitMain(threadGroup, scheduler);
+        qDebug() << __func__ << ": Running initialization in thread";
+        bool rv = AppInitMain();
+
         Q_EMIT initializeResult(rv);
     } catch (const std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
-        handleRunawayException(NULL);
+        handleRunawayException(nullptr);
     }
 }
 
@@ -301,15 +312,14 @@ void MachinecoinCore::shutdown()
     try
     {
         qDebug() << __func__ << ": Running Shutdown in thread";
-        Interrupt(threadGroup);
-        threadGroup.join_all();
+        Interrupt();
         Shutdown();
         qDebug() << __func__ << ": Shutdown finished";
-        Q_EMIT shutdownResult(1);
+        Q_EMIT shutdownResult();
     } catch (const std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
-        handleRunawayException(NULL);
+        handleRunawayException(nullptr);
     }
 }
 
@@ -332,7 +342,7 @@ MachinecoinApplication::MachinecoinApplication(int &argc, char **argv):
     // This must be done inside the MachinecoinApplication constructor, or after it, because
     // PlatformStyle::instantiate requires a QApplication
     std::string platformName;
-    platformName = GetArg("-uiplatform", MachinecoinGUI::DEFAULT_UIPLATFORM);
+    platformName = gArgs.GetArg("-uiplatform", MachinecoinGUI::DEFAULT_UIPLATFORM);
     platformStyle = PlatformStyle::instantiate(QString::fromStdString(platformName));
     if (!platformStyle) // Fall back to "other" if specified name not found
         platformStyle = PlatformStyle::instantiate("other");
@@ -370,7 +380,7 @@ void MachinecoinApplication::createPaymentServer()
 
 void MachinecoinApplication::createOptionsModel(bool resetSettings)
 {
-    optionsModel = new OptionsModel(NULL, resetSettings);
+    optionsModel = new OptionsModel(nullptr, resetSettings);
 }
 
 void MachinecoinApplication::createWindow(const NetworkStyle *networkStyle)
@@ -379,7 +389,6 @@ void MachinecoinApplication::createWindow(const NetworkStyle *networkStyle)
 
     pollShutdownTimer = new QTimer(window);
     connect(pollShutdownTimer, SIGNAL(timeout()), window, SLOT(detectShutdown()));
-    pollShutdownTimer->start(200);
 }
 
 void MachinecoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
@@ -401,8 +410,8 @@ void MachinecoinApplication::startThread()
     executor->moveToThread(coreThread);
 
     /*  communication to and from thread */
-    connect(executor, SIGNAL(initializeResult(int)), this, SLOT(initializeResult(int)));
-    connect(executor, SIGNAL(shutdownResult(int)), this, SLOT(shutdownResult(int)));
+    connect(executor, SIGNAL(initializeResult(bool)), this, SLOT(initializeResult(bool)));
+    connect(executor, SIGNAL(shutdownResult()), this, SLOT(shutdownResult()));
     connect(executor, SIGNAL(runawayException(QString)), this, SLOT(handleRunawayException(QString)));
     connect(this, SIGNAL(requestedInitialize()), executor, SLOT(initialize()));
     connect(this, SIGNAL(requestedShutdown()), executor, SLOT(shutdown()));
@@ -453,14 +462,14 @@ void MachinecoinApplication::requestShutdown()
     Q_EMIT requestedShutdown();
 }
 
-void MachinecoinApplication::initializeResult(int retval)
+void MachinecoinApplication::initializeResult(bool success)
 {
-    qDebug() << __func__ << ": Initialization result: " << retval;
-    // Set exit result: 0 if successful, 1 if failure
-    returnValue = retval ? 0 : 1;
-    if(retval)
+    qDebug() << __func__ << ": Initialization result: " << success;
+    // Set exit result.
+    returnValue = success ? EXIT_SUCCESS : EXIT_FAILURE;
+    if(success)
     {
-        // Log this only after AppInit2 finishes, as then logging setup is guaranteed complete
+        // Log this only after AppInitMain finishes, as then logging setup is guaranteed complete
         qWarning() << "Platform customization:" << platformStyle->getName();
 #ifdef ENABLE_WALLET
         PaymentServer::LoadRootCAs();
@@ -471,9 +480,10 @@ void MachinecoinApplication::initializeResult(int retval)
         window->setClientModel(clientModel);
 
 #ifdef ENABLE_WALLET
-        if(pwalletMain)
+        // TODO: Expose secondary wallets
+        if (!vpwallets.empty())
         {
-            walletModel = new WalletModel(platformStyle, pwalletMain, optionsModel);
+            walletModel = new WalletModel(platformStyle, vpwallets[0], optionsModel);
 
             window->addWallet(MachinecoinGUI::DEFAULT_WALLET, walletModel);
             window->setCurrentWallet(MachinecoinGUI::DEFAULT_WALLET);
@@ -484,7 +494,7 @@ void MachinecoinApplication::initializeResult(int retval)
 #endif
 
         // If -min option passed, start window minimized.
-        if(GetBoolArg("-min", false))
+        if(gArgs.GetBoolArg("-min", false))
         {
             window->showMinimized();
         }
@@ -505,15 +515,16 @@ void MachinecoinApplication::initializeResult(int retval)
                          window, SLOT(message(QString,QString,unsigned int)));
         QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
 #endif
+        pollShutdownTimer->start(200);
     } else {
-        quit(); // Exit main loop
+        Q_EMIT splashFinished(window); // Make sure splash screen doesn't stick around during shutdown
+        quit(); // Exit first main loop invocation
     }
 }
 
-void MachinecoinApplication::shutdownResult(int retval)
+void MachinecoinApplication::shutdownResult()
 {
-    qDebug() << __func__ << ": Shutdown result: " << retval;
-    quit(); // Exit main loop after shutdown finished
+    quit(); // Exit second main loop invocation after shutdown finished
 }
 
 void MachinecoinApplication::handleRunawayException(const QString &message)
@@ -537,7 +548,7 @@ int main(int argc, char *argv[])
 
     /// 1. Parse command-line options. These take precedence over anything else.
     // Command-line options take precedence:
-    ParseParameters(argc, argv);
+    gArgs.ParseParameters(argc, argv);
 
     // Do not refer to data directory yet, this can be overridden by Intro::pickDataDirectory
 
@@ -575,6 +586,7 @@ int main(int argc, char *argv[])
     //   Need to pass name here as CAmount is a typedef (see http://qt-project.org/doc/qt-5/qmetatype.html#qRegisterMetaType)
     //   IMPORTANT if it is no longer a typedef use the normal variant above
     qRegisterMetaType< CAmount >("CAmount");
+    qRegisterMetaType< std::function<void(void)> >("std::function<void(void)>");
 
     /// 3. Application identification
     // must be set before OptionsModel is initialized or translations are loaded,
@@ -592,9 +604,9 @@ int main(int argc, char *argv[])
 
     // Show help message immediately after parsing command-line options (for "-lang") and setting locale,
     // but before showing splash screen.
-    if (IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help") || IsArgSet("-version"))
+    if (gArgs.IsArgSet("-?") || gArgs.IsArgSet("-h") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version"))
     {
-        HelpMessageDialog help(NULL, IsArgSet("-version"));
+        HelpMessageDialog help(nullptr, gArgs.IsArgSet("-version"));
         help.showOrPrint();
         return EXIT_SUCCESS;
     }
@@ -606,14 +618,14 @@ int main(int argc, char *argv[])
 
     /// 6. Determine availability of data directory and parse machinecoin.conf
     /// - Do not call GetDataDir(true) before this step finishes
-    if (!boost::filesystem::is_directory(GetDataDir(false)))
+    if (!fs::is_directory(GetDataDir(false)))
     {
         QMessageBox::critical(0, QObject::tr(PACKAGE_NAME),
-                              QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(GetArg("-datadir", ""))));
+                              QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(gArgs.GetArg("-datadir", ""))));
         return EXIT_FAILURE;
     }
     try {
-        ReadConfigFile(GetArg("-conf", MACHINECOIN_CONF_FILENAME));
+        gArgs.ReadConfigFile(gArgs.GetArg("-conf", MACHINECOIN_CONF_FILENAME));
     } catch (const std::exception& e) {
         QMessageBox::critical(0, QObject::tr(PACKAGE_NAME),
                               QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));
@@ -649,8 +661,7 @@ int main(int argc, char *argv[])
     /// 7a. parse masternode.conf
     std::string strErr;
     if(!masternodeConfig.read(strErr)) {
-        QMessageBox::critical(0, QObject::tr("Machinecoin Core"),
-                              QObject::tr("Error reading masternode configuration file: %1").arg(strErr.c_str()));
+        QMessageBox::critical(0, QObject::tr(PACKAGE_NAME), QObject::tr("Error reading masternode configuration file: %1").arg(strErr.c_str()));
         return EXIT_FAILURE;
     }
     /// 8. URI IPC sending
@@ -684,31 +695,41 @@ int main(int argc, char *argv[])
     // Allow parameter interaction before we create the options model
     app.parameterSetup();
     // Load GUI settings from QSettings
-    app.createOptionsModel(IsArgSet("-resetguisettings"));
+    app.createOptionsModel(gArgs.IsArgSet("-resetguisettings"));
 
     // Subscribe to global signals from core
     uiInterface.InitMessage.connect(InitMessage);
 
-    if (GetBoolArg("-splash", DEFAULT_SPLASHSCREEN) && !GetBoolArg("-min", false))
+    if (gArgs.GetBoolArg("-splash", DEFAULT_SPLASHSCREEN) && !gArgs.GetBoolArg("-min", false))
         app.createSplashScreen(networkStyle.data());
 
+    int rv = EXIT_SUCCESS;
     try
     {
         app.createWindow(networkStyle.data());
-        app.requestInitialize();
+        // Perform base initialization before spinning up initialization/shutdown thread
+        // This is acceptable because this function only contains steps that are quick to execute,
+        // so the GUI thread won't be held up.
+        if (MachinecoinCore::baseInitialize()) {
+            app.requestInitialize();
 #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-        WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("%1 didn't yet exit safely...").arg(QObject::tr(PACKAGE_NAME)), (HWND)app.getMainWinId());
+            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("%1 didn't yet exit safely...").arg(QObject::tr(PACKAGE_NAME)), (HWND)app.getMainWinId());
 #endif
-        app.exec();
-        app.requestShutdown();
-        app.exec();
+            app.exec();
+            app.requestShutdown();
+            app.exec();
+            rv = app.getReturnValue();
+        } else {
+            // A dialog with detailed error will have been shown by InitError()
+            rv = EXIT_FAILURE;
+        }
     } catch (const std::exception& e) {
         PrintExceptionContinue(&e, "Runaway exception");
         app.handleRunawayException(QString::fromStdString(GetWarnings("gui")));
     } catch (...) {
-        PrintExceptionContinue(NULL, "Runaway exception");
+        PrintExceptionContinue(nullptr, "Runaway exception");
         app.handleRunawayException(QString::fromStdString(GetWarnings("gui")));
     }
-    return app.getReturnValue();
+    return rv;
 }
 #endif // MACHINECOIN_QT_TEST

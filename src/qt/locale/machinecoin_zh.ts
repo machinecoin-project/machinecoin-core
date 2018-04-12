@@ -53,6 +53,10 @@
     </context>
 <context>
     <name>OptionsDialog</name>
+    <message>
+        <source>Error</source>
+        <translation>错误</translation>
+    </message>
     </context>
 <context>
     <name>OverviewPage</name>
@@ -108,7 +112,7 @@
     </message>
     <message>
         <source>Warning: Invalid Machinecoin address</source>
-        <translation>警告：莱特币地址无效</translation>
+        <translation>警告：比特币地址无效</translation>
     </message>
     </context>
 <context>
@@ -178,10 +182,6 @@
     <message>
         <source>Warning</source>
         <translation>警告</translation>
-    </message>
-    <message>
-        <source>Loading addresses...</source>
-        <translation>正在载入地址...</translation>
     </message>
     <message>
         <source>Insufficient funds</source>

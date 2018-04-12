@@ -6,17 +6,16 @@
 #define MACHINECOIN_QT_MACHINECOINGUI_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/machinecoin-config.h"
+#include <config/machinecoin-config.h>
 #endif
 
-#include "amount.h"
+#include <amount.h>
 
 #include <QLabel>
 #include <QMainWindow>
 #include <QMap>
 #include <QMenu>
 #include <QPoint>
-#include <QPushButton>
 #include <QSystemTrayIcon>
 
 class ClientModel;
@@ -32,8 +31,6 @@ class WalletModel;
 class HelpMessageDialog;
 class ModalOverlay;
 class MasternodeList;
-
-class CWallet;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -175,7 +172,7 @@ public Q_SLOTS:
                             @see CClientUIInterface::MessageBoxFlags
        @param[in] ret       pointer to a bool that will be modified to whether Ok was clicked (modal only)
     */
-    void message(const QString &title, const QString &message, unsigned int style, bool *ret = NULL);
+    void message(const QString &title, const QString &message, unsigned int style, bool *ret = nullptr);
 
 #ifdef ENABLE_WALLET
     /** Set the encryption status as shown in the UI.

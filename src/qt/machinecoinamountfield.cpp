@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2015 The Machinecoin Core developers
+// Copyright (c) 2011-2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "machinecoinamountfield.h"
+#include <qt/machinecoinamountfield.h>
 
-#include "machinecoinunits.h"
-#include "guiconstants.h"
-#include "qvaluecombobox.h"
+#include <qt/machinecoinunits.h>
+#include <qt/guiconstants.h>
+#include <qt/qvaluecombobox.h>
 
 #include <QApplication>
 #include <QAbstractSpinBox>
@@ -188,7 +188,7 @@ Q_SIGNALS:
     void valueChanged();
 };
 
-#include "machinecoinamountfield.moc"
+#include <qt/machinecoinamountfield.moc>
 
 MachinecoinAmountField::MachinecoinAmountField(QWidget *parent) :
     QWidget(parent),

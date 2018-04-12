@@ -5,10 +5,10 @@
 #ifndef MACHINECOIN_QT_RPCCONSOLE_H
 #define MACHINECOIN_QT_RPCCONSOLE_H
 
-#include "guiutil.h"
-#include "peertablemodel.h"
+#include <qt/guiutil.h>
+#include <qt/peertablemodel.h>
 
-#include "net.h"
+#include <net.h>
 
 #include <QWidget>
 #include <QCompleter>
@@ -36,8 +36,8 @@ public:
     explicit RPCConsole(const PlatformStyle *platformStyle, QWidget *parent);
     ~RPCConsole();
 
-    static bool RPCParseCommandLine(std::string &strResult, const std::string &strCommand, bool fExecute, std::string * const pstrFilteredOut = NULL);
-    static bool RPCExecuteCommandLine(std::string &strResult, const std::string &strCommand, std::string * const pstrFilteredOut = NULL) {
+    static bool RPCParseCommandLine(std::string &strResult, const std::string &strCommand, bool fExecute, std::string * const pstrFilteredOut = nullptr);
+    static bool RPCExecuteCommandLine(std::string &strResult, const std::string &strCommand, std::string * const pstrFilteredOut = nullptr) {
         return RPCParseCommandLine(strResult, strCommand, true, pstrFilteredOut);
     }
 
@@ -123,7 +123,6 @@ Q_SIGNALS:
     void cmdRequest(const QString &command);
 
 private:
-    static QString FormatBytes(quint64 bytes);
     void startExecutor();
     void setTrafficGraphRange(int mins);
     /** show detailed information on ui about selected node */

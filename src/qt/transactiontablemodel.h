@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2011-2018 The Machinecoin Core developers
+// Copyright (c) 2011-2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef MACHINECOIN_QT_TRANSACTIONTABLEMODEL_H
 #define MACHINECOIN_QT_TRANSACTIONTABLEMODEL_H
 
-#include "machinecoinunits.h"
+#include <qt/machinecoinunits.h>
 
 #include <QAbstractTableModel>
 #include <QStringList>
@@ -79,7 +79,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
-    bool processingQueuedTransactions() { return fProcessingQueuedTransactions; }
+    bool processingQueuedTransactions() const { return fProcessingQueuedTransactions; }
 
 private:
     CWallet* wallet;

@@ -5,7 +5,7 @@
 #ifndef MACHINECOIN_QT_RECEIVECOINSDIALOG_H
 #define MACHINECOIN_QT_RECEIVECOINSDIALOG_H
 
-#include "guiutil.h"
+#include <qt/guiutil.h>
 
 #include <QDialog>
 #include <QHeaderView>
@@ -15,7 +15,6 @@
 #include <QPoint>
 #include <QVariant>
 
-class OptionsModel;
 class PlatformStyle;
 class WalletModel;
 

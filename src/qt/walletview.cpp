@@ -1,35 +1,32 @@
-﻿// Copyright (c) 2011-2018 The Machinecoin Core developers
+// Copyright (c) 2011-2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "walletview.h"
+#include <qt/walletview.h>
 
-#include "addressbookpage.h"
-#include "askpassphrasedialog.h"
-#include "machinecoingui.h"
-#include "clientmodel.h"
-#include "guiutil.h"
-#include "masternodeconfig.h"
-#include "optionsmodel.h"
-#include "overviewpage.h"
-#include "platformstyle.h"
-#include "receivecoinsdialog.h"
-#include "sendcoinsdialog.h"
-#include "signverifymessagedialog.h"
-#include "transactiontablemodel.h"
-#include "transactionview.h"
-#include "walletmodel.h"
+#include <qt/addressbookpage.h>
+#include <qt/askpassphrasedialog.h>
+#include <qt/machinecoingui.h>
+#include <qt/clientmodel.h>
+#include <qt/guiutil.h>
+#include <qt/optionsmodel.h>
+#include <qt/overviewpage.h>
+#include <qt/platformstyle.h>
+#include <qt/receivecoinsdialog.h>
+#include <qt/sendcoinsdialog.h>
+#include <qt/signverifymessagedialog.h>
+#include <qt/transactiontablemodel.h>
+#include <qt/transactionview.h>
+#include <qt/walletmodel.h>
 
-#include "ui_interface.h"
+#include <ui_interface.h>
 
 #include <QAction>
 #include <QActionGroup>
 #include <QFileDialog>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QProgressDialog>
 #include <QPushButton>
-#include <QSettings>
 #include <QVBoxLayout>
 
 WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
@@ -66,12 +63,6 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(transactionsPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
-        
-    QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool()) {
-        masternodeListPage = new MasternodeList(platformStyle);
-        addWidget(masternodeListPage);
-    }
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -120,10 +111,6 @@ void WalletView::setClientModel(ClientModel *_clientModel)
 
     overviewPage->setClientModel(_clientModel);
     sendCoinsPage->setClientModel(_clientModel);
-    QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool()) {
-        masternodeListPage->setClientModel(_clientModel);
-    }
 }
 
 void WalletView::setWalletModel(WalletModel *_walletModel)
@@ -135,15 +122,8 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
     overviewPage->setWalletModel(_walletModel);
     receiveCoinsPage->setModel(_walletModel);
     sendCoinsPage->setModel(_walletModel);
-    usedReceivingAddressesPage->setModel(_walletModel->getAddressTableModel());
-    usedSendingAddressesPage->setModel(_walletModel->getAddressTableModel());
-    
-    //added wallet model to avoid crash when start is clicked at masternode tab
-    //note that at this time its not possible to run node via this tab because coins are pre-loced at start of MAC and start button trying to lock it again
-    QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool()) {
-        masternodeListPage->setWalletModel(_walletModel);
-    }
+    usedReceivingAddressesPage->setModel(_walletModel ? _walletModel->getAddressTableModel() : nullptr);
+    usedSendingAddressesPage->setModel(_walletModel ? _walletModel->getAddressTableModel() : nullptr);
 
     if (_walletModel)
     {
@@ -197,14 +177,6 @@ void WalletView::gotoOverviewPage()
 void WalletView::gotoHistoryPage()
 {
     setCurrentWidget(transactionsPage);
-}
-
-void WalletView::gotoMasternodePage()
-{
-    QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool()) {
-        setCurrentWidget(masternodeListPage);
-    }
 }
 
 void WalletView::gotoReceiveCoinsPage()
@@ -274,7 +246,7 @@ void WalletView::backupWallet()
 {
     QString filename = GUIUtil::getSaveFileName(this,
         tr("Backup Wallet"), QString(),
-        tr("Wallet Data (*.dat)"), NULL);
+        tr("Wallet Data (*.dat)"), nullptr);
 
     if (filename.isEmpty())
         return;

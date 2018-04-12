@@ -62,12 +62,36 @@
         <translation>آدرس های گیرنده</translation>
     </message>
     <message>
+        <source>These are your Machinecoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>اینها آدرس های شما برای فرستادن پرداخت هاست. همیشه قبل از فرستادن سکه ها مقدار و آدرس دریافت کننده را چک کنید.</translation>
+    </message>
+    <message>
+        <source>These are your Machinecoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>این ها آدرس های بیت کوین شما برای دریافت پرداخت ها می باشد. توصیه میشود برای هر تراکنش از یک آدرس دریافت جدید استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>&amp;Copy Address</source>
+        <translation>کپی کردن آدرس</translation>
+    </message>
+    <message>
         <source>Copy &amp;Label</source>
         <translation>کپی و برچسب‌&amp;گذاری</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
         <translation>&amp;ویرایش</translation>
+    </message>
+    <message>
+        <source>Export Address List</source>
+        <translation>صدور لیست آدرس ها</translation>
+    </message>
+    <message>
+        <source>Comma separated file (*.csv)</source>
+        <translation>فایل جدا شده با ویرگول(*.csv)</translation>
+    </message>
+    <message>
+        <source>Exporting Failed</source>
+        <translation>صدور موفق نبود</translation>
     </message>
     </context>
 <context>
@@ -108,12 +132,28 @@
         <translation>رمزنگاری کیف پول</translation>
     </message>
     <message>
+        <source>This operation needs your wallet passphrase to unlock the wallet.</source>
+        <translation>این عملیات نیاز به عبارت کیف پول شما برای بازگشایی کیف پول دارد</translation>
+    </message>
+    <message>
         <source>Unlock wallet</source>
         <translation>باز کردن قفل کیف پول</translation>
     </message>
     <message>
+        <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
+        <translation>این عملیات نیاز به عبارت کیف پول شما برای رمزگشایی کیف پول دارد.</translation>
+    </message>
+    <message>
         <source>Decrypt wallet</source>
         <translation>رمزگشایی کیف پول</translation>
+    </message>
+    <message>
+        <source>Change passphrase</source>
+        <translation>تغییر گذرواژه</translation>
+    </message>
+    <message>
+        <source>Enter the old passphrase and new passphrase to the wallet.</source>
+        <translation>عبارت کهنه و جدید کیف پول را وارد کنید.</translation>
     </message>
     <message>
         <source>Confirm wallet encryption</source>
@@ -250,12 +290,24 @@
         <translation>باز کردن &amp;آدرس</translation>
     </message>
     <message>
+        <source>Click to disable network activity.</source>
+        <translation>برای غیر فعال کردن فعالیت شبکه کلیک کنید.</translation>
+    </message>
+    <message>
+        <source>Network activity disabled.</source>
+        <translation>فعالیت شبکه غیر فعال شد.</translation>
+    </message>
+    <message>
+        <source>Click to enable network activity again.</source>
+        <translation>برای فعال کردن دوباره فعالیت شبکه کلیک کنید.</translation>
+    </message>
+    <message>
         <source>Reindexing blocks on disk...</source>
         <translation>بازنشانی بلوک‌ها روی دیسک...</translation>
     </message>
     <message>
         <source>Send coins to a Machinecoin address</source>
-        <translation>ارسال وجه به نشانی Machinecoin</translation>
+        <translation>ارسال وجه به نشانی بیت‌کوین</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -279,7 +331,7 @@
     </message>
     <message>
         <source>Machinecoin</source>
-        <translation>Machinecoin</translation>
+        <translation>بیت‌کوین</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -307,11 +359,11 @@
     </message>
     <message>
         <source>Sign messages with your Machinecoin addresses to prove you own them</source>
-        <translation>برای اثبات اینکه پیام‌ها به شما تعلق دارند، آن‌ها را با نشانی Machinecoin خود امضا کنید</translation>
+        <translation>برای اثبات اینکه پیام‌ها به شما تعلق دارند، آن‌ها را با نشانی بیت‌کوین خود امضا کنید</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Machinecoin addresses</source>
-        <translation>برای حصول اطمینان از اینکه پیام با نشانی Machinecoin مشخص شده امضا است یا خیر، پیام را شناسایی کنید</translation>
+        <translation>برای حصول اطمینان از اینکه پیام با نشانی بیت‌کوین مشخص شده امضا است یا خیر، پیام را شناسایی کنید</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -331,7 +383,7 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and machinecoin: URIs)</source>
-        <translation>درخواست پرداخت ( تولید کد کیوار و ادرس machinecoin)</translation>
+        <translation>درخواست پرداخت ( تولید کد کیوار و ادرس بیت کوین)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -343,7 +395,7 @@
     </message>
     <message>
         <source>Open a machinecoin: URI or payment request</source>
-        <translation>بازکردن یک machinecoin: آدرس یا درخواست پرداخت</translation>
+        <translation>بازکردن یک بیت کوین: آدرس یا درخواست پرداخت</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -351,7 +403,7 @@
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Machinecoin network</source>
-        <translation><numerusform>%n ارتباط فعال با شبکهٔ Machinecoin</numerusform></translation>
+        <translation><numerusform>%n ارتباط فعال با شبکهٔ بیت‌کوین</numerusform></translation>
     </message>
     <message>
         <source>Processing blocks on disk...</source>
@@ -507,6 +559,10 @@
         <translation>تأیید شده</translation>
     </message>
     <message>
+        <source>Copy address</source>
+        <translation>کپی ادرس</translation>
+    </message>
+    <message>
         <source>Copy label</source>
         <translation>کپی برچسب</translation>
     </message>
@@ -529,6 +585,18 @@
     <message>
         <source>Copy quantity</source>
         <translation>کپی تعداد</translation>
+    </message>
+    <message>
+        <source>Copy fee</source>
+        <translation>رونوشت کارمزد</translation>
+    </message>
+    <message>
+        <source>Copy bytes</source>
+        <translation>کپی کردن بایت ها</translation>
+    </message>
+    <message>
+        <source>Copy change</source>
+        <translation>کپی کردن تغییر</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
@@ -583,7 +651,7 @@
     </message>
     <message>
         <source>The entered address "%1" is not a valid Machinecoin address.</source>
-        <translation>نشانی وارد شده "%1" یک نشانی معتبر Machinecoin نیست.</translation>
+        <translation>نشانی وارد شده "%1" یک نشانی معتبر بیت‌کوین نیست.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book.</source>
@@ -683,6 +751,10 @@
         <translation>استفاده از یک مسیر سفارشی:</translation>
     </message>
     <message>
+        <source>Machinecoin</source>
+        <translation>بیت‌کوین</translation>
+    </message>
+    <message>
         <source>Error</source>
         <translation>خطا</translation>
     </message>
@@ -698,8 +770,28 @@
         <translation>فرم</translation>
     </message>
     <message>
+        <source>Unknown...</source>
+        <translation>مشخص نیست</translation>
+    </message>
+    <message>
         <source>Last block time</source>
         <translation>زمان آخرین بلوک</translation>
+    </message>
+    <message>
+        <source>Progress</source>
+        <translation>پیشروی</translation>
+    </message>
+    <message>
+        <source>Progress increase per hour</source>
+        <translation>پیشروی در هر ساعت بیشتر میشود</translation>
+    </message>
+    <message>
+        <source>calculating...</source>
+        <translation>در حال محاسبه...</translation>
+    </message>
+    <message>
+        <source>Estimated time left until synced</source>
+        <translation>زمان تخمینی تا سینک شدن</translation>
     </message>
     <message>
         <source>Hide</source>
@@ -744,14 +836,6 @@
         <translation>مگابایت</translation>
     </message>
     <message>
-        <source>Accept connections from outside</source>
-        <translation>پذیرش اتصالات از بیرون</translation>
-    </message>
-    <message>
-        <source>Allow incoming connections</source>
-        <translation>اجازه دادن به اتصالات دریافتی</translation>
-    </message>
-    <message>
         <source>Reset all client options to default.</source>
         <translation>بازنشانی تمام تنظیمات به پیش‌فرض.</translation>
     </message>
@@ -773,7 +857,7 @@
     </message>
     <message>
         <source>Automatically open the Machinecoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>باز کردن خودکار درگاه شبکهٔ Machinecoin روی روترها. تنها زمانی کار می‌کند که روتر از پروتکل UPnP پشتیبانی کند و این پروتکل فعال باشد.</translation>
+        <translation>باز کردن خودکار درگاه شبکهٔ بیت‌کوین روی روترها. تنها زمانی کار می‌کند که روتر از پروتکل UPnP پشتیبانی کند و این پروتکل فعال باشد.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -856,6 +940,10 @@
         <translation>تأییدِ بازنشانی گزینه‌ها</translation>
     </message>
     <message>
+        <source>Error</source>
+        <translation>خطا</translation>
+    </message>
+    <message>
         <source>This change would require a client restart.</source>
         <translation>برای این تغییرات بازنشانی مشتری ضروری است</translation>
     </message>
@@ -872,7 +960,7 @@
     </message>
     <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Machinecoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>اطلاعات نمایش‌داده شده ممکن است قدیمی باشند. بعد از این که یک اتصال با شبکه برقرار شد، کیف پول شما به‌صورت خودکار با شبکهٔ Machinecoin همگام‌سازی می‌شود. اما این روند هنوز کامل نشده است.</translation>
+        <translation>اطلاعات نمایش‌داده شده ممکن است قدیمی باشند. بعد از این که یک اتصال با شبکه برقرار شد، کیف پول شما به‌صورت خودکار با شبکهٔ بیت‌کوین همگام‌سازی می‌شود. اما این روند هنوز کامل نشده است.</translation>
     </message>
     <message>
         <source>Available:</source>
@@ -921,10 +1009,22 @@
     </context>
 <context>
     <name>PaymentServer</name>
+    <message>
+        <source>Invalid payment request.</source>
+        <translation>درخواست پرداخت نامعتبر.</translation>
+    </message>
     </context>
 <context>
     <name>PeerTableModel</name>
-    </context>
+    <message>
+        <source>Sent</source>
+        <translation>ارسال شده</translation>
+    </message>
+    <message>
+        <source>Received</source>
+        <translation>دریافتی</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
     <message>
@@ -933,7 +1033,7 @@
     </message>
     <message>
         <source>Enter a Machinecoin address (e.g. %1)</source>
-        <translation>یک آدرس Machinecoin وارد کنید (مثلاً %1)</translation>
+        <translation>یک آدرس بیت‌کوین وارد کنید (مثلاً %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -967,7 +1067,27 @@
         <source>%1 and %2</source>
         <translation>%1 و %2</translation>
     </message>
-    </context>
+    <message>
+        <source>%1 B</source>
+        <translation>%1 بایت</translation>
+    </message>
+    <message>
+        <source>%1 KB</source>
+        <translation>%1 کیلوبایت</translation>
+    </message>
+    <message>
+        <source>%1 MB</source>
+        <translation>%1 مگابایت</translation>
+    </message>
+    <message>
+        <source>%1 GB</source>
+        <translation>%1 گیگابایت</translation>
+    </message>
+    <message>
+        <source>unknown</source>
+        <translation>ناشناس</translation>
+    </message>
+</context>
 <context>
     <name>QObject::QObject</name>
     </context>
@@ -1085,6 +1205,10 @@
         <translation>در:</translation>
     </message>
     <message>
+        <source>Out:</source>
+        <translation>خروجی:</translation>
+    </message>
+    <message>
         <source>Debug log file</source>
         <translation>فایلِ لاگِ اشکال زدایی</translation>
     </message>
@@ -1093,28 +1217,24 @@
         <translation>پاکسازی کنسول</translation>
     </message>
     <message>
-        <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
-        <translation>دکمه‌های بالا و پایین برای پیمایش تاریخچه و &lt;b&gt;Ctrl-L&lt;/b&gt; برای پاک کردن صفحه.</translation>
+        <source>1 &amp;hour</source>
+        <translation>1 ساعت</translation>
     </message>
     <message>
-        <source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
-        <translation>برای نمایش یک مرور کلی از دستورات ممکن، عبارت &lt;b&gt;help&lt;/b&gt; را بنویسید.</translation>
+        <source>1 &amp;day</source>
+        <translation>1 روز</translation>
     </message>
     <message>
-        <source>%1 B</source>
-        <translation>%1 بایت</translation>
+        <source>1 &amp;week</source>
+        <translation>1 هفته</translation>
     </message>
     <message>
-        <source>%1 KB</source>
-        <translation>%1 کیلوبایت</translation>
+        <source>1 &amp;year</source>
+        <translation>1 سال</translation>
     </message>
     <message>
-        <source>%1 MB</source>
-        <translation>%1 مگابایت</translation>
-    </message>
-    <message>
-        <source>%1 GB</source>
-        <translation>%1 گیگابایت</translation>
+        <source>Ban for</source>
+        <translation>محدود شده برای</translation>
     </message>
     <message>
         <source>never</source>
@@ -1273,24 +1393,12 @@
         <translation>پنهان کردن</translation>
     </message>
     <message>
-        <source>total at least</source>
-        <translation>در مجموع حداقل</translation>
-    </message>
-    <message>
         <source>Recommended:</source>
         <translation>توصیه شده:</translation>
     </message>
     <message>
         <source>Custom:</source>
         <translation>سفارشی:</translation>
-    </message>
-    <message>
-        <source>normal</source>
-        <translation>نرمال</translation>
-    </message>
-    <message>
-        <source>fast</source>
-        <translation>سریع</translation>
     </message>
     <message>
         <source>Send to multiple recipients at once</source>
@@ -1329,6 +1437,18 @@
         <translation>کپی مقدار</translation>
     </message>
     <message>
+        <source>Copy fee</source>
+        <translation>رونوشت کارمزد</translation>
+    </message>
+    <message>
+        <source>Copy bytes</source>
+        <translation>کپی کردن بایت ها</translation>
+    </message>
+    <message>
+        <source>Copy change</source>
+        <translation>کپی کردن تغییر</translation>
+    </message>
+    <message>
         <source>(no label)</source>
         <translation>(بدون برچسب)</translation>
     </message>
@@ -1357,7 +1477,7 @@
     </message>
     <message>
         <source>The Machinecoin address to send the payment to</source>
-        <translation>نشانی Machinecoin برای ارسال پرداخت به آن</translation>
+        <translation>نشانی بیت‌کوین برای ارسال پرداخت به آن</translation>
     </message>
     <message>
         <source>Alt+A</source>
@@ -1410,7 +1530,7 @@
     </message>
     <message>
         <source>The Machinecoin address to sign the message with</source>
-        <translation>نشانی Machinecoin برای امضاء پیغام با آن</translation>
+        <translation>نشانی بیت‌کوین برای امضاء پیغام با آن</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -1462,11 +1582,11 @@
     </message>
     <message>
         <source>The Machinecoin address the message was signed with</source>
-        <translation>نشانی Machinecoin که پیغام با آن امضاء شده</translation>
+        <translation>نشانی بیت‌کوین که پیغام با آن امضاء شده</translation>
     </message>
     <message>
         <source>Verify the message to ensure it was signed with the specified Machinecoin address</source>
-        <translation>برای حصول اطمینان از اینکه پیام با نشانی Machinecoin مشخص شده امضا است یا خیر، پیام را شناسایی کنید</translation>
+        <translation>برای حصول اطمینان از اینکه پیام با نشانی بیت‌کوین مشخص شده امضا است یا خیر، پیام را شناسایی کنید</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -1515,6 +1635,10 @@
 <context>
     <name>TransactionView</name>
     <message>
+        <source>Copy address</source>
+        <translation>کپی ادرس</translation>
+    </message>
+    <message>
         <source>Copy label</source>
         <translation>کپی برچسب</translation>
     </message>
@@ -1527,12 +1651,20 @@
         <translation>کپی شناسهٔ تراکنش</translation>
     </message>
     <message>
+        <source>Comma separated file (*.csv)</source>
+        <translation>فایل جدا شده با ویرگول(*.csv)</translation>
+    </message>
+    <message>
         <source>Label</source>
         <translation>برچسب</translation>
     </message>
     <message>
         <source>Address</source>
         <translation>آدرس</translation>
+    </message>
+    <message>
+        <source>Exporting Failed</source>
+        <translation>صدور موفق نبود</translation>
     </message>
     </context>
 <context>
@@ -1584,6 +1716,10 @@
     <message>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
         <translation>هنگامی که یک تراکنش در کیف پولی رخ می دهد، دستور را اجرا کن(%s در دستورات بوسیله ی TxID جایگزین می شود)</translation>
+    </message>
+    <message>
+        <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
+        <translation>پذیرش اتصالات از بیرون (پیش فرض:1 بدون پراکسی یا اتصال)</translation>
     </message>
     <message>
         <source>Block creation options:</source>
@@ -1650,10 +1786,6 @@
         <translation>در حال بازبینی بلوک‌ها...</translation>
     </message>
     <message>
-        <source>Verifying wallet...</source>
-        <translation>در حال بازبینی کیف پول...</translation>
-    </message>
-    <message>
         <source>Wallet options:</source>
         <translation>گزینه‌های کیف پول:</translation>
     </message>
@@ -1706,16 +1838,8 @@
         <translation>به DNS اجازه بده تا برای addnode ، seednode و اتصال جستجو کند</translation>
     </message>
     <message>
-        <source>Loading addresses...</source>
-        <translation>بار گیری آدرس ها</translation>
-    </message>
-    <message>
         <source>(default: %s)</source>
         <translation>(پیش‌فرض %s)</translation>
-    </message>
-    <message>
-        <source>Invalid -proxy address: '%s'</source>
-        <translation>آدرس پراکسی اشتباه %s</translation>
     </message>
     <message>
         <source>Unknown network specified in -onlynet: '%s'</source>
@@ -1730,20 +1854,12 @@
         <translation>بار گیری شاخص بلوک</translation>
     </message>
     <message>
-        <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation>به اتصال یک گره اضافه کنید و اتصال را باز نگاه دارید</translation>
-    </message>
-    <message>
         <source>Loading wallet...</source>
         <translation>بار گیری والت</translation>
     </message>
     <message>
         <source>Cannot downgrade wallet</source>
         <translation>امکان تنزل نسخه در wallet وجود ندارد</translation>
-    </message>
-    <message>
-        <source>Cannot write default address</source>
-        <translation>آدرس پیش فرض قابل ذخیره نیست</translation>
     </message>
     <message>
         <source>Rescanning...</source>

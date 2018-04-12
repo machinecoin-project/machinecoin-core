@@ -2,9 +2,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "machinecoinunits.h"
+#include <qt/machinecoinunits.h>
 
-#include "primitives/transaction.h"
+#include <primitives/transaction.h>
 
 #include <QStringList>
 
@@ -36,14 +36,23 @@ bool MachinecoinUnits::valid(int unit)
     }
 }
 
-QString MachinecoinUnits::name(int unit)
+QString MachinecoinUnits::longName(int unit)
 {
     switch(unit)
     {
     case MAC: return QString("MAC");
     case mMAC: return QString("mMAC");
-    case uMAC: return QString::fromUtf8("μMAC");
+    case uMAC: return QString::fromUtf8("µMAC");
     default: return QString("???");
+    }
+}
+
+QString MachinecoinUnits::shortName(int unit)
+{
+    switch(unit)
+    {
+    case uMAC: return QString::fromUtf8("bits");
+    default:   return longName(unit);
     }
 }
 
@@ -121,7 +130,7 @@ QString MachinecoinUnits::format(int unit, const CAmount& nIn, bool fPlus, Separ
 
 QString MachinecoinUnits::formatWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
 {
-    return format(unit, amount, plussign, separators) + QString(" ") + name(unit);
+    return format(unit, amount, plussign, separators) + QString(" ") + shortName(unit);
 }
 
 QString MachinecoinUnits::formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
@@ -176,7 +185,7 @@ QString MachinecoinUnits::getAmountColumnTitle(int unit)
     QString amountTitle = QObject::tr("Amount");
     if (MachinecoinUnits::valid(unit))
     {
-        amountTitle += " ("+MachinecoinUnits::name(unit) + ")";
+        amountTitle += " ("+MachinecoinUnits::shortName(unit) + ")";
     }
     return amountTitle;
 }
@@ -197,7 +206,7 @@ QVariant MachinecoinUnits::data(const QModelIndex &index, int role) const
         {
         case Qt::EditRole:
         case Qt::DisplayRole:
-            return QVariant(name(unit));
+            return QVariant(longName(unit));
         case Qt::ToolTipRole:
             return QVariant(description(unit));
         case UnitRole:

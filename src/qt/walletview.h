@@ -1,12 +1,11 @@
-﻿// Copyright (c) 2011-2018 The Machinecoin Core developers
+// Copyright (c) 2011-2017 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef MACHINECOIN_QT_WALLETVIEW_H
 #define MACHINECOIN_QT_WALLETVIEW_H
 
-#include "amount.h"
-#include "masternodelist.h"
+#include <amount.h>
 
 #include <QStackedWidget>
 
@@ -22,7 +21,6 @@ class WalletModel;
 class AddressBookPage;
 
 QT_BEGIN_NAMESPACE
-class QLabel;
 class QModelIndex;
 class QProgressDialog;
 QT_END_NAMESPACE
@@ -66,7 +64,6 @@ private:
     SendCoinsDialog *sendCoinsPage;
     AddressBookPage *usedSendingAddressesPage;
     AddressBookPage *usedReceivingAddressesPage;
-    MasternodeList *masternodeListPage;
 
     TransactionView *transactionView;
 
@@ -78,8 +75,6 @@ public Q_SLOTS:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-    /** Switch to masternode page */
-    void gotoMasternodePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */

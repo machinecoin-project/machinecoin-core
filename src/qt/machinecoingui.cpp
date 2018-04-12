@@ -2,41 +2,37 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include "config/machinecoin-config.h"
-#endif
+#include <qt/machinecoingui.h>
 
-#include "machinecoingui.h"
-
-#include "machinecoinunits.h"
-#include "clientmodel.h"
-#include "guiconstants.h"
-#include "guiutil.h"
-#include "modaloverlay.h"
-#include "networkstyle.h"
-#include "notificator.h"
-#include "openuridialog.h"
-#include "optionsdialog.h"
-#include "optionsmodel.h"
-#include "platformstyle.h"
-#include "rpcconsole.h"
-#include "utilitydialog.h"
+#include <qt/machinecoinunits.h>
+#include <qt/clientmodel.h>
+#include <qt/guiconstants.h>
+#include <qt/guiutil.h>
+#include <qt/modaloverlay.h>
+#include <qt/networkstyle.h>
+#include <qt/notificator.h>
+#include <qt/openuridialog.h>
+#include <qt/optionsdialog.h>
+#include <qt/optionsmodel.h>
+#include <qt/platformstyle.h>
+#include <qt/rpcconsole.h>
+#include <qt/utilitydialog.h>
 
 #ifdef ENABLE_WALLET
-#include "walletframe.h"
-#include "walletmodel.h"
+#include <qt/walletframe.h>
+#include <qt/walletmodel.h>
 #endif // ENABLE_WALLET
 
 #ifdef Q_OS_MAC
-#include "macdockiconhandler.h"
+#include <qt/macdockiconhandler.h>
 #endif
 
-#include "chainparams.h"
-#include "init.h"
-#include "ui_interface.h"
-#include "util.h"
-#include "masternode-sync.h"
-#include "masternodelist.h"
+#include <chainparams.h>
+#include <init.h>
+#include <ui_interface.h>
+#include <util.h>
+#include <masternode-sync.h>
+#include <masternodelist.h>
 
 #include <iostream>
 
@@ -126,7 +122,11 @@ MachinecoinGUI::MachinecoinGUI(const PlatformStyle *_platformStyle, const Networ
     spinnerFrame(0),
     platformStyle(_platformStyle)
 {
-    GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
+    QSettings settings;
+    if (!restoreGeometry(settings.value("MainWindowGeometry").toByteArray())) {
+        // Restore failed (perhaps missing setting), center the window
+        move(QApplication::desktop()->availableGeometry().center() - frameGeometry().center());
+    }
 
     QString windowTitle = tr(PACKAGE_NAME) + " - ";
 #ifdef ENABLE_WALLET
@@ -264,7 +264,8 @@ MachinecoinGUI::~MachinecoinGUI()
     // Unsubscribe from notifications from core
     unsubscribeFromCoreSignals();
 
-    GUIUtil::saveWindowGeometry("nWindow", this);
+    QSettings settings;
+    settings.setValue("MainWindowGeometry", saveGeometry());
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
         trayIcon->hide();
 #ifdef Q_OS_MAC
@@ -472,6 +473,7 @@ void MachinecoinGUI::createToolBars()
     if(walletFrame)
     {
         QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
+        toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
         toolbar->setMovable(false);
         toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         toolbar->addAction(overviewAction);
@@ -501,7 +503,8 @@ void MachinecoinGUI::setClientModel(ClientModel *_clientModel)
         connect(_clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
         connect(_clientModel, SIGNAL(networkActiveChanged(bool)), this, SLOT(setNetworkActive(bool)));
 
-        setNumBlocks(_clientModel->getNumBlocks(), _clientModel->getLastBlockDate(), _clientModel->getVerificationProgress(NULL), false);
+        modalOverlay->setKnownBestHeight(_clientModel->getHeaderTipHeight(), QDateTime::fromTime_t(_clientModel->getHeaderTipTime()));
+        setNumBlocks(_clientModel->getNumBlocks(), _clientModel->getLastBlockDate(), _clientModel->getVerificationProgress(nullptr), false);
         connect(_clientModel, SIGNAL(numBlocksChanged(int,QDateTime,double,bool)), this, SLOT(setNumBlocks(int,QDateTime,double,bool)));
         
         connect(_clientModel, SIGNAL(additionalDataSyncProgressChanged(double)), this, SLOT(setAdditionalDataSyncProgress(double)));
@@ -530,8 +533,6 @@ void MachinecoinGUI::setClientModel(ClientModel *_clientModel)
             // initialize the disable state of the tray icon with the current value in the model.
             setTrayIconVisible(optionsModel->getHideTrayIcon());
         }
-
-        modalOverlay->setKnownBestHeight(clientModel->getHeaderTipHeight(), QDateTime::fromTime_t(clientModel->getHeaderTipTime()));
     } else {
         // Disable possibility to show main window via action
         toggleHideAction->setEnabled(false);
@@ -1010,7 +1011,7 @@ void MachinecoinGUI::message(const QString &title, const QString &message, unsig
         showNormalIfMinimized();
         QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, message, buttons, this);
         int r = mBox.exec();
-        if (ret != NULL)
+        if (ret != nullptr)
             *ret = r == QMessageBox::Ok;
     }
     else
@@ -1094,7 +1095,7 @@ void MachinecoinGUI::dropEvent(QDropEvent *event)
 {
     if(event->mimeData()->hasUrls())
     {
-        Q_FOREACH(const QUrl &uri, event->mimeData()->urls())
+        for (const QUrl &uri : event->mimeData()->urls())
         {
             Q_EMIT receivedURI(uri.toString());
         }
@@ -1290,9 +1291,9 @@ UnitDisplayStatusBarControl::UnitDisplayStatusBarControl(const PlatformStyle *pl
     QList<MachinecoinUnits::Unit> units = MachinecoinUnits::availableUnits();
     int max_width = 0;
     const QFontMetrics fm(font());
-    Q_FOREACH (const MachinecoinUnits::Unit unit, units)
+    for (const MachinecoinUnits::Unit unit : units)
     {
-        max_width = qMax(max_width, fm.width(MachinecoinUnits::name(unit)));
+        max_width = qMax(max_width, fm.width(MachinecoinUnits::longName(unit)));
     }
     setMinimumSize(max_width, 0);
     setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -1309,9 +1310,9 @@ void UnitDisplayStatusBarControl::mousePressEvent(QMouseEvent *event)
 void UnitDisplayStatusBarControl::createContextMenu()
 {
     menu = new QMenu(this);
-    Q_FOREACH(MachinecoinUnits::Unit u, MachinecoinUnits::availableUnits())
+    for (MachinecoinUnits::Unit u : MachinecoinUnits::availableUnits())
     {
-        QAction *menuAction = new QAction(QString(MachinecoinUnits::name(u)), this);
+        QAction *menuAction = new QAction(QString(MachinecoinUnits::longName(u)), this);
         menuAction->setData(QVariant(u));
         menu->addAction(menuAction);
     }
@@ -1336,7 +1337,7 @@ void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *_optionsModel)
 /** When Display Units are changed on OptionsModel it will refresh the display text of the control on the status bar */
 void UnitDisplayStatusBarControl::updateDisplayUnit(int newUnits)
 {
-    setText(MachinecoinUnits::name(newUnits));
+    setText(MachinecoinUnits::longName(newUnits));
 }
 
 /** Shows context menu with Display Unit options by the mouse coordinates */

@@ -3,18 +3,18 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/machinecoin-config.h"
+#include <config/machinecoin-config.h>
 #endif
 
-#include "addressbookpage.h"
-#include "ui_addressbookpage.h"
+#include <qt/addressbookpage.h>
+#include <qt/forms/ui_addressbookpage.h>
 
-#include "addresstablemodel.h"
-#include "machinecoingui.h"
-#include "csvmodelwriter.h"
-#include "editaddressdialog.h"
-#include "guiutil.h"
-#include "platformstyle.h"
+#include <qt/addresstablemodel.h>
+#include <qt/machinecoingui.h>
+#include <qt/csvmodelwriter.h>
+#include <qt/editaddressdialog.h>
+#include <qt/guiutil.h>
+#include <qt/platformstyle.h>
 
 #include <QIcon>
 #include <QMenu>
@@ -254,7 +254,7 @@ void AddressBookPage::done(int retval)
     // Figure out which address was selected, and return it
     QModelIndexList indexes = table->selectionModel()->selectedRows(AddressTableModel::Address);
 
-    Q_FOREACH (const QModelIndex& index, indexes) {
+    for (const QModelIndex& index : indexes) {
         QVariant address = table->model()->data(index);
         returnValue = address.toString();
     }
@@ -273,7 +273,7 @@ void AddressBookPage::on_exportButton_clicked()
     // CSV is currently the only supported format
     QString filename = GUIUtil::getSaveFileName(this,
         tr("Export Address List"), QString(),
-        tr("Comma separated file (*.csv)"), NULL);
+        tr("Comma separated file (*.csv)"), nullptr);
 
     if (filename.isNull())
         return;

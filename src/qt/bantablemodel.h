@@ -5,7 +5,7 @@
 #ifndef MACHINECOIN_QT_BANTABLEMODEL_H
 #define MACHINECOIN_QT_BANTABLEMODEL_H
 
-#include "net.h"
+#include <net.h>
 
 #include <QAbstractTableModel>
 #include <QStringList>
