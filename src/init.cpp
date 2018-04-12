@@ -1941,7 +1941,7 @@ void ThreadCheckMasternode(CConnman* connman)
             }
 
             if(nTick % (60 * 5) == 0) {
-                governance.DoMaintenance();
+                governance.DoMaintenance(connman);
             }
         }
     }
