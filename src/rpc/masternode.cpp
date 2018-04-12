@@ -798,6 +798,8 @@ UniValue sentinelping(const JSONRPCRequest& request)
 
 UniValue mnsync(const JSONRPCRequest& request)
 {
+    CConnman& connman = *g_connman;
+
     if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "mnsync [status|next|reset]\n"
