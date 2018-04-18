@@ -186,6 +186,9 @@ bool operator<(const CInv& a, const CInv& b)
 
 bool CInv::IsKnownType() const
 {
+    LogPrintf("TYPE: %s\n", type);
+    LogPrintf("LENGTH: %s\n", (int)ARRAYLEN(allNetMessageTypes));
+    LogPrintf("COMMAND: %s\n", allNetMessageTypes[type]);
     return (type >= 1 && type < (int)ARRAYLEN(allNetMessageTypes));
 }
 
