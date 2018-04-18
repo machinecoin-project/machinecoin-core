@@ -19,10 +19,10 @@ public:
 
 protected:
     // CValidationInterface
-    void AcceptedBlockHeader(const CBlockIndex *pindexNew);
-    void NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload);
+    void AcceptedBlockHeader(const CBlockIndex *pindexNew) override;
+    void NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload) override;
     void UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload) override;
-    void SyncTransaction(const CTransaction &tx, const CBlock *pblock);
+    void SyncTransaction(const CTransaction &tx, const CBlock *pblock) override;
 
 private:
     CConnman* connman;
