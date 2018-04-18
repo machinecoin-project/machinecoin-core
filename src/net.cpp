@@ -89,10 +89,6 @@ std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfLimited[NET_MAX] = {};
 std::string strSubVersion;
 
-std::map<CInv, CDataStream> mapRelay;
-std::deque<pair<int64_t, CInv> > vRelayExpiration;
-CCriticalSection cs_mapRelay;
-
 limitedmap<uint256, int64_t> mapAlreadyAskedFor(MAX_INV_SZ);
 
 void CConnman::AddOneShot(const std::string& strDest)
@@ -386,7 +382,6 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             // we have existing connection to this node but it was not a connection to masternode,
             // change flag and add reference so that we can correctly clear it later
             if(fConnectToMasternode && !pnode->fMasternode) {
-                pnode->AddRef();
                 pnode->fMasternode = true;
             }
             return pnode;
@@ -419,7 +414,6 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
                 // we have existing connection to this node but it was not a connection to masternode,
                 // change flag and add reference so that we can correctly clear it later
                 if(fConnectToMasternode && !pnode->fMasternode) {
-                    pnode->AddRef();
                     pnode->fMasternode = true;
                 }
                 pnode->MaybeSetAddrName(std::string(pszDest));
@@ -478,7 +472,6 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
     CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, addr_bind, pszDest ? pszDest : "", false);
     
     if(fConnectToMasternode) {
-        pnode->AddRef();
         pnode->fMasternode = true;
     }
     
@@ -1211,9 +1204,6 @@ void CConnman::ThreadSocketHandler()
 
                     // hold in disconnected pool until all refs are released
                     pnode->Release();
-
-                    if (pnode->fMasternode)
-                        pnode->Release();
 
                     vNodesDisconnected.push_back(pnode);
                 }

@@ -10,7 +10,6 @@
 
 class CScheduler;
 class CWallet;
-class CConnman;
 
 namespace boost
 {

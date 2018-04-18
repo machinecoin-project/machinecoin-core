@@ -1708,6 +1708,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             LogPrint(MCLog::NET, "peer=%d does not offer the expected services (%08x offered, %08x expected); disconnecting\n", pfrom->GetId(), nServices, GetDesirableServiceFlags(nServices));
             connman->PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_NONSTANDARD,
                                strprintf("Expected to offer services %08x", GetDesirableServiceFlags(nServices))));
+            pfrom->fDisconnect = true;
             return false;
         }
         
@@ -2007,11 +2008,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
         for (CInv &inv : vInv)
         {
-            if(!inv.IsKnownType()) {
-                LogPrint(MCLog::NET, "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->GetId());
-                continue;
-            }
-
             if (interruptMsgProc)
                 return true;
 
