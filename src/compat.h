@@ -65,6 +65,13 @@ typedef unsigned int SOCKET;
 #endif
 
 #ifdef WIN32
+#ifndef PRIO_MAX
+#define PRIO_MAX 20
+#endif
+#define THREAD_PRIORITY_LOWEST          PRIO_MAX
+#define THREAD_PRIORITY_BELOW_NORMAL    2
+#define THREAD_PRIORITY_NORMAL          0
+#define THREAD_PRIORITY_ABOVE_NORMAL    (-2)
 #ifndef S_IRUSR
 #define S_IRUSR             0400
 #define S_IWUSR             0200
@@ -80,16 +87,6 @@ typedef int64_t ssize_t;
 typedef int32_t ssize_t;
 #endif
 #endif
-
-#ifdef _WIN64
-// PRIO_MAX is not defined on Solaris
-#ifndef PRIO_MAX
-#define PRIO_MAX 20
-#endif
-#define THREAD_PRIORITY_LOWEST          PRIO_MAX
-#define THREAD_PRIORITY_BELOW_NORMAL    2
-#define THREAD_PRIORITY_NORMAL          0
-#define THREAD_PRIORITY_ABOVE_NORMAL    (-2)
 #endif
 
 #if HAVE_DECL_STRNLEN == 0
