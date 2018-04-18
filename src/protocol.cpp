@@ -189,12 +189,12 @@ bool CInv::IsKnownType() const
     LogPrintf("TYPE: %s\n", type);
     LogPrintf("LENGTH: %s\n", (int)ARRAYLEN(allNetMessageTypes));
     LogPrintf("COMMAND: %s\n", allNetMessageTypes[type]);
-    //return (type >= 1 && type < (int)ARRAYLEN(allNetMessageTypes));
+    return (type >= 1 && type < (int)ARRAYLEN(allNetMessageTypes));
 }
 
 std::string CInv::GetCommand() const
 {
-    IsKnownType();
+    //IsKnownType();
     std::string cmd;
     if (type & MSG_WITNESS_FLAG)
         cmd.append("witness-");
