@@ -202,9 +202,7 @@ std::string CInv::GetCommand() const
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
     default:
-        if (!IsKnownType())
-            throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
-        return allNetMessageTypes[type];
+        throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
     }
 }
 
