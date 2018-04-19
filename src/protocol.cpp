@@ -206,7 +206,7 @@ std::string CInv::GetCommand() const
         if (!IsKnownType(type))
             throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
         else
-            return allNetMessageTypes[type]
+            return allNetMessageTypes[type];
     }
 }
 
