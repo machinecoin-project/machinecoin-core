@@ -403,8 +403,6 @@ enum GetDataMsg
     MSG_MASTERNODE_VERIFY = 12,
 };
 
-extern CInv cinv;
-
 /** inv message data */
 class CInv
 {
@@ -423,7 +421,7 @@ public:
 
     friend bool operator<(const CInv& a, const CInv& b);
 
-    bool IsKnownType(int typeIn) const;
+    extern bool IsKnownType(int typeIn) const;
     std::string GetCommand() const;
     std::string ToString() const;
 

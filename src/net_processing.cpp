@@ -1230,7 +1230,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
     {
         LOCK(cs_main);
 
-        while (it != pfrom->vRecvGetData.end() && (cinv.IsKnownType(it->type)/* || it->type == MSG_TX || it->type == MSG_WITNESS_TX*/)) {
+        while (it != pfrom->vRecvGetData.end() && (IsKnownType(it->type)/* || it->type == MSG_TX || it->type == MSG_WITNESS_TX*/)) {
             if (interruptMsgProc)
                 return;
             // Don't bother if send buffer is too full to respond anyway
