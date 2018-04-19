@@ -403,6 +403,8 @@ enum GetDataMsg
     MSG_MASTERNODE_VERIFY = 12,
 };
 
+extern CInv cinv;
+
 /** inv message data */
 class CInv
 {
