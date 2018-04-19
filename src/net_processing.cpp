@@ -16,6 +16,7 @@
 #include <merkleblock.h>
 #include <netmessagemaker.h>
 #include <netbase.h>
+#include <protocol.h>
 #include <policy/fees.h>
 #include <policy/policy.h>
 #include <primitives/block.h>
