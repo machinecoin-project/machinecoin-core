@@ -421,7 +421,6 @@ public:
 
     friend bool operator<(const CInv& a, const CInv& b);
 
-    friend bool IsKnownType(int typeIn);
     std::string GetCommand() const;
     std::string ToString() const;
 
@@ -430,5 +429,7 @@ public:
     int type;
     uint256 hash;
 };
+
+bool IsKnownType(int typeIn) const;
 
 #endif // MACHINECOIN_PROTOCOL_H

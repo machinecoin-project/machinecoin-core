@@ -184,7 +184,7 @@ bool operator<(const CInv& a, const CInv& b)
     return (a.type < b.type || (a.type == b.type && a.hash < b.hash));
 }
 
-bool IsKnownType(int typeIn)
+bool IsKnownType(int typeIn) const
 {
     return (typeIn >= 1 && typeIn < (int)ARRAYLEN(allNetMessageTypes));
 }
