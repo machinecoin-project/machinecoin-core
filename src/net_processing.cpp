@@ -21,7 +21,6 @@
 #include <policy/policy.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
-#include <protocol.h>
 #include <random.h>
 #include <reverse_iterator.h>
 #include <scheduler.h>
