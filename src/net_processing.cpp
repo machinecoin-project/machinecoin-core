@@ -1229,7 +1229,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
     {
         LOCK(cs_main);
 
-        while (it != pfrom->vRecvGetData.end() && (it->type == MSG_TX || it->type == MSG_WITNESS_TX)) {
+        while (it != pfrom->vRecvGetData.end() && (IsKnownType(it->type)/* || it->type == MSG_TX || it->type == MSG_WITNESS_TX*/)) {
             if (interruptMsgProc)
                 return;
             // Don't bother if send buffer is too full to respond anyway
@@ -2011,6 +2011,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         {
             if (interruptMsgProc)
                 return true;
+
+            if(!IsKnownType(inv.type)) {
+                LogPrint("net", "got inv of unknown type %d: %s peer=%d\n", inv.type, inv.hash.ToString(), pfrom->GetId());
+                continue;
+            }
 
             bool fAlreadyHave = AlreadyHave(inv);
             LogPrint(MCLog::NET, "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->GetId());

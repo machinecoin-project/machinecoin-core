@@ -184,12 +184,9 @@ bool operator<(const CInv& a, const CInv& b)
     return (a.type < b.type || (a.type == b.type && a.hash < b.hash));
 }
 
-bool CInv::IsKnownType() const
+bool IsKnownType(int typeIn) const
 {
-    LogPrintf("TYPE: %s\n", type);
-    LogPrintf("LENGTH: %s\n", (int)ARRAYLEN(allNetMessageTypes));
-    LogPrintf("COMMAND: %s\n", allNetMessageTypes[type]);
-    return (type >= 1 && type < (int)ARRAYLEN(allNetMessageTypes));
+    return (typeIn >= 1 && typeIn < (int)ARRAYLEN(allNetMessageTypes));
 }
 
 std::string CInv::GetCommand() const
@@ -206,7 +203,10 @@ std::string CInv::GetCommand() const
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
     default:
-        throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
+        if (!IsKnownType(type))
+            throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
+        else
+            return allNetMessageTypes[type]
     }
 }
 
