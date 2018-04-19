@@ -421,7 +421,7 @@ public:
 
     friend bool operator<(const CInv& a, const CInv& b);
 
-    friend bool IsKnownType(int typeIn) const;
+    friend bool IsKnownType(int typeIn);
     std::string GetCommand() const;
     std::string ToString() const;
 
