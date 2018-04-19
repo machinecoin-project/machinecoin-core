@@ -8,10 +8,7 @@
 
 #include <net.h>
 #include <validationinterface.h>
-#include <protocol.h>
 #include <consensus/params.h>
-
-class CInv;
 
 /** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
 static const unsigned int DEFAULT_MAX_ORPHAN_TRANSACTIONS = 100;
