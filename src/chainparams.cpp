@@ -75,6 +75,7 @@ public:
     CMainParams() {
         strNetworkID = "main";
         consensus.nSubsidyHalvingInterval = 350000; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
+        consensus.BIP16Height = 0;
         consensus.BIP34Height = 227931; // Machinecoin BIP34 height
         consensus.BIP34Hash = uint256S("5b77f70e30731bbf8c4b6c44cf62170cc559b6015aa9b7988d8d44a30c4a4614"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 416969; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
@@ -191,6 +192,7 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 350000; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
+        consensus.BIP16Height = 0;
         consensus.BIP34Height = 0; // Machinecoin BIP34 height
         consensus.BIP34Hash = uint256S("72059c481cc49a2941cc36bd0f070abfe1ccc6e329534602dbdef555547e895f"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 0; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
@@ -246,7 +248,7 @@ public:
         vSeeds.emplace_back("dnsseed3.machinecoin.io");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,53); // Machinecoin N
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196); // Machinecoin 3
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
@@ -292,6 +294,7 @@ public:
     CRegTestParams() {
         strNetworkID = "regtest";
         consensus.nSubsidyHalvingInterval = 150; // Machinecoin number of blocks until halving on 1st Nov. 2016 09:17:52 PM
+        consensus.BIP16Height = 0;
         consensus.BIP34Height = 100000000; // BIP34 has not activated on regtest (far in the future so block v1 are not rejected in tests)
         consensus.BIP34Hash = uint256(); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
