@@ -430,6 +430,6 @@ public:
     uint256 hash;
 };
 
-bool IsKnownType(int typeIn) const;
+bool IsKnownType(int typeIn);
 
 #endif // MACHINECOIN_PROTOCOL_H
