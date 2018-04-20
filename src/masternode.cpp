@@ -397,7 +397,7 @@ bool CMasternodeBroadcast::Create(const COutPoint& outpoint, const CService& ser
 
     LogPrint(MCLog::MN, "CMasternodeBroadcast::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
              EncodeDestination(GetDestinationForKey(pubKeyCollateralAddressNew, OUTPUT_TYPE_P2SH_SEGWIT)),
-             EncodeDestination(GetDestinationForKey(pubKeyMasternodeNew, OUTPUT_TYPE_P2SH_SEGWIT)))
+             EncodeDestination(GetDestinationForKey(pubKeyMasternodeNew, OUTPUT_TYPE_P2SH_SEGWIT)));
 
     auto Log = [&strErrorRet,&mnbRet](std::string sErr)->bool
     {
