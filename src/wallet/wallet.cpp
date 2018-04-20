@@ -2464,8 +2464,11 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
     CTxDestination address;
     ExtractDestination(pubScript, address);
     
-    for (CWalletRef pwallet : ::vpwallets) {
-        CKeyID keyID = GetKeyForDestination(*pwallet, address);
+    CKeyID keyID;
+    for (CWalletRef pwallet : vpwallets) {
+        keyID = GetKeyForDestination(*pwallet, address);
+        
+        LogPrintf("pwallet loop");
 
         if (!pwallet->GetPubKey(keyID, pubKeyRet)) {
             LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Address does not refer to a key\n");
@@ -2476,6 +2479,8 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
             LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
             continue;
         }
+        
+        LogPrintf("address: %s\n", EncodeDestination(address));
         
         return true;
     }

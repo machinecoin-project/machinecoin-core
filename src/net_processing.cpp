@@ -3700,10 +3700,9 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                 }
             }
             
+            vInv.reserve(std::max<size_t>(pto->vInventoryMNToSend.size(), INVENTORY_BROADCAST_MAX));
             // Add other invs
             for (const CInv& inv : pto->vInventoryMNToSend) {
-                pto->filterInventoryKnown.insert(inv.hash);
-                
                 vInv.push_back(CInv(inv.type, inv.hash));
                 if (vInv.size() == MAX_INV_SZ) {
                     connman->PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
