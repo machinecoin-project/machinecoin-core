@@ -2480,12 +2480,13 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
             continue;
         }
         
+        LogPrintf("pubkey: %s\n", EncodeDestination(GetDestinationForKey(keyRet.GetPubKey())));
         LogPrintf("address: %s\n", EncodeDestination(address));
         
         return true;
     }
-
-    return true;
+    
+    return false;
 }
 
 bool CWallet::GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAmount amount)
