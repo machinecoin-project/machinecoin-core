@@ -54,6 +54,25 @@ const char *MNGOVERNANCEOBJECTVOTE="govobjvote";
 const char *MNVERIFY="mnv";
 } // namespace NetMsgType
 
+const static std::string ppszTypeName[] =
+{
+    "ERROR", // Should never occur
+    NetMsgType::TX,
+    NetMsgType::BLOCK,
+    NetMsgType::MERKLEBLOCK,
+    NetMsgType::CMPCTBLOCK,
+    // Machinecoin message types
+    // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
+    NetMsgType::MASTERNODEPAYMENTVOTE,
+    NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
+    NetMsgType::MNQUORUM, // not implemented
+    NetMsgType::MNANNOUNCE,
+    NetMsgType::MNPING,
+    NetMsgType::MNGOVERNANCEOBJECT,
+    NetMsgType::MNGOVERNANCEOBJECTVOTE,
+    NetMsgType::MNVERIFY,
+};
+
 /** All known message types. Keep this in the same order as the list of
  * messages above and in protocol.h.
  */
@@ -187,12 +206,11 @@ bool operator<(const CInv& a, const CInv& b)
 bool IsKnownType(int typeIn)
 {
     LogPrintf("TYPEIN %s\n", typeIn);
-    return (typeIn >= 1 && typeIn < (int)ARRAYLEN(allNetMessageTypes));
+    return (typeIn >= 1 && typeIn < (int)ARRAYLEN(ppszTypeName));
 }
 
 std::string CInv::GetCommand() const
 {
-    //IsKnownType();
     std::string cmd;
     if (type & MSG_WITNESS_FLAG)
         cmd.append("witness-");
@@ -204,11 +222,11 @@ std::string CInv::GetCommand() const
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
     default:
-        LogPrintf("TYPE %s\n", type);
+        LogPrintf("TYPE %s\n",s type);
         if (!IsKnownType(type))
             throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
         else
-            return allNetMessageTypes[type];
+            return ppszTypeName[type];
     }
 }
 
