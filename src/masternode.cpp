@@ -249,7 +249,7 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout)
-            if(out.nValue == 100*COIN && out.scriptPubKey == payee) return true;
+            if(out.nValue == 200*COIN && out.scriptPubKey == payee) return true;
     }
 
     return false;
