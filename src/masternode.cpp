@@ -249,10 +249,12 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
-            LogPrintf("OUT: %s\n", out.ToString());
             LogPrintf("OUT: %s\n", EncodeDestination(payee));
             LogPrintf("OUT: %s\n", EncodeDestination(out.scriptPubKey));
             LogPrintf("OUT: %s\n", out.nValue);
+            CTxDestination address;
+            ExtractDestination(out.scriptPubKey, address);
+            LogPrintf("OUT: %s\n", EncodeDestination(address));
             if(out.nValue == 200*COIN && GetScriptForWitness(out.scriptPubKey) == payee) return true;
         }
     }
