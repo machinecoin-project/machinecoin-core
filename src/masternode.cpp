@@ -243,7 +243,7 @@ void CMasternode::Check(bool fForce)
 bool CMasternode::IsInputAssociatedWithPubkey()
 {
     CScript payee;
-    payee = GetScriptForDestination(CScript(pubKeyCollateralAddress));
+    payee = GetScriptForDestination(CScriptID(pubKeyCollateralAddress));
 
     CTransactionRef tx;
     uint256 hash;
