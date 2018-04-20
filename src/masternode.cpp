@@ -250,8 +250,8 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
             LogPrintf("OUT: %s\n", out.nValue);
-            LogPrintf("OUT: %s\n", out.scriptPubKey);
-            LogPrintf("OUT: %s\n", pubKeyCollateralAddress);
+            LogPrintf("OUT: %s\n", EncodeDestination(out.scriptPubKey));
+            LogPrintf("OUT: %s\n", EncodeDestination(payee));
             LogPrintf("OUT: %s\n", vin.prevout.hash);
             LogPrintf("OUT: %s\n", hash);
             if(out.nValue == 200*COIN && out.scriptPubKey == payee) return true;
