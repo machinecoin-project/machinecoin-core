@@ -58,7 +58,6 @@ const static std::string ppszTypeName[] =
 {
     "ERROR", // Should never occur
     NetMsgType::TX,
-    NetMsgType::WITNESS_TX,
     // Machinecoin message types
     // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
     NetMsgType::MASTERNODEPAYMENTVOTE,
