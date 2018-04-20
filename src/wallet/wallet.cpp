@@ -2480,7 +2480,7 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
             continue;
         }
         
-        LogPrintf("pubkey: %s\n", EncodeDestination(GetDestinationForKey(keyRet.GetPubKey())));
+        LogPrintf("pubkey: %s\n", EncodeDestination(GetDestinationForKey(keyRet.GetPubKey(), OUTPUT_TYPE_P2SH_SEGWIT)));
         LogPrintf("address: %s\n", EncodeDestination(address));
         
         return true;
