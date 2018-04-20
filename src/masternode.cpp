@@ -243,15 +243,19 @@ void CMasternode::Check(bool fForce)
 bool CMasternode::IsInputAssociatedWithPubkey()
 {
     CScript payee;
-    payee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
+    payee = GetScriptForDestination(pubKeyCollateralAddress);
 
     CTransactionRef tx;
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
+            CTxDestination address1;
+            ExtractDestination(out.scriptPubKey, address1);
+            CTxDestination address2;
+            ExtractDestination(payee, address2);
             LogPrintf("OUT: %s\n", out.nValue);
-            LogPrintf("OUT: %s\n", EncodeDestination(out.scriptPubKey));
-            LogPrintf("OUT: %s\n", EncodeDestination(payee));
+            LogPrintf("OUT: %s\n", EncodeDestination(address1));
+            LogPrintf("OUT: %s\n", EncodeDestination(address2));
             if(out.nValue == 200*COIN && out.scriptPubKey == payee) return true;
         }
     }
