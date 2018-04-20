@@ -186,6 +186,7 @@ bool operator<(const CInv& a, const CInv& b)
 
 bool IsKnownType(int typeIn)
 {
+    LogPrintf("TYPEIN %s\n", typeIn);
     return (typeIn >= 1 && typeIn < (int)ARRAYLEN(allNetMessageTypes));
 }
 
@@ -203,6 +204,7 @@ std::string CInv::GetCommand() const
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
     default:
+        LogPrintf("TYPE %s\n", type);
         if (!IsKnownType(type))
             throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
         else
