@@ -2469,11 +2469,10 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
         keyID = GetKeyForDestination(*pwallet, address1);
     }
 
-    if (!GetKey(keyID, keyRet)) {
+    if (!GetKey(keyID, keyRet) && GetPubKey(keyID, pubKeyRet)) {
         LogPrintf ("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
     }
 
-    pubKeyRet = keyRet.GetPubKey();
     return true;
 }
 
