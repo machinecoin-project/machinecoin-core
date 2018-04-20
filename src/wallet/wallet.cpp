@@ -2458,19 +2458,26 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
 
     CScript pubScript;
 
-    outpointRet = COutPoint(out.tx->GetHash(), out->n);
-    pubScript = out.tx->tx->vout[out->n].scriptPubKey; // the inputs PubKey
+    outpointRet = COutPoint(out.tx->GetHash(), out.i);
+    pubScript = out.tx->tx->vout[out.i].scriptPubKey; // the inputs PubKey
 
-    CTxDestination address1;
-    ExtractDestination(pubScript, address1);
+    CTxDestination address;
+    ExtractDestination(pubScript, address);
+    
+    const CKeyID *keyID = boost::get<CKeyID>(&address);
+    
+    for (CWalletRef pwallet : ::vpwallets) {
+        if (!pwallet->GetPubKey(*keyID, pubKeyRet)) {
+            LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Address does not refer to a key\n");
+            continue;
+        }
 
-    CKeyID keyID;
-    for (CWalletRef pwallet : vpwallets) {
-        keyID = GetKeyForDestination(*pwallet, address1);
-    }
-
-    if (!GetKey(keyID, keyRet) && !GetPubKey(keyID, pubKeyRet)) {
-        LogPrintf ("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
+        if (!pwallet->GetKey(*keyID, keyRet)) {
+            LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
+            continue;
+        }
+        
+        return true;
     }
 
     return true;
