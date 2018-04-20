@@ -249,11 +249,7 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
-            CTxDestination address1;
-            ExtractDestination(out.scriptPubKey, address1);
             LogPrintf("OUT: %s\n", out.nValue);
-            LogPrintf("OUT: %s\n", EncodeDestination(address1));
-            LogPrintf("OUT: %s\n", EncodeDestination(payee));
             if(out.nValue == 200*COIN && out.scriptPubKey == payee) return true;
         }
     }
@@ -650,7 +646,7 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos)
                     pubKeyCollateralAddress.GetID().ToString() + pubKeyMasternode.GetID().ToString() +
                     boost::lexical_cast<std::string>(nProtocolVersion);
 
-    LogPrint(MCLog::MN, "CMasternodeBroadcast::CheckSignature -- strMessage: %s  pubKeyCollateralAddress address: %s  sig: %s\n", strMessage, EncodeDestination(GetScriptForDestination(pubKeyCollateralAddress.GetID())), EncodeBase64(&vchSig[0], vchSig.size()));
+    LogPrint(MCLog::MN, "CMasternodeBroadcast::CheckSignature -- strMessage: %s  pubKeyCollateralAddress address: %s  sig: %s\n", strMessage, EncodeDestination(GetDestinationForKey(pubKeyCollateralAddress, OUTPUT_TYPE_P2SH_SEGWIT)), EncodeBase64(&vchSig[0], vchSig.size()));
 
     if(!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, vchSig, strMessage, strError)){
         LogPrintf("CMasternodeBroadcast::CheckSignature -- Got bad Masternode announce signature, error: %s\n", strError);
