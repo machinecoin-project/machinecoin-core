@@ -2458,8 +2458,8 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
 
     CScript pubScript;
 
-    outpointRet = COutPoint(out.tx->GetHash(), out.n);
-    pubScript = out.tx->tx->vout[out.n].scriptPubKey; // the inputs PubKey
+    outpointRet = COutPoint(out.tx->GetHash(), out->n);
+    pubScript = out.tx->tx->vout[out->n].scriptPubKey; // the inputs PubKey
 
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
