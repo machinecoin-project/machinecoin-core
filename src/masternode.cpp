@@ -255,7 +255,7 @@ bool CMasternode::IsInputAssociatedWithPubkey()
             CTxDestination address;
             ExtractDestination(out.scriptPubKey, address);
             LogPrintf("OUT: %s\n", EncodeDestination(address));
-            if(out.nValue == 200*COIN && GetScriptForWitness(out.scriptPubKey) == payee) return true;
+            if(out.nValue == 200*COIN && EncodeDestination(payee) == EncodeDestination(address)) return true;
         }
     }
 
