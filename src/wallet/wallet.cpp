@@ -2464,15 +2464,15 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
     CTxDestination address;
     ExtractDestination(pubScript, address);
     
-    const CKeyID *keyID = boost::get<CKeyID>(&address);
-    
     for (CWalletRef pwallet : ::vpwallets) {
-        if (!pwallet->GetPubKey(*keyID, pubKeyRet)) {
+        CKeyID keyID = GetKeyForDestination(*pwallet, address);
+
+        if (!pwallet->GetPubKey(keyID, pubKeyRet)) {
             LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Address does not refer to a key\n");
             continue;
         }
 
-        if (!pwallet->GetKey(*keyID, keyRet)) {
+        if (!pwallet->GetKey(keyID, keyRet)) {
             LogPrintf("CWallet::GetOutpointAndKeysFromOutput -- Private key for address is not known\n");
             continue;
         }
