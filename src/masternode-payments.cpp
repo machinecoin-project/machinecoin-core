@@ -480,8 +480,8 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
                 }
             }
             
-            LogPrintf("%s", EncodeDestination(CScriptID(payee.GetPayee()));
-            LogPrintf("%s", EncodeDestination(CScriptID(txout.scriptPubKey));
+            LogPrintf("%s", EncodeDestination(CScriptID(payee.GetPayee())));
+            LogPrintf("%s", EncodeDestination(CScriptID(txout.scriptPubKey)));
 
             if(strPayeesPossible == "") {
                 strPayeesPossible = EncodeDestination(CScriptID(payee.GetPayee()));
