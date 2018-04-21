@@ -26,8 +26,6 @@
 #include <validationinterface.h>
 #include <warnings.h>
 #include <script/standard.h>
-#include <keystore.h>
-#include <wallet/wallet.h>
 
 #include <governance-classes.h>
 #include <masternode-payments.h>
@@ -715,9 +713,9 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
   
     UniValue masternodeObj(UniValue::VOBJ);
     if(pblock->txoutMasternode != CTxOut()) {
-        CPubKey pubKey;
-        ExtractPubKey(pblock->txoutMasternode.scriptPubKey, pubKey);
-        masternodeObj.push_back(Pair("payee", EncodeDestination(GetDestinationForKey(pubKey, OUTPUT_TYPE_P2SH_SEGWIT)).c_str()));
+        CTxDestination address;
+        ExtractDestination(pblock->txoutMasternode.scriptPubKey, address);
+        masternodeObj.push_back(Pair("payee", EncodeDestination(address).c_str()));
         masternodeObj.push_back(Pair("script", HexStr(pblock->txoutMasternode.scriptPubKey.begin(), pblock->txoutMasternode.scriptPubKey.end())));
         masternodeObj.push_back(Pair("amount", pblock->txoutMasternode.nValue));
     }
