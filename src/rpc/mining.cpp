@@ -714,7 +714,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     UniValue masternodeObj(UniValue::VOBJ);
     if(pblock->txoutMasternode != CTxOut()) {
         CTxDestination address1;
-        ExtractDestination(GetScriptForWitness(pblock->txoutMasternode.scriptPubKey), address1);
+        ExtractDestination(pblock->txoutMasternode.scriptPubKey, address1);
         masternodeObj.push_back(Pair("payee", EncodeDestination(address1).c_str()));
         masternodeObj.push_back(Pair("script", HexStr(pblock->txoutMasternode.scriptPubKey.begin(), pblock->txoutMasternode.scriptPubKey.end())));
         masternodeObj.push_back(Pair("amount", pblock->txoutMasternode.nValue));
