@@ -138,7 +138,7 @@ public:
         vSeeds.emplace_back("dnsseed3.machinecoin.io");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50); // Machinecoin M
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,20); // Machinecoin 9
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
@@ -248,12 +248,12 @@ public:
         vSeeds.emplace_back("dnsseed3.machinecoin.io");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,53); // Machinecoin N
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,58); // Machinecoin 3
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,23); // Machinecoin A
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
-        bech32_hrp = "tm";
+        bech32_hrp = "tmc";
         
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
@@ -376,7 +376,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
         
-        bech32_hrp = "mcrt";
+        bech32_hrp = "rmc";
     }
 };
 
