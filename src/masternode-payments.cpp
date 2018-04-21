@@ -12,6 +12,7 @@
 #include <netfulfilledman.h>
 #include <netmessagemaker.h>
 #include <util.h>
+#include <script/standard.h>
 
 #include <boost/lexical_cast.hpp>
 
