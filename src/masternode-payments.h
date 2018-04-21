@@ -12,7 +12,6 @@
 #include <masternode.h>
 #include <net_processing.h>
 #include <utilstrencodings.h>
-#include <script/standard.h>
 
 class CMasternodePayments;
 class CMasternodePaymentVote;
@@ -66,7 +65,7 @@ public:
         READWRITE(vecVoteHashes);
     }
 
-    CScript GetPayee() { return GetScriptForWitness(scriptPubKey); }
+    CScript GetPayee() { return scriptPubKey; }
 
     void AddVoteHash(uint256 hashIn) { vecVoteHashes.push_back(hashIn); }
     std::vector<uint256> GetVoteHashes() { return vecVoteHashes; }

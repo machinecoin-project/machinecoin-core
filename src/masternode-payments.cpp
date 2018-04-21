@@ -190,7 +190,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
             return;
         }
         // fill payee with locally calculated winner and hope for the best
-        payee = GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID());
+        payee = GetScriptForWitness(GetGetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()));
     }
 
     // GET MASTERNODE PAYMENT VARIABLES SETUP
