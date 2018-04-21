@@ -202,7 +202,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     // ... and masternode
     
     CTxDestination dest = CScriptID(payee);
-    CScript mnPayee = GetScriptForDestination(dest);
+    CScript mnPayee = GetScriptForWitness(GetScriptForDestination(dest));
     
     txoutMasternodeRet = CTxOut(masternodePayment, mnPayee);
     txNew.vout.push_back(txoutMasternodeRet);
