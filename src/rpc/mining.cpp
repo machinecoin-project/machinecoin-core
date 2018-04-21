@@ -27,6 +27,7 @@
 #include <warnings.h>
 #include <script/standard.h>
 #include <keystore.h>
+#include <wallet/wallet.h>
 
 #include <governance-classes.h>
 #include <masternode-payments.h>
