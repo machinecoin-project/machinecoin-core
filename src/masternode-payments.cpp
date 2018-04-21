@@ -191,7 +191,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
             return;
         }
         // fill payee with locally calculated winner and hope for the best
-        payee = GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID());
+        payee = GetScriptForWitness(GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()));
     }
 
     // GET MASTERNODE PAYMENT VARIABLES SETUP
@@ -200,7 +200,11 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     // split reward between miner ...
     txNew.vout[0].nValue -= masternodePayment;
     // ... and masternode
-    txoutMasternodeRet = CTxOut(masternodePayment, payee);
+    
+    CTxDestination dest = CScriptID(payee);
+    CScript mnPayee = GetScriptForDestination(dest);
+    
+    txoutMasternodeRet = CTxOut(masternodePayment, mnPayee);
     txNew.vout.push_back(txoutMasternodeRet);
 
     LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(CScriptID(payee)));
@@ -359,7 +363,7 @@ bool CMasternodePayments::IsScheduled(CMasternode& mn, int nNotBlockHeight)
     if(!masternodeSync.IsMasternodeListSynced()) return false;
 
     CScript mnpayee;
-    mnpayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
+    mnpayee = GetScriptForWitness(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()));
 
     CScript payee;
     for(int64_t h = nCachedBlockHeight; h <= nCachedBlockHeight + 8; h++){
