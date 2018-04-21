@@ -725,9 +725,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     if(pblock->voutSuperblock.size()) {
         for (const CTxOut& txout : pblock->voutSuperblock) {
             UniValue entry(UniValue::VOBJ);
-            CTxDestination address1;
-            ExtractDestination(txout.scriptPubKey, address1);
-            entry.push_back(Pair("payee", EncodeDestination(address1).c_str()));
+            entry.push_back(Pair("payee", EncodeDestination(CScriptID(txout.scriptPubKey)).c_str()));
             entry.push_back(Pair("script", HexStr(txout.scriptPubKey.begin(), txout.scriptPubKey.end())));
             entry.push_back(Pair("amount", txout.nValue));
             superblockObjArray.push_back(entry);

@@ -503,13 +503,10 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
 
     for (CMasternodePayee& payee : vecPayees)
     {
-        CTxDestination address1;
-        ExtractDestination(payee.GetPayee(), address1);
-
         if (strRequiredPayments != "Unknown") {
-            strRequiredPayments += ", " + EncodeDestination(address1) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
+            strRequiredPayments += ", " + EncodeDestination(CScriptID(payee.GetPayee())) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
         } else {
-            strRequiredPayments = EncodeDestination(address1) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
+            strRequiredPayments = EncodeDestination(CScriptID(payee.GetPayee())) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
         }
     }
 
