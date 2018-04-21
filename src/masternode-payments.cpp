@@ -203,10 +203,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     txoutMasternodeRet = CTxOut(masternodePayment, payee);
     txNew.vout.push_back(txoutMasternodeRet);
 
-    CTxDestination address1;
-    ExtractDestination(payee, address1);
-
-    LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(address1));
+    LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(CScriptID(payee)));
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto() {
@@ -474,9 +471,8 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
     for (CMasternodePayee& payee : vecPayees) {
         if (payee.GetVoteCount() >= MNPAYMENTS_SIGNATURES_REQUIRED) {
             for (CTxOut txout : txNew->vout) {
-                            LogPrintf("%s", EncodeDestination(CScriptID(payee.GetPayee())));
-            LogPrintf("%s", EncodeDestination(CScriptID(txout.scriptPubKey)));
-                if (payee.GetPayee() == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                LogPrintf("%s\n", txout.nValue);
+                if (EncodeDestination(CScriptID(payee.GetPayee())) == EncodeDestination(CScriptID(txout.scriptPubKey)) && nMasternodePayment == txout.nValue) {
                     LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
                     return true;
                 }
