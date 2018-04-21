@@ -200,7 +200,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     // split reward between miner ...
     txNew.vout[0].nValue -= masternodePayment;
     // ... and masternode
-    txoutMasternodeRet = CTxOut(masternodePayment, payee);
+    txoutMasternodeRet = CTxOut(masternodePayment, GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()));
     txNew.vout.push_back(txoutMasternodeRet);
 
     LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(CScriptID(payee)));
