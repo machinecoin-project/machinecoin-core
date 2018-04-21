@@ -479,14 +479,14 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
                     return true;
                 }
             }
-
-            CTxDestination address1;
-            ExtractDestination(payee.GetPayee(), address1);
+            
+            LogPrintf("%s", EncodeDestination(CScriptID(payee.GetPayee()));
+            LogPrintf("%s", EncodeDestination(CScriptID(txout.scriptPubKey));
 
             if(strPayeesPossible == "") {
-                strPayeesPossible = EncodeDestination(address1);
+                strPayeesPossible = EncodeDestination(CScriptID(payee.GetPayee()));
             } else {
-                strPayeesPossible += "," + EncodeDestination(address1);
+                strPayeesPossible += "," + EncodeDestination(CScriptID(payee.GetPayee()));
             }
         }
     }
