@@ -471,21 +471,18 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
     for (CMasternodePayee& payee : vecPayees) {
         if (payee.GetVoteCount() >= MNPAYMENTS_SIGNATURES_REQUIRED) {
             for (CTxOut txout : txNew->vout) {
-                LogPrintf("IsTransactionValid\n");
-                LogPrintf("%s\n", nMasternodePayment);
-                LogPrintf("%s\n", txout.nValue);
-                LogPrintf("%s\n", EncodeDestination(CScriptID(payee.GetPayee())));
-                LogPrintf("%s\n", EncodeDestination(CScriptID(txout.scriptPubKey)));
-                if (CScriptID(payee.GetPayee()) == CScriptID(txout.scriptPubKey) && nMasternodePayment == txout.nValue) {
+                CTxDestination dest;
+                ExtractDestination(txout.scriptPubKey, dest);
+                if (EncodeDestination(payee.GetPayee() == EncodeDestination(dest)) && nMasternodePayment == txout.nValue) {
                     LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
                     return true;
                 }
             }
 
             if(strPayeesPossible == "") {
-                strPayeesPossible = EncodeDestination(CScriptID(payee.GetPayee()));
+                strPayeesPossible = EncodeDestination(payee.GetPayee());
             } else {
-                strPayeesPossible += "," + EncodeDestination(CScriptID(payee.GetPayee()));
+                strPayeesPossible += "," + EncodeDestination(payee.GetPayee());
             }
         }
     }
