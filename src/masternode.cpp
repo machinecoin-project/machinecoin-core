@@ -243,7 +243,7 @@ void CMasternode::Check(bool fForce)
 bool CMasternode::IsInputAssociatedWithPubkey()
 {
     CScript payee;
-    payee = GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()));
+    payee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
 
     CTransactionRef tx;
     uint256 hash;
