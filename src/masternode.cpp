@@ -243,19 +243,16 @@ void CMasternode::Check(bool fForce)
 bool CMasternode::IsInputAssociatedWithPubkey()
 {
     CScript payee;
-    payee = GetScriptForWitness(GetScriptForDestination(pubKeyCollateralAddress.GetID()));
+    payee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
 
     CTransactionRef tx;
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
-            LogPrintf("OUT: %s\n", EncodeDestination(payee));
-            LogPrintf("OUT: %s\n", EncodeDestination(out.scriptPubKey));
+            LogPrintf("OUT: %s\n", EncodeDestination(CScriptID(payee)));
+            LogPrintf("OUT: %s\n", EncodeDestination(CScriptID(out.scriptPubKey)));
             LogPrintf("OUT: %s\n", out.nValue);
-            CTxDestination address;
-            ExtractDestination(out.scriptPubKey, address);
-            LogPrintf("OUT: %s\n", EncodeDestination(address));
-            if(out.nValue == 200*COIN && EncodeDestination(payee) == EncodeDestination(address)) return true;
+            if(out.nValue == 200*COIN && EncodeDestination(CScriptID(payee)) == EncodeDestination(CScriptID(out.scriptPubKey))) return true;
         }
     }
 
@@ -315,7 +312,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 
     const CBlockIndex *BlockReading = pindex;
 
-    CScript mnpayee = GetScriptForWitness(GetScriptForDestination(pubKeyCollateralAddress.GetID()));
+    CScript mnpayee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
     // LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);

@@ -445,7 +445,7 @@ bool CMasternodeMan::GetMasternodeInfo(const CScript& payee, masternode_info_t& 
 {
     LOCK(cs);
     for (auto& mnpair : mapMasternodes) {
-        CScript scriptCollateralAddress = GetScriptForWitness(GetScriptForDestination(mnpair.second.pubKeyCollateralAddress.GetID()));
+        CScript scriptCollateralAddress = GetScriptForDestination(mnpair.second.pubKeyCollateralAddress.GetID());
         if (scriptCollateralAddress == payee) {
             mnInfoRet = mnpair.second.GetInfo();
             return true;
