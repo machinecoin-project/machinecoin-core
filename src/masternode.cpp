@@ -243,14 +243,14 @@ void CMasternode::Check(bool fForce)
 bool CMasternode::IsInputAssociatedWithPubkey()
 {
     CScript payee;
-    payee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
+    payee = GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()));
 
     CTransactionRef tx;
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
             LogPrintf("OUT: %s\n", EncodeDestination(CScriptID(payee)));
-            LogPrintf("OUT: %s\n", EncodeDestination(CScriptID(out.scriptPubKey)));
+            LogPrintf("OUT: %s\n", EncodeDestination(out.scriptPubKey));
             LogPrintf("OUT: %s\n", out.nValue);
             if(out.nValue == 200*COIN && EncodeDestination(CScriptID(payee)) == EncodeDestination(CScriptID(out.scriptPubKey))) return true;
         }
