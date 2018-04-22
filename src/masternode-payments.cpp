@@ -471,6 +471,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
     for (CMasternodePayee& payee : vecPayees) {
         if (payee.GetVoteCount() >= MNPAYMENTS_SIGNATURES_REQUIRED) {
             for (CTxOut txout : txNew->vout) {
+                LogPrintf("IsTransactionValid\n");
                 LogPrintf("%s\n", nMasternodePayment);
                 LogPrintf("%s\n", txout.nValue);
                 LogPrintf("%s\n", EncodeDestination(CScriptID(payee.GetPayee())));
