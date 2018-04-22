@@ -253,10 +253,10 @@ bool CMasternode::IsInputAssociatedWithPubkey()
             LogPrintf("OUT: %s\n", out.nValue);
             CTxDestination dest;
             ExtractDestination(out.scriptPubKey, dest);
-            GetScriptForDestination(WitnessV0KeyHash(dest))
+            CScript voutPayee = GetScriptForDestination(WitnessV0KeyHash(dest))
             LogPrintf("OUT: %s\n", EncodeDestination(dest));
             
-            if(out.nValue == 200*COIN && payee == GetScriptForDestination(WitnessV0KeyHash(dest))) return true;
+            if(out.nValue == 200*COIN && payee == voutPayee) return true;
         }
     }
 
