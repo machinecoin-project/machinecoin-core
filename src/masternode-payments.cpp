@@ -647,7 +647,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight, CConnman* connman)
     LogPrintf("CMasternodePayments::ProcessBlock -- Masternode found by GetNextMasternodeInQueueForPayment(): %s\n", mnInfo.vin.prevout.ToStringShort());
 
 
-    CScript payee = GetScriptForWitness(GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()));
+    CScript payee = GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID());
 
     CMasternodePaymentVote voteNew(activeMasternode.outpoint, nBlockHeight, payee);
 
