@@ -252,7 +252,7 @@ bool CMasternode::IsInputAssociatedWithPubkey()
             LogPrintf("OUT: %s\n", EncodeDestination(payee));
             LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForDestination(out.scriptPubKey)));
             LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForDestination(CScriptID(out.scriptPubKey))));
-            LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForWitnes(out.scriptPubKey)));
+            LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForWitness(out.scriptPubKey)));
             LogPrintf("OUT: %s\n", out.nValue);
             if(out.nValue == 200*COIN && payee == GetScriptForWitness(out.scriptPubKey)) return true;
         }
