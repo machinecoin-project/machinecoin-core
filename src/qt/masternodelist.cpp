@@ -211,7 +211,7 @@ void MasternodeList::updateMyMasternodeInfo(QString strAlias, QString strAddr, c
     
     std::vector<CTxDestination> dests = GetAllDestinationsForKey(infoMn.pubKeyCollateralAddress);
     for (CTxDestination dest : dests) {
-        LogPrintf("%s\n", %s);
+        LogPrintf("%s\n", EncodeDestination(dest));
     }
 
     ui->tableWidgetMyMasternodes->setItem(nNewRow, 0, aliasItem);
