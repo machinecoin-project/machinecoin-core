@@ -207,7 +207,7 @@ void MasternodeList::updateMyMasternodeInfo(QString strAlias, QString strAddr, c
     QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(QString::fromStdString(DurationToDHMS(fFound ? (infoMn.nTimeLastPing - infoMn.sigTime) : 0)));
     QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat("%Y-%m-%d %H:%M",
                                                                                                    fFound ? infoMn.nTimeLastPing + GetOffsetFromUtc() : 0)));
-    QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(fFound ? EncodeDestination(CScriptID(GetScriptForDestination(infoMn.pubKeyCollateralAddress))) : ""));
+    QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(fFound ? EncodeDestination(CScriptID(GetScriptForDestination(infoMn.pubKeyCollateralAddress.GetID()))) : ""));
     
     std::vector<CTxDestination> dests = GetAllDestinationsForKey(infoMn.pubKeyCollateralAddress);
     for (CTxDestination dest : dests) {
@@ -293,7 +293,7 @@ void MasternodeList::updateNodeList()
         QTableWidgetItem *statusItem = new QTableWidgetItem(QString::fromStdString(mn.GetStatus()));
         QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(QString::fromStdString(DurationToDHMS(mn.lastPing.sigTime - mn.sigTime)));
         QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat("%Y-%m-%d %H:%M", mn.lastPing.sigTime + offsetFromUtc)));
-        QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(EncodeDestination(CScriptID(GetScriptForDestination(mn.pubKeyCollateralAddress)))));
+        QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(EncodeDestination(CScriptID(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID())))));
 
         if (strCurrentFilter != "")
         {
