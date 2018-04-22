@@ -250,10 +250,11 @@ bool CMasternode::IsInputAssociatedWithPubkey()
     if(GetTransaction(vin.prevout.hash, tx, Params().GetConsensus(), hash, true)) {
         for (CTxOut out : tx->vout) {
             LogPrintf("OUT: %s\n", EncodeDestination(payee));
-            LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForDestination(out.scriptPubKey)));
-            LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForDestination(CScriptID(out.scriptPubKey))));
             LogPrintf("OUT: %s\n", EncodeDestination(GetScriptForWitness(out.scriptPubKey)));
             LogPrintf("OUT: %s\n", out.nValue);
+            CTxDestination dest;
+            ExtractDestination(out.scriptPubKey, dest);
+            LogPrintf("OUT: %s\n", EncodeDestination(dest));
             if(out.nValue == 200*COIN && payee == GetScriptForWitness(out.scriptPubKey)) return true;
         }
     }
