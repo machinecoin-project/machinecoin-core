@@ -208,6 +208,11 @@ void MasternodeList::updateMyMasternodeInfo(QString strAlias, QString strAddr, c
     QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat("%Y-%m-%d %H:%M",
                                                                                                    fFound ? infoMn.nTimeLastPing + GetOffsetFromUtc() : 0)));
     QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(fFound ? EncodeDestination(CScriptID(GetScriptForDestination(infoMn.pubKeyCollateralAddress.GetID()))) : ""));
+    
+    std::vector<CTxDestination> dests = GetAllDestinationsForKey(infoMn.pubKeyCollateralAddress);
+    for (CTxDestination dest : dests) {
+        LogPrintf("%s\n", %s);
+    }
 
     ui->tableWidgetMyMasternodes->setItem(nNewRow, 0, aliasItem);
     ui->tableWidgetMyMasternodes->setItem(nNewRow, 1, addrItem);
