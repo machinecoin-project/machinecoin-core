@@ -478,7 +478,6 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
                 LogPrintf("Payee: %s\n", EncodeDestination(payee.GetPayee()));
                 LogPrintf("Dest: %s\n", EncodeDestination(CScriptID(GetScriptForWitness(GetScriptForDestination(dest)))));
                 LogPrintf("Dest: %s\n", EncodeDestination(GetScriptForWitness(GetScriptForDestination(dest))));
-                LogPrintf("Dest: %s\n", EncodeDestination(CScriptID(dest)));
                 LogPrintf("Match: %s\n", (EncodeDestination(payee.GetPayee()) == EncodeDestination(CScriptID(GetScriptForDestination(dest)))));
                 LogPrintf("Payment: %s\n", nMasternodePayment);
                 LogPrintf("nValue: %s\n", txout.nValue);
