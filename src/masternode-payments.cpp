@@ -14,6 +14,7 @@
 #include <util.h>
 #include <script/standard.h>
 #include <keystore.h>
+#include <wallet/wallet.h>
 
 #include <boost/lexical_cast.hpp>
 
