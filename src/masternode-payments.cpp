@@ -192,7 +192,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
             return;
         }
         // fill payee with locally calculated winner and hope for the best
-        payee = GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID());
+        payee = GetScriptForWitness(GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()));
     }
 
     // GET MASTERNODE PAYMENT VARIABLES SETUP
@@ -360,7 +360,7 @@ bool CMasternodePayments::IsScheduled(CMasternode& mn, int nNotBlockHeight)
     if(!masternodeSync.IsMasternodeListSynced()) return false;
 
     CScript mnpayee;
-    mnpayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
+    mnpayee = GetScriptForWitness(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()));
 
     CScript payee;
     for(int64_t h = nCachedBlockHeight; h <= nCachedBlockHeight + 8; h++){
@@ -476,6 +476,8 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
                 ExtractDestination(txout.scriptPubKey, dest);
                 LogPrintf("Start\n");
                 LogPrintf("Payee: %s\n", EncodeDestination(payee.GetPayee()));
+                LogPrintf("Dest: %s\n", EncodeDestination(CScriptID(GetScriptForWitness(GetScriptForDestination(dest)))));
+                LogPrintf("Dest: %s\n", EncodeDestination(GetScriptForWitness(GetScriptForDestination(dest))));
                 LogPrintf("Dest: %s\n", EncodeDestination(CScriptID(GetScriptForDestination(dest))));
                 LogPrintf("Match: %s\n", (EncodeDestination(payee.GetPayee()) == EncodeDestination(CScriptID(GetScriptForDestination(dest)))));
                 LogPrintf("Payment: %s\n", nMasternodePayment);
@@ -654,7 +656,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight, CConnman* connman)
     LogPrintf("CMasternodePayments::ProcessBlock -- Masternode found by GetNextMasternodeInQueueForPayment(): %s\n", mnInfo.vin.prevout.ToStringShort());
 
 
-    CScript payee = GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID());
+    CScript payee = GetScriptForWitness(GetScriptForDestination(mnInfo.pubKeyCollateralAddress.GetID()));
 
     CMasternodePaymentVote voteNew(activeMasternode.outpoint, nBlockHeight, payee);
 
