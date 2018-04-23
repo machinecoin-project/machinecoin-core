@@ -478,7 +478,11 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
                 LogPrintf("Payee: %s\n", EncodeDestination(CScriptID(payee.GetPayee())));
                 LogPrintf("Dest: %s\n", EncodeDestination(CScriptID(GetScriptForDestination(dest))));
                 LogPrintf("Dest + end: %s\n", EncodeDestination(GetScriptForDestination(dest)));
-                LogPrintf("Boost: %s\n", EncodeDestination(GetScriptForDestination(boost::get<WitnessV0KeyHash>(CScriptID(GetScriptForDestination(dest))))));
+                
+                if (ExtractDestination(txout.scriptPubKey, dest)) {
+                    auto witnessHash = boost::get<WitnessV0KeyHash>(&dest);
+                    LogPrintf("Boost: %s\n", EncodeDestination(GetScriptForDestination(witnessHash)));
+                }
                 
                 if (EncodeDestination(payee.GetPayee()) == EncodeDestination(GetScriptForDestination(dest)) && nMasternodePayment == txout.nValue) {
                     LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
