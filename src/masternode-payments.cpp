@@ -478,7 +478,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
                 CTxDestination address1;
                 ExtractDestination(payee.GetPayee(), address1);
                 CTxDestination address2;
-                ExtractDestination(txout.scriptPubKey, address2);
+                ExtractDestination(GetScriptForDestination(txout.scriptPubKey), address2);
                 
                 LogPrintf("Payee: %s\n", EncodeDestination(address1));
                 LogPrintf("Dest: %s\n", EncodeDestination(address2));
