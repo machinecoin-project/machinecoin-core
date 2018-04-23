@@ -472,21 +472,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
 
     for (CMasternodePayee& payee : vecPayees) {
         if (payee.GetVoteCount() >= MNPAYMENTS_SIGNATURES_REQUIRED) {
-            for (CTxOut txout : txNew->vout) {
-                LogPrintf("Start\n");
-                
-                CTxDestination address1;
-                ExtractDestination(payee.GetPayee(), address1);
-                CTxDestination address2;
-                ExtractDestination(GetScriptForDestination(txout.scriptPubKey), address2);
-                
-                LogPrintf("Payee: %s\n", EncodeDestination(address1));
-                LogPrintf("Dest: %s\n", EncodeDestination(address2));
-                LogPrintf("Match: %s\n", (payee.GetPayee() == txout.scriptPubKey));
-                LogPrintf("Payment: %s\n", nMasternodePayment);
-                LogPrintf("nValue: %s\n", txout.nValue);
-                LogPrintf("End\n");
-                
+            for (CTxOut txout : txNew->vout) {                
                 if (payee.GetPayee() == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
                     LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
                     return true;
@@ -518,6 +504,7 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
     {
         CTxDestination address;
         ExtractDestination(payee.GetPayee(), address);
+        LogPrintf("%s\n", EncodeDestination(GetScriptForDestination(payee.GetPayee())));
         if (strRequiredPayments != "Unknown") {
             strRequiredPayments += ", " + EncodeDestination(address) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
         } else {
