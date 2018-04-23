@@ -473,27 +473,33 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
     for (CMasternodePayee& payee : vecPayees) {
         if (payee.GetVoteCount() >= MNPAYMENTS_SIGNATURES_REQUIRED) {
             for (CTxOut txout : txNew->vout) {
-                CTxDestination dest;
-                ExtractDestination(txout.scriptPubKey, dest);
                 LogPrintf("Start\n");
-                LogPrintf("Payee: %s\n", EncodeDestination(payee.GetPayee()));
-                LogPrintf("Dest: %s\n", EncodeDestination(CScriptID(GetScriptForWitness(GetScriptForDestination(dest)))));
-                LogPrintf("Dest: %s\n", EncodeDestination(GetScriptForWitness(GetScriptForDestination(dest))));
-                LogPrintf("Match: %s\n", (EncodeDestination(payee.GetPayee()) == EncodeDestination(CScriptID(GetScriptForDestination(dest)))));
+                
+                CTxDestination address1;
+                ExtractDestination(payee.GetPayee(), address1);
+                CTxDestination address2;
+                ExtractDestination(txout.scriptPubKey, address2);
+                
+                LogPrintf("Payee: %s\n", EncodeDestination(address1);
+                LogPrintf("Dest: %s\n", EncodeDestination(address2);
+                LogPrintf("Match: %s\n", (payee.GetPayee() == txout.scriptPubKey));
                 LogPrintf("Payment: %s\n", nMasternodePayment);
                 LogPrintf("nValue: %s\n", txout.nValue);
                 LogPrintf("End\n");
                 
-                if (EncodeDestination(payee.GetPayee()) == EncodeDestination(CScriptID(GetScriptForDestination(dest))) && nMasternodePayment == txout.nValue) {
+                if (payee.GetPayee() == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
                     LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
                     return true;
                 }
             }
+            
+            CTxDestination address;
+            ExtractDestination(payee.GetPayee(), address);
 
             if(strPayeesPossible == "") {
-                strPayeesPossible = EncodeDestination(payee.GetPayee());
+                strPayeesPossible = EncodeDestination(address);
             } else {
-                strPayeesPossible += "," + EncodeDestination(payee.GetPayee());
+                strPayeesPossible += "," + EncodeDestination(address);
             }
         }
     }
