@@ -509,6 +509,10 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString()
 
     for (CMasternodePayee& payee : vecPayees)
     {
+        std::vector<CTxDestination> dests = GetAllDestinationsForKey(payee.GetPayee());
+        for (CTxDestination dest : dests) {
+            LogPrintf("Dest: %s\n", dest);
+        }
         if (strRequiredPayments != "Unknown") {
             strRequiredPayments += ", " + EncodeDestination(CScriptID(payee.GetPayee())) + ":" + boost::lexical_cast<std::string>(payee.GetVoteCount());
         } else {
