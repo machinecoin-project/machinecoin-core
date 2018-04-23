@@ -473,6 +473,10 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
             for (CTxOut txout : txNew->vout) {
                 CTxDestination dest;
                 ExtractDestination(txout.scriptPubKey, dest);
+                LogPrintf("%s\n", EncodeDestination(payee.GetPayee()));
+                LogPrintf("%s\n", EncodeDestination(dest));
+                LogPrintf("%s\n", EncodeDestination(CScriptID(payee.GetPayee())));
+                LogPrintf("%s\n", EncodeDestination(CScriptID(dest)));
                 if (EncodeDestination(payee.GetPayee()) == EncodeDestination(dest) && nMasternodePayment == txout.nValue) {
                     LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- Found required payment\n");
                     return true;
