@@ -19,6 +19,8 @@
 #include <httprpc.h>
 #include <utilstrencodings.h>
 
+#include <masternodeconfig.h>
+
 #include <boost/thread.hpp>
 
 #include <stdio.h>
@@ -105,6 +107,13 @@ bool AppInit(int argc, char* argv[])
             SelectParams(ChainNameFromCommandLine());
         } catch (const std::exception& e) {
             fprintf(stderr, "Error: %s\n", e.what());
+            return false;
+        }
+
+        // parse masternode.conf
+        std::string strErr;
+        if(!masternodeConfig.read(strErr)) {
+            fprintf(stderr,"Error reading masternode configuration file: %s\n", strErr.c_str());
             return false;
         }
 
