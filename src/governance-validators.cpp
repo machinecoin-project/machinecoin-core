@@ -155,20 +155,6 @@ bool CProposalValidator::ValidatePaymentAddress()
         return false;
     }
 
-    static const std::string base58chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
-    size_t nLength = strPaymentAddress.size();
-
-    if((nLength < 26) || (nLength > 35)) {
-        strErrorMessages += "incorrect payment_address length;";
-        return false;
-    }
-
-    if(strPaymentAddress.find_first_not_of(base58chars) != std::string::npos) {
-        strErrorMessages += "payment_address contains invalid characters;";
-        return false;
-    }
-
     if(IsValidDestinationString(strPaymentAddress)) {
         strErrorMessages += "payment_address is invalid;";
         return false;
