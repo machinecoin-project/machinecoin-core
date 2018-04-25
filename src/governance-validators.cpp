@@ -154,8 +154,9 @@ bool CProposalValidator::ValidatePaymentAddress()
         strErrorMessages += "payment_address field not found;";
         return false;
     }
-
-    if(IsValidDestinationString(strPaymentAddress)) {
+    
+    CTxDestination destination = DecodeDestination(strPaymentAddress);
+    if (!IsValidDestination(destination)) {
         strErrorMessages += "payment_address is invalid;";
         return false;
     }
