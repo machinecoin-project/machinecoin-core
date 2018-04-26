@@ -23,24 +23,6 @@
 
 #include <algorithm>
 
-UniValue getpoolinfo(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() != 0)
-        throw std::runtime_error(
-            "getpoolinfo\n"
-            "Returns an object containing mixing pool related information.\n");
-
-#ifdef ENABLE_WALLET
-    UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("mixing_mode",       (!fMasterNode) ? "multi-session" : "normal"));
-
-    masternode_info_t mnInfo;
-#endif // ENABLE_WALLET
-
-    return obj;
-}
-
-
 UniValue masternode(const JSONRPCRequest& request)
 {
     CConnman& connman = *g_connman;
@@ -838,7 +820,6 @@ UniValue mnsync(const JSONRPCRequest& request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
-    { "masternodes",        "getpoolinfo",            &getpoolinfo,            {} },
     { "masternodes",        "masternode",             &masternode,             {"args"} },
     { "masternodes",        "masternodelist",         &masternodelist,         {"args"} },
     { "masternodes",        "masternodebroadcast",    &masternodebroadcast,    {"args"} },
