@@ -14,9 +14,7 @@
 #include <messagesigner.h>
 #include <script/standard.h>
 #include <util.h>
-#ifdef ENABLE_WALLET
 #include <wallet/wallet.h>
-#endif // ENABLE_WALLET
 
 #include <boost/lexical_cast.hpp>
 
