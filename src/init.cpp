@@ -11,6 +11,7 @@
 
 #include <addrman.h>
 #include <amount.h>
+#include <base58.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <checkpoints.h>
@@ -1709,12 +1710,13 @@ bool AppInitMain()
             if(!CMessageSigner::GetKeysFromSecret(strMasterNodePrivKey, activeMasternode.keyMasternode, activeMasternode.pubKeyMasternode))
                 return InitError(_("Invalid masternodeprivkey. Please see documenation."));
 
-            //LogPrintf("  pubKeyMasternode: %s\n", activeMasternode.pubKeyMasternode.GetID());
+            LogPrintf("  pubKeyMasternode: %s\n", EncodeDestination(CScriptID(activeMasternode.pubKeyMasternode)));
         } else {
             return InitError(_("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
         }
     }
 
+#ifdef ENABLE_WALLET
     LogPrintf("Using masternode config file %s\n", GetMasternodeConfigFile().string());
   
     if(gArgs.GetBoolArg("-mnconflock", true) && (masternodeConfig.getCount() > 0)) {
@@ -1729,7 +1731,8 @@ bool AppInitMain()
             LogPrintf("  %s %s - locked successfully\n", mne.getTxHash(), mne.getOutputIndex());
         }
     }
-  
+#endif // ENABLE_WALLET
+
     //lite mode disables all Masternode related functionality
     fLiteMode = gArgs.GetBoolArg("-litemode", false);
     if(fMasterNode && fLiteMode){
