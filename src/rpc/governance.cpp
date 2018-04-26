@@ -22,9 +22,7 @@
 #include <rpc/server.h>
 #include <util.h>
 #include <utilmoneystr.h>
-#ifdef ENABLE_WALLET
 #include <wallet/wallet.h>
-#endif // ENABLE_WALLET
 
 #include <boost/lexical_cast.hpp>
 
