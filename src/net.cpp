@@ -2626,8 +2626,7 @@ bool CConnman::DisconnectNode(NodeId id)
 }
 
 void CConnman::RelayInv(CInv &inv, const int minProtoVersion) {
-    // should be already locked, so skip this
-    // LOCK(cs_vNodes);
+    LOCK(cs_vNodes);
     for (CNode* pnode : vNodes)
         if(pnode->nVersion >= minProtoVersion)
             pnode->PushInventory(inv);

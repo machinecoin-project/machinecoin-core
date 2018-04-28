@@ -116,8 +116,8 @@ void MasternodeList::StartAlias(std::string strAlias)
             if(fSuccess) {
                 strStatusHtml += "<br>Successfully started masternode.";
                 mnodeman.UpdateMasternodeList(mnb, &connman);
-                mnb.Relay(&connman);
                 mnodeman.NotifyMasternodeUpdates(&connman);
+                mnb.Relay(&connman);
             } else {
                 strStatusHtml += "<br>Failed to start masternode.<br>Error: " + strError;
             }
