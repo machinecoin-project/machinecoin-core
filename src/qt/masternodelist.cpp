@@ -15,8 +15,6 @@
 #include <QTimer>
 #include <QMessageBox>
 
-CConnman& connman = *g_connman;
-
 int GetOffsetFromUtc()
 {
 #if QT_VERSION < 0x050200
@@ -103,6 +101,8 @@ void MasternodeList::showContextMenu(const QPoint &point)
 
 void MasternodeList::StartAlias(std::string strAlias)
 {
+    CConnman& connman = *g_connman;
+
     std::string strStatusHtml;
     strStatusHtml += "<center>Alias: " + strAlias;
 
@@ -135,6 +135,8 @@ void MasternodeList::StartAlias(std::string strAlias)
 
 void MasternodeList::StartAll(std::string strCommand)
 {
+    CConnman& connman = *g_connman;
+
     int nCountSuccessful = 0;
     int nCountFailed = 0;
     std::string strFailedHtml;
