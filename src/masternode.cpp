@@ -664,6 +664,11 @@ void CMasternodeBroadcast::Relay(CConnman* connman)
         return;
     }
 
+    if (connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0) {
+        LogPrint(MCLog::MN, "CMasternodeBroadcast::Relay -- won't relay until connected to any node\n");
+        return;
+    }
+
     CInv inv(MSG_MASTERNODE_ANNOUNCE, GetHash());
     connman->RelayInv(inv);
 }
