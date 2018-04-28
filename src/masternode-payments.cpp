@@ -530,7 +530,7 @@ bool CMasternodePayments::IsTransactionValid(const CTransactionRef& txNew, int n
     LOCK(cs_mapMasternodeBlocks);
 
     if(mapMasternodeBlocks.count(nBlockHeight)){
-        return mapMasternodeBlocks[nBlockHeight].IsTransactionValid(txNew, CAmount blockReward);
+        return mapMasternodeBlocks[nBlockHeight].IsTransactionValid(txNew, blockReward);
     }
 
     return true;
