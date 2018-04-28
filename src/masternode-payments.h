@@ -100,7 +100,7 @@ public:
     bool GetBestPayee(CScript& payeeRet);
     bool HasPayeeWithVotes(const CScript& payeeIn, int nVotesReq);
 
-    bool IsTransactionValid(const CTransactionRef& txNew);
+    bool IsTransactionValid(const CTransactionRef& txNew, CAmount blockReward);
 
     std::string GetRequiredPaymentsString();
 };
@@ -203,7 +203,7 @@ public:
     void CheckAndRemove();
 
     bool GetBlockPayee(int nBlockHeight, CScript& payee);
-    bool IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight);
+    bool IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
     bool IsScheduled(CMasternode& mn, int nNotBlockHeight);
 
     bool CanVote(COutPoint outMasternode, int nBlockHeight);

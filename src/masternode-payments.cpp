@@ -116,7 +116,7 @@ bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount b
     LogPrint(MCLog::GOV, "IsBlockPayeeValid -- No triggered superblock detected at height %d\n", nBlockHeight);
 
     // IF THIS ISN'T A SUPERBLOCK OR SUPERBLOCK IS INVALID, IT SHOULD PAY A MASTERNODE DIRECTLY
-    if(mnpayments.IsTransactionValid(txNew, nBlockHeight)) {
+    if(mnpayments.IsTransactionValid(txNew, nBlockHeight, blockReward)) {
         return true;
     }
 
@@ -450,14 +450,14 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payeeIn, int nVote
     return false;
 }
 
-bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew)
+bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew, CAmount blockReward)
 {
     LOCK(cs_vecPayees);
 
     int nMaxSignatures = 0;
     std::string strPayeesPossible = "";
 
-    CAmount nMasternodePayment = GetMasternodePayment(nBlockHeight, txNew->GetValueOut());
+    CAmount nMasternodePayment = GetMasternodePayment(nBlockHeight, blockReward);
 
     //require at least MNPAYMENTS_SIGNATURES_REQUIRED signatures
 
@@ -525,12 +525,12 @@ std::string CMasternodePayments::GetRequiredPaymentsString(int nBlockHeight)
     return "Unknown";
 }
 
-bool CMasternodePayments::IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight)
+bool CMasternodePayments::IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward)
 {
     LOCK(cs_mapMasternodeBlocks);
 
     if(mapMasternodeBlocks.count(nBlockHeight)){
-        return mapMasternodeBlocks[nBlockHeight].IsTransactionValid(txNew);
+        return mapMasternodeBlocks[nBlockHeight].IsTransactionValid(txNew, CAmount blockReward);
     }
 
     return true;
