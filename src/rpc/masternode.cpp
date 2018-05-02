@@ -148,7 +148,7 @@ UniValue masternode(const JSONRPCRequest& request)
         obj.push_back(Pair("IP:port",       mnInfo.addr.ToString()));
         obj.push_back(Pair("protocol",      (int64_t)mnInfo.nProtocolVersion));
         obj.push_back(Pair("outpoint",      mnInfo.vin.prevout.ToStringShort()));
-        obj.push_back(Pair("payee",         EncodeDestination(mnInfo.pubKeyCollateralAddress.GetID()));
+        obj.push_back(Pair("payee",         EncodeDestination(mnInfo.pubKeyCollateralAddress.GetID())));
         obj.push_back(Pair("lastseen",      mnInfo.nTimeLastPing));
         obj.push_back(Pair("activeseconds", mnInfo.nTimeLastPing - mnInfo.sigTime));
         return obj;
@@ -673,7 +673,7 @@ UniValue masternodebroadcast(const JSONRPCRequest& request)
                 resultObj.push_back(Pair("outpoint", mnb.vin.prevout.ToStringShort()));
                 resultObj.push_back(Pair("addr", mnb.addr.ToString()));
                 resultObj.push_back(Pair("pubKeyCollateralAddress", EncodeDestination(mnb.pubKeyCollateralAddress.GetID())));
-                resultObj.push_back(Pair("pubKeyMasternode", EncodeDestination(GetDestinationForKey(mnb.pubKeyMasternode, OUTPUT_TYPE_LEGACY))));
+                resultObj.push_back(Pair("pubKeyMasternode", EncodeDestination(mnb.pubKeyMasternode.GetID())));
                 resultObj.push_back(Pair("vchSig", EncodeBase64(&mnb.vchSig[0], mnb.vchSig.size())));
                 resultObj.push_back(Pair("sigTime", mnb.sigTime));
                 resultObj.push_back(Pair("protocolVersion", mnb.nProtocolVersion));
