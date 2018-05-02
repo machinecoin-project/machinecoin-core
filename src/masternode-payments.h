@@ -17,6 +17,8 @@ class CMasternodePayments;
 class CMasternodePaymentVote;
 class CMasternodeBlockPayees;
 
+class CWallet;
+
 static const int MNPAYMENTS_SIGNATURES_REQUIRED         = 1;
 static const int MNPAYMENTS_SIGNATURES_TOTAL            = 10;
 
