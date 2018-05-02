@@ -154,7 +154,21 @@ bool CProposalValidator::ValidatePaymentAddress()
         strErrorMessages += "payment_address field not found;";
         return false;
     }
-    
+
+    static const std::string base58chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+    size_t nLength = strPaymentAddress.size();
+
+    if((nLength < 26) || (nLength > 35)) {
+        strErrorMessages += "incorrect payment_address length;";
+        return false;
+    }
+
+    if(strPaymentAddress.find_first_not_of(base58chars) != std::string::npos) {
+        strErrorMessages += "payment_address contains invalid characters;";
+        return false;
+    }
+
     CTxDestination destination = DecodeDestination(strPaymentAddress);
     if (!IsValidDestination(destination)) {
         strErrorMessages += "payment_address is invalid;";
