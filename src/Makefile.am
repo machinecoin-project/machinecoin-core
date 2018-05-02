@@ -275,7 +275,6 @@ libmachinecoin_server_a_SOURCES = \
   validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
-  wallet/wallet.cpp \
   $(MACHINECOIN_CORE_H)
 
 if ENABLE_ZMQ
@@ -302,6 +301,7 @@ libmachinecoin_wallet_a_SOURCES = \
   wallet/init.cpp \
   wallet/rpcdump.cpp \
   wallet/rpcwallet.cpp \
+  wallet/wallet.cpp \
   wallet/walletdb.cpp \
   wallet/walletutil.cpp \
   $(MACHINECOIN_CORE_H)
