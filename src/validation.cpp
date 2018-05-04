@@ -1740,7 +1740,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
         if (state == THRESHOLD_LOCKED_IN || state == THRESHOLD_STARTED) {
             nVersion |= VersionBitsMask(params, (Consensus::DeploymentPos)i);
 
-            /*CScript payee;
+            CScript payee;
             masternode_info_t mnInfo;
             if (!mnpayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
                 // no votes for this block
@@ -1753,7 +1753,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
             if (mnInfo.nProtocolVersion < IMPLEMENTED_MASTERNODES) {
                 // masternode is not upgraded yet
                 continue;
-            }*/
+            }
         }
     }
 
