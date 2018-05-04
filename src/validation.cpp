@@ -2048,10 +2048,10 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         return state.DoS(0, error("ConnectBlock(MAC): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
 
-    /*if (!IsBlockPayeeValid(block.vtx[0], pindex->nHeight, blockReward)) {
+    if (!IsBlockPayeeValid(block.vtx[0], pindex->nHeight, blockReward)) {
         return state.DoS(0, error("ConnectBlock(MAC): couldn't find masternode or superblock payments"),
                                 REJECT_INVALID, "bad-cb-payee");
-    }*/
+    }
     // END MACHINECOIN
 
     if (!control.Wait())
