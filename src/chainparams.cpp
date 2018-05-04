@@ -106,10 +106,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1550347200; // Feb 16, 2019 pm.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0000000000000000000000000000000000000000000000000060f90e5c5717f3");
+        consensus.nMinimumChainWork = uint256S("00000000000000000000000000000000000000000000000001890320d31c0459");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975"); // 467593
+        consensus.defaultAssumeValid = uint256S("0xb04202ff452e9463cc355366165ac2ebe1d5456cfb422fd48c60d3d992ae3c41"); // 506000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -162,20 +162,21 @@ public:
                 {329528, uint256S("0x6fc60fe0c0133dfbb7fd7fae48e689c344e513a109cb4724913f768070f02a11")},  // Machinecoin: checkpoint at 329528
                 {410476, uint256S("0x8da1c7f79018fac8acac69a57b2f8b5d2743af67976a4525fdedc8c85a3a1418")},  // Machinecoin: checkpoint at 410476
                 {467593, uint256S("0xc69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975")},  // Machinecoin: checkpoint at 467593
+                {506003, uint256S("0x6ea758bfa652aa7b6ac492d6452deac5cc9e3eac154f49fd1032afd6c0a7520d")},  // Machinecoin: checkpoint at 506003
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x1f1face6161f136f673e3af962328bfa233b954994fd06da4ee97804d1b02481 (height 467245).
-            1518719681, // * UNIX timestamp of last known number of transactions
-            524706,  // * total number of transactions between genesis and that timestamp
+            // Data as of block c69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975 (height 506003).
+            1525454386, // * UNIX timestamp of last known number of transactions
+            573703,     // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            500.0         // * estimated number of transactions per second after that timestamp
+            500.0       // * estimated number of transactions per second after that timestamp
         };
       
         // Masternodes
-        consensus.nMasternodePaymentsStartBlock = 0;
-        consensus.nSuperblockStartBlock = 0;
+        consensus.nMasternodePaymentsStartBlock = 509700;
+        consensus.nSuperblockStartBlock = 509700;
         consensus.nSuperblockCycle = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
         consensus.nGovernanceMinQuorum = 10;
         consensus.nGovernanceFilterElements = 20000;
