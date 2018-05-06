@@ -235,7 +235,7 @@ public:
     {
         std::vector<unsigned char> data;
         const int nBlockHeight = chainActive.Height() + 1;
-        if (nBlockHeight >= params.Params().GetConsensus().nSwitchScriptAddressBlock)
+        if (nBlockHeight >= m_params.Params().GetConsensus().nSwitchScriptAddressBlock)
             data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
         else
             data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
