@@ -55,7 +55,6 @@ struct Params {
     // int BIP16Height;
     
     // Masternodes
-    int nSwitchScriptAddressBlock;
     int nMasternodePaymentsStartBlock;
     int nSuperblockStartBlock;
     int nSuperblockCycle; // in blocks

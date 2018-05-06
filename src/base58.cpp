@@ -233,11 +233,7 @@ public:
     std::string operator()(const CScriptID& id) const
     {
         std::vector<unsigned char> data;
-        const int nBlockHeight = chainActive.Height() + 1;
-        if (nBlockHeight >= m_params.GetConsensus().nSwitchScriptAddressBlock)
-            data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
-        else
-            data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
+        data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
         data.insert(data.end(), id.begin(), id.end());
         return EncodeBase58Check(data);
     }

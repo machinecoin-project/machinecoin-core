@@ -176,7 +176,6 @@ public:
         };
       
         // Masternodes
-        consensus.nSwitchScriptAddressBlock = 509700;
         consensus.nMasternodePaymentsStartBlock = 509700;
         consensus.nSuperblockStartBlock = 509700;
         consensus.nSuperblockCycle = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
@@ -280,7 +279,6 @@ public:
         };
       
         // Masternodes
-        consensus.nSwitchScriptAddressBlock = 120;
         consensus.nMasternodePaymentsStartBlock = 120;
         consensus.nSuperblockStartBlock = 120;
         consensus.nSuperblockCycle = 24;
@@ -367,7 +365,6 @@ public:
         };
       
         // Masternodes
-        consensus.nSwitchScriptAddressBlock = 0;
         consensus.nMasternodePaymentsStartBlock = 0;
         consensus.nSuperblockStartBlock = 1;
         consensus.nSuperblockCycle = 24;
