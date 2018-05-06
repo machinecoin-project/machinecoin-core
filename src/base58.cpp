@@ -6,7 +6,6 @@
 
 #include <bech32.h>
 #include <hash.h>
-#include <validation.h>
 #include <script/script.h>
 #include <uint256.h>
 #include <utilstrencodings.h>
