@@ -6,6 +6,7 @@
 
 #include <bech32.h>
 #include <hash.h>
+#include <validation.h>
 #include <script/script.h>
 #include <uint256.h>
 #include <utilstrencodings.h>
@@ -232,11 +233,12 @@ public:
 
     std::string operator()(const CScriptID& id) const
     {
+        std::vector<unsigned char> data;
         const int nBlockHeight = chainActive.Height() + 1;
-        if (nBlockHeight >= CChainParams.Params().GetConsensus().nSwitchScriptAddressBlock)
-            std::vector<unsigned char> data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
+        if (nBlockHeight >= params.Params().GetConsensus().nSwitchScriptAddressBlock)
+            data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
         else
-            std::vector<unsigned char> data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
+            data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
         data.insert(data.end(), id.begin(), id.end());
         return EncodeBase58Check(data);
     }
