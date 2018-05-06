@@ -17,6 +17,7 @@
 #include <chainparams.h>
 #include <key.h>
 #include <pubkey.h>
+#include <validation.h>
 #include <script/standard.h>
 #include <support/allocators/zeroafterfree.h>
 
