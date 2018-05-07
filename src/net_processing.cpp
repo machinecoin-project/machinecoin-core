@@ -3649,12 +3649,14 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                 }
                 // Topologically and fee-rate sort the inventory we send for privacy and priority reasons.
                 // A heap is used so that not all items need sorting if only a few are being sent.
+                LogPrintf("CompareInvMempoolOrder\n");
                 CompareInvMempoolOrder compareInvMempoolOrder(&mempool);
                 std::make_heap(vInvTx.begin(), vInvTx.end(), compareInvMempoolOrder);
                 // No reason to drain out at many times the network's capacity,
                 // especially since we have many peers and some will draw much shorter delays.
                 unsigned int nRelayedTransactions = 0;
                 LOCK(pto->cs_filter);
+                LogPrintf("Loop #1\n");
                 while (!vInvTx.empty() && nRelayedTransactions < INVENTORY_BROADCAST_MAX) {
                     // Fetch the top element from the heap
                     std::pop_heap(vInvTx.begin(), vInvTx.end(), compareInvMempoolOrder);
@@ -3664,22 +3666,28 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                     // Remove it from the to-be-sent set
                     pto->setInventoryTxToSend.erase(it);
                     // Check if not in the filter already
+                    LogPrintf("In Loop ä1\n");
                     if (pto->filterInventoryKnown.contains(hash)) {
                         continue;
                     }
                     // Not in the mempool anymore? don't bother sending it.
                     auto txinfo = mempool.info(hash);
                     if (!txinfo.tx) {
+                        LogPrintf("No txinfo\n");
                         continue;
                     }
                     if (filterrate && txinfo.feeRate.GetFeePerK() < filterrate) {
+                        LogPrintf("filterrate\n");
                         continue;
                     }
+                    LogPrintf("IsRelevantAndUpdate\n");
                     if (pto->pfilter && !pto->pfilter->IsRelevantAndUpdate(*txinfo.tx)) continue;
                     // Send
+                    LogPrintf("Before Relay\n");
                     vInv.push_back(CInv(MSG_TX, hash));
                     nRelayedTransactions++;
                     {
+                        LogPrintf("Relay\n");
                         // Expire old relay messages
                         while (!vRelayExpiration.empty() && vRelayExpiration.front().first < nNow)
                         {
@@ -3693,14 +3701,16 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                         }
                     }
                     if (vInv.size() == MAX_INV_SZ) {
+                        LogPrintf("PushMessage\n");
                         connman->PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
                         vInv.clear();
                     }
+                    LogPrintf("filterInventoryKnown.insert\n");
                     pto->filterInventoryKnown.insert(hash);
                 }
             }
             
-            /*vInv.reserve(std::max<size_t>(pto->vInventoryMNToSend.size(), INVENTORY_BROADCAST_MAX));
+            vInv.reserve(std::max<size_t>(pto->vInventoryMNToSend.size(), INVENTORY_BROADCAST_MAX));
             // Add other invs
             for (const CInv& inv : pto->vInventoryMNToSend) {
                 vInv.push_back(CInv(inv.type, inv.hash));
@@ -3709,7 +3719,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                     vInv.clear();
                 }
             }
-            pto->vInventoryMNToSend.clear();*/
+            pto->vInventoryMNToSend.clear();
         }
         if (!vInv.empty())
             connman->PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
