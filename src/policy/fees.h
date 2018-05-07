@@ -183,7 +183,7 @@ private:
      * to give accurate estimates over a large range of potential feerates
      * Therefore it makes sense to exponentially space the buckets
      */
-    static constexpr double FEE_SPACING = 1.05;
+    static constexpr double FEE_SPACING = 1.1;
 
 public:
     /** Create new BlockPolicyEstimator and initialize stats tracking classes with default values */
