@@ -3700,7 +3700,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                 }
             }
             
-            vInv.reserve(std::max<size_t>(pto->vInventoryMNToSend.size(), INVENTORY_BROADCAST_MAX));
+            /*vInv.reserve(std::max<size_t>(pto->vInventoryMNToSend.size(), INVENTORY_BROADCAST_MAX));
             // Add other invs
             for (const CInv& inv : pto->vInventoryMNToSend) {
                 vInv.push_back(CInv(inv.type, inv.hash));
@@ -3709,7 +3709,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                     vInv.clear();
                 }
             }
-            pto->vInventoryMNToSend.clear();
+            pto->vInventoryMNToSend.clear();*/
         }
         if (!vInv.empty())
             connman->PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
