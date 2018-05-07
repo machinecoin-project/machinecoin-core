@@ -176,8 +176,8 @@ public:
         };
       
         // Masternodes
-        consensus.nMasternodePaymentsStartBlock = 509999;
-        consensus.nSuperblockStartBlock = 509999;
+        consensus.nMasternodePaymentsStartBlock = 513000;
+        consensus.nSuperblockStartBlock = 513000;
         consensus.nSuperblockCycle = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
         consensus.nGovernanceMinQuorum = 10;
         consensus.nGovernanceFilterElements = 20000;
