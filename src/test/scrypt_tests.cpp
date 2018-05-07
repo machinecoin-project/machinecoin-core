@@ -9,6 +9,8 @@
 
 #include <test/test_machinecoin.h>
 
+#include <boost/test/unit_test.hpp>
+
 BOOST_AUTO_TEST_SUITE(scrypt_tests)
 
 BOOST_AUTO_TEST_CASE(scrypt_hashtest)
