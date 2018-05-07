@@ -6,9 +6,9 @@ bin_PROGRAMS += bench/bench_machinecoin
 BENCH_SRCDIR = bench
 BENCH_BINARY = bench/bench_machinecoin$(EXEEXT)
 
-RAW_TEST_FILES = \
+RAW_BENCH_FILES = \
   bench/data/block413567.raw
-GENERATED_TEST_FILES = $(RAW_TEST_FILES:.raw=.raw.h)
+GENERATED_BENCH_FILES = $(RAW_BENCH_FILES:.raw=.raw.h)
 
 bench_bench_machinecoin_SOURCES = \
   $(RAW_BENCH_FILES) \
