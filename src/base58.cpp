@@ -8,6 +8,7 @@
 #include <hash.h>
 #include <script/script.h>
 #include <uint256.h>
+#include <utiltime.h>
 #include <utilstrencodings.h>
 
 #include <boost/variant/apply_visitor.hpp>
@@ -233,7 +234,10 @@ public:
     std::string operator()(const CScriptID& id) const
     {
         std::vector<unsigned char> data;
-        data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
+        if (GetTime() >= 1526515200)
+            data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS2);
+        else
+            data = m_params.Base58Prefix(CChainParams::SCRIPT_ADDRESS);
         data.insert(data.end(), id.begin(), id.end());
         return EncodeBase58Check(data);
     }
