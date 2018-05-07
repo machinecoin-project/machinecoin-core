@@ -175,7 +175,7 @@ private:
      * invalidates old estimates files. So leave it at 1000 unless it becomes
      * necessary to lower it, and then lower it substantially.
      */
-    static constexpr double MIN_BUCKET_FEERATE = 1000;
+    static constexpr double MIN_BUCKET_FEERATE = 1500;
     static constexpr double MAX_BUCKET_FEERATE = 1e7;
 
     /** Spacing of FeeRate buckets
@@ -183,7 +183,7 @@ private:
      * to give accurate estimates over a large range of potential feerates
      * Therefore it makes sense to exponentially space the buckets
      */
-    static constexpr double FEE_SPACING = 1.1;
+    static constexpr double FEE_SPACING = 1.05;
 
 public:
     /** Create new BlockPolicyEstimator and initialize stats tracking classes with default values */
