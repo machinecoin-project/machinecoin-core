@@ -77,7 +77,7 @@ MACHINECOIN_TESTS =\
   test/streams_tests.cpp \
   test/test_machinecoin.cpp \
   test/test_machinecoin.h \
-  test/test_machinecoin_main.h \
+  test/test_machinecoin_main.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \
   test/transaction_tests.cpp \
