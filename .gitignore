@@ -116,3 +116,5 @@ test/cache/*
 
 libmachinecoinconsensus.pc
 contrib/devtools/split-debug.sh
+
+!depends/patches/*
