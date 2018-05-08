@@ -77,7 +77,7 @@ MACHINECOIN_TESTS =\
   test/streams_tests.cpp \
   test/test_machinecoin.cpp \
   test/test_machinecoin.h \
-  test/test_machinecoin_main.h \
+  test/test_machinecoin_main.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \
   test/transaction_tests.cpp \
@@ -104,7 +104,7 @@ test_test_machinecoin_LDADD += $(LIBMACHINECOIN_WALLET)
 endif
 test_test_machinecoin_LDADD += $(LIBMACHINECOIN_SERVER) $(LIBMACHINECOIN_CLI) $(LIBMACHINECOIN_COMMON) $(LIBMACHINECOIN_UTIL) $(LIBMACHINECOIN_CONSENSUS) $(LIBMACHINECOIN_CRYPTO) $(LIBUNIVALUE) \
   $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS)
-test_test_machinecoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fPIE
+test_test_machinecoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 test_test_machinecoin_LDADD += $(LIBMACHINECOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
 test_test_machinecoin_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static
@@ -117,7 +117,7 @@ endif
 # test_machinecoin_fuzzy binary #
 test_test_machinecoin_fuzzy_SOURCES = test/test_machinecoin_fuzzy.cpp
 test_test_machinecoin_fuzzy_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES)
-test_test_machinecoin_fuzzy_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fPIE
+test_test_machinecoin_fuzzy_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 test_test_machinecoin_fuzzy_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 test_test_machinecoin_fuzzy_LDADD = \
