@@ -165,7 +165,7 @@ def check_PE_NX(executable):
 
 CHECKS = {
 'ELF': [
-    ('PIE', check_ELF_PIE),
+    # ('PIE', check_ELF_PIE),
     ('NX', check_ELF_NX),
     ('RELRO', check_ELF_RELRO),
     ('Canary', check_ELF_Canary)
