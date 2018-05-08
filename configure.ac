@@ -556,6 +556,8 @@ fi
 if test x$TARGET_OS != xwindows; then
   # All windows code is PIC, forcing it on just adds useless compile warnings
   AX_CHECK_COMPILE_FLAG([-fPIC],[PIC_FLAGS="-fPIC"])
+  ac_configure_args="${ac_configure_args} --disable-shared --with-pic"
+  AC_CONFIG_SUBDIRS([src/crypto])
 fi
 
 if test x$use_hardening != xno; then
