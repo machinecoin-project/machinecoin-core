@@ -29,6 +29,7 @@ LIBMACHINECOIN_CONSENSUS=libmachinecoin_consensus.a
 LIBMACHINECOIN_CLI=libmachinecoin_cli.a
 LIBMACHINECOIN_UTIL=libmachinecoin_util.a
 LIBMACHINECOIN_CRYPTO=crypto/libmachinecoin_crypto.a
+LIBMACHINECOIN_TIMETRAVEL=crypto/libmachinecoin_timetravel.a
 LIBMACHINECOINQT=qt/libmachinecoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
@@ -48,6 +49,7 @@ $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
 EXTRA_LIBRARIES += \
+  $(LIBMACHINECOIN_TIMETRAVEL) \
   $(LIBMACHINECOIN_CRYPTO) \
   $(LIBMACHINECOIN_UTIL) \
   $(LIBMACHINECOIN_COMMON) \
@@ -101,20 +103,6 @@ MACHINECOIN_CORE_H = \
   consensus/tx_verify.h \
   core_io.h \
   core_memusage.h \
-	 crypto/scrypt.h \
-  crypto/sph_types.h \
-  crypto/sph_blake.h \
-  crypto/sph_bmw.h \
-  crypto/sph_groestl.h \
-  crypto/sph_skein.h \
-  crypto/sph_jh.h \
-  crypto/sph_keccak.h \
-  crypto/sph_luffa.h \
-  crypto/sph_cubehash.h \
-  crypto/sph_shavite.h \
-  crypto/sph_simd.h \
-  crypto/sph_echo.h \
-  crypto/hashblock.h \
   cuckoocache.h \
   fs.h \
   dsnotificationinterface.h \
@@ -306,43 +294,10 @@ libmachinecoin_wallet_a_SOURCES = \
   wallet/walletutil.cpp \
   $(MACHINECOIN_CORE_H)
 
-# crypto primitives library
-crypto_libmachinecoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
-crypto_libmachinecoin_crypto_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-crypto_libmachinecoin_crypto_a_SOURCES = \
-  crypto/aes.cpp \
-  crypto/aes.h \
-  crypto/chacha20.h \
-  crypto/chacha20.cpp \
-  crypto/common.h \
-  crypto/hmac_sha256.cpp \
-  crypto/hmac_sha256.h \
-  crypto/hmac_sha512.cpp \
-  crypto/hmac_sha512.h \
-  crypto/ripemd160.cpp \
-  crypto/ripemd160.h \
-  crypto/sha1.cpp \
-  crypto/sha1.h \
-  crypto/sha256.cpp \
-  crypto/sha256.h \
-  crypto/sha512.cpp \
-  crypto/sha512.h
-
-if USE_ASM
-crypto_libmachinecoin_crypto_a_SOURCES += crypto/sha256_sse4.cpp
-endif
-
-# consensus: shared between all executables that validate any consensus rules.
-libmachinecoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES)
-libmachinecoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libmachinecoin_consensus_a_SOURCES = \
-  amount.h \
-  arith_uint256.cpp \
-  arith_uint256.h \
-  consensus/merkle.cpp \
-  consensus/merkle.h \
-  consensus/params.h \
-  consensus/validation.h \
+# timetravel related library
+timetravel_libmachinecoin_timetravel_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
+timetravel_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) -fPIC
+timetravel_libmachinecoin_timetravel_a_SOURCES = \
   crypto/scrypt.cpp \
   crypto/aes_helper.c \
   crypto/blake.c \
@@ -370,6 +325,47 @@ libmachinecoin_consensus_a_SOURCES = \
   crypto/sph_simd.h \
   crypto/sph_echo.h \
   crypto/hashblock.h \
+
+# crypto primitives library
+crypto_libmachinecoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
+crypto_libmachinecoin_crypto_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+crypto_libmachinecoin_crypto_a_SOURCES = \
+  crypto/aes.cpp \
+  crypto/aes.h \
+  crypto/chacha20.h \
+  crypto/chacha20.cpp \
+  crypto/common.h \
+  crypto/hmac_sha256.cpp \
+  crypto/hmac_sha256.h \
+  crypto/hmac_sha512.cpp \
+  crypto/hmac_sha512.h \
+  crypto/ripemd160.cpp \
+  crypto/ripemd160.h \
+  crypto/scrypt.cpp \
+  crypto/scrypt-sse2.cpp \
+  crypto/scrypt.h \
+  crypto/sha1.cpp \
+  crypto/sha1.h \
+  crypto/sha256.cpp \
+  crypto/sha256.h \
+  crypto/sha512.cpp \
+  crypto/sha512.h
+
+if USE_ASM
+crypto_libmachinecoin_crypto_a_SOURCES += crypto/sha256_sse4.cpp
+endif
+
+# consensus: shared between all executables that validate any consensus rules.
+libmachinecoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES)
+libmachinecoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libmachinecoin_consensus_a_SOURCES = \
+  amount.h \
+  arith_uint256.cpp \
+  arith_uint256.h \
+  consensus/merkle.cpp \
+  consensus/merkle.h \
+  consensus/params.h \
+  consensus/validation.h \
   hash.cpp \
   hash.h \
   prevector.h \
@@ -405,19 +401,6 @@ libmachinecoin_common_a_SOURCES = \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
-  crypto/scrypt.cpp \
-  crypto/aes_helper.c \
-  crypto/blake.c \
-  crypto/bmw.c \
-  crypto/groestl.c \
-  crypto/skein.c \
-  crypto/jh.c \
-  crypto/keccak.c \
-  crypto/luffa.c \
-  crypto/cubehash.c \
-  crypto/shavite.c \
-  crypto/simd.c \
-  crypto/echo.c \
   key.cpp \
   keystore.cpp \
   netaddress.cpp \
@@ -488,6 +471,7 @@ machinecoind_LDADD = \
   $(LIBMACHINECOIN_ZMQ) \
   $(LIBMACHINECOIN_CONSENSUS) \
   $(LIBMACHINECOIN_CRYPTO) \
+  $(LIBMACHINECOIN_TIMETRAVEL) \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
@@ -509,7 +493,8 @@ machinecoin_cli_LDADD = \
   $(LIBMACHINECOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBMACHINECOIN_UTIL) \
-  $(LIBMACHINECOIN_CRYPTO)
+  $(LIBMACHINECOIN_CRYPTO) \
+  $(LIBMACHINECOIN_TIMETRAVEL)
 
 machinecoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
@@ -530,6 +515,7 @@ machinecoin_tx_LDADD = \
   $(LIBMACHINECOIN_UTIL) \
   $(LIBMACHINECOIN_CONSENSUS) \
   $(LIBMACHINECOIN_CRYPTO) \
+  $(LIBMACHINECOIN_TIMETRAVEL) \
   $(LIBSECP256K1)
 
 machinecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
@@ -538,7 +524,7 @@ machinecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 # machinecoinconsensus library #
 if BUILD_MACHINECOIN_LIBS
 include_HEADERS = script/machinecoinconsensus.h
-libmachinecoinconsensus_la_SOURCES = $(crypto_libmachinecoin_crypto_a_SOURCES) $(libmachinecoin_consensus_a_SOURCES)
+libmachinecoinconsensus_la_SOURCES = $(crypto_libmachinecoin_crypto_a_SOURCES) $(timetravel_libmachinecoin_timetravel_a_SOURCES) $(libmachinecoin_consensus_a_SOURCES)
 
 if GLIBC_BACK_COMPAT
   libmachinecoinconsensus_la_SOURCES += compat/glibc_compat.cpp
