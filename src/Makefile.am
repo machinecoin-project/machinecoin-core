@@ -101,6 +101,7 @@ MACHINECOIN_CORE_H = \
   consensus/tx_verify.h \
   core_io.h \
   core_memusage.h \
+	 crypto/scrypt.h \
   crypto/sph_types.h \
   crypto/sph_blake.h \
   crypto/sph_bmw.h \
@@ -320,9 +321,6 @@ crypto_libmachinecoin_crypto_a_SOURCES = \
   crypto/hmac_sha512.h \
   crypto/ripemd160.cpp \
   crypto/ripemd160.h \
-  crypto/scrypt.cpp \
-  crypto/scrypt-sse2.cpp \
-  crypto/scrypt.h \
   crypto/sha1.cpp \
   crypto/sha1.h \
   crypto/sha256.cpp \
@@ -345,6 +343,7 @@ libmachinecoin_consensus_a_SOURCES = \
   consensus/merkle.h \
   consensus/params.h \
   consensus/validation.h \
+  crypto/scrypt.cpp \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -357,6 +356,7 @@ libmachinecoin_consensus_a_SOURCES = \
   crypto/shavite.c \
   crypto/simd.c \
   crypto/echo.c \
+  crypto/scrypt.h \
   crypto/sph_types.h \
   crypto/sph_blake.h \
   crypto/sph_bmw.h \
