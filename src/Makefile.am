@@ -324,7 +324,7 @@ timetravel_libmachinecoin_timetravel_a_SOURCES = \
   crypto/sph_shavite.h \
   crypto/sph_simd.h \
   crypto/sph_echo.h \
-  crypto/hashblock.h \
+  crypto/hashblock.h
 
 # crypto primitives library
 crypto_libmachinecoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
