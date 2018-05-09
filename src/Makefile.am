@@ -101,7 +101,6 @@ MACHINECOIN_CORE_H = \
   consensus/tx_verify.h \
   core_io.h \
   core_memusage.h \
-	 crypto/scrypt.h \
   crypto/sph_types.h \
   crypto/sph_blake.h \
   crypto/sph_bmw.h \
