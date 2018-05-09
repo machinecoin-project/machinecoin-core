@@ -298,7 +298,6 @@ libmachinecoin_wallet_a_SOURCES = \
 timetravel_libmachinecoin_timetravel_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
 timetravel_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) -fPIC
 timetravel_libmachinecoin_timetravel_a_SOURCES = \
-  crypto/scrypt.cpp \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -311,7 +310,6 @@ timetravel_libmachinecoin_timetravel_a_SOURCES = \
   crypto/shavite.c \
   crypto/simd.c \
   crypto/echo.c \
-  crypto/scrypt.h \
   crypto/sph_types.h \
   crypto/sph_blake.h \
   crypto/sph_bmw.h \
