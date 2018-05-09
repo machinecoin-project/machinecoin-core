@@ -29,7 +29,6 @@ LIBMACHINECOIN_CONSENSUS=libmachinecoin_consensus.a
 LIBMACHINECOIN_CLI=libmachinecoin_cli.a
 LIBMACHINECOIN_UTIL=libmachinecoin_util.a
 LIBMACHINECOIN_CRYPTO=crypto/libmachinecoin_crypto.a
-LIBMACHINECOIN_TIMETRAVEL=crypto/libmachinecoin_timetravel.a
 LIBMACHINECOINQT=qt/libmachinecoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
@@ -49,7 +48,6 @@ $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
 EXTRA_LIBRARIES += \
-  $(LIBMACHINECOIN_TIMETRAVEL) \
   $(LIBMACHINECOIN_CRYPTO) \
   $(LIBMACHINECOIN_UTIL) \
   $(LIBMACHINECOIN_COMMON) \
@@ -195,7 +193,8 @@ MACHINECOIN_CORE_H = \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h\
   zmq/zmqnotificationinterface.h \
-  zmq/zmqpublishnotifier.h
+  zmq/zmqpublishnotifier.h \
+  $(MACHINECOIN_TIMETRAVEL_H)
 
 
 obj/build.h: FORCE
@@ -295,9 +294,7 @@ libmachinecoin_wallet_a_SOURCES = \
   $(MACHINECOIN_CORE_H)
 
 # timetravel related libraries
-crypto_libmachinecoin_timetravel_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
-crypto_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-crypto_libmachinecoin_timetravel_a_SOURCES = \
+MACHINECOIN_TIMETRAVEL = \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -309,7 +306,9 @@ crypto_libmachinecoin_timetravel_a_SOURCES = \
   crypto/cubehash.c \
   crypto/shavite.c \
   crypto/simd.c \
-  crypto/echo.c \
+  crypto/echo.c
+
+MACHINECOIN_TIMETRAVEL_H = \
   crypto/sph_types.h \
   crypto/sph_blake.h \
   crypto/sph_bmw.h \
@@ -386,7 +385,10 @@ libmachinecoin_consensus_a_SOURCES = \
   uint256.h \
   utilstrencodings.cpp \
   utilstrencodings.h \
-  version.h
+  version.h \
+  crypto/scrypt.cpp \
+  $(MACHINECOIN_TIMETRAVEL) \
+  $(MACHINECOIN_TIMETRAVEL_H)
 
 # common: shared between machinecoind, and machinecoin-qt and non-server tools
 libmachinecoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES)
@@ -399,6 +401,8 @@ libmachinecoin_common_a_SOURCES = \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
+  crypto/scrypt.cpp \
+  $(MACHINECOIN_TIMETRAVEL) \
   key.cpp \
   keystore.cpp \
   netaddress.cpp \
@@ -469,7 +473,6 @@ machinecoind_LDADD = \
   $(LIBMACHINECOIN_ZMQ) \
   $(LIBMACHINECOIN_CONSENSUS) \
   $(LIBMACHINECOIN_CRYPTO) \
-  $(LIBMACHINECOIN_TIMETRAVEL) \
   $(LIBLEVELDB) \
   $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
@@ -491,8 +494,7 @@ machinecoin_cli_LDADD = \
   $(LIBMACHINECOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBMACHINECOIN_UTIL) \
-  $(LIBMACHINECOIN_CRYPTO) \
-  $(LIBMACHINECOIN_TIMETRAVEL)
+  $(LIBMACHINECOIN_CRYPTO)
 
 machinecoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
@@ -522,7 +524,7 @@ machinecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 # machinecoinconsensus library #
 if BUILD_MACHINECOIN_LIBS
 include_HEADERS = script/machinecoinconsensus.h
-libmachinecoinconsensus_la_SOURCES = $(crypto_libmachinecoin_crypto_a_SOURCES) $(crypto_libmachinecoin_timetravel_a_SOURCES) $(libmachinecoin_consensus_a_SOURCES)
+libmachinecoinconsensus_la_SOURCES = $(crypto_libmachinecoin_crypto_a_SOURCES) $(libmachinecoin_consensus_a_SOURCES)
 
 if GLIBC_BACK_COMPAT
   libmachinecoinconsensus_la_SOURCES += compat/glibc_compat.cpp
