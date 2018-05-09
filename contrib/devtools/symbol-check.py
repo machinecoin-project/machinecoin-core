@@ -47,28 +47,28 @@ MAX_VERSIONS = {
 
 # Ignore symbols that are exported as part of every executable
 IGNORE_EXPORTS = {
-b'_edata', b'_end', b'_init', b'__bss_start', b'_fini', b'_IO_stdin_used'
+'_edata', '_end', '_init', '__bss_start', '_fini', '_IO_stdin_used'
 }
 READELF_CMD = os.getenv('READELF', '/usr/bin/readelf')
 CPPFILT_CMD = os.getenv('CPPFILT', '/usr/bin/c++filt')
 # Allowed NEEDED libraries
 ALLOWED_LIBRARIES = {
 # machinecoind and machinecoin-qt
-b'libgcc_s.so.1', # GCC base support
-b'libc.so.6', # C library
-b'libpthread.so.0', # threading
-b'libanl.so.1', # DNS resolve
-b'libm.so.6', # math library
-b'librt.so.1', # real-time (clock)
-b'ld-linux-x86-64.so.2', # 64-bit dynamic linker
-b'ld-linux.so.2', # 32-bit dynamic linker
+'libgcc_s.so.1', # GCC base support
+'libc.so.6', # C library
+'libpthread.so.0', # threading
+'libanl.so.1', # DNS resolve
+'libm.so.6', # math library
+'librt.so.1', # real-time (clock)
+'ld-linux-x86-64.so.2', # 64-bit dynamic linker
+'ld-linux.so.2', # 32-bit dynamic linker
 # machinecoin-qt only
-b'libX11-xcb.so.1', # part of X11
-b'libX11.so.6', # part of X11
-b'libxcb.so.1', # part of X11
-b'libfontconfig.so.1', # font support
-b'libfreetype.so.6', # font parsing
-b'libdl.so.2' # programming interface to dynamic linker
+'libX11-xcb.so.1', # part of X11
+'libX11.so.6', # part of X11
+'libxcb.so.1', # part of X11
+'libfontconfig.so.1', # font support
+'libfreetype.so.6', # font parsing
+'libdl.so.2' # programming interface to dynamic linker
 }
 
 class CPPFilt(object):
