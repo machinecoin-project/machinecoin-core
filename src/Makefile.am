@@ -386,7 +386,6 @@ libmachinecoin_consensus_a_SOURCES = \
   utilstrencodings.cpp \
   utilstrencodings.h \
   version.h \
-  crypto/scrypt.cpp \
   $(MACHINECOIN_TIMETRAVEL) \
   $(MACHINECOIN_TIMETRAVEL_H)
 
@@ -401,7 +400,6 @@ libmachinecoin_common_a_SOURCES = \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
-  crypto/scrypt.cpp \
   $(MACHINECOIN_TIMETRAVEL) \
   key.cpp \
   keystore.cpp \
