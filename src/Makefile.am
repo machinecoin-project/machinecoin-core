@@ -294,10 +294,10 @@ libmachinecoin_wallet_a_SOURCES = \
   wallet/walletutil.cpp \
   $(MACHINECOIN_CORE_H)
 
-# timetravel related library
-timetravel_libmachinecoin_timetravel_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
-timetravel_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) -fPIC
-timetravel_libmachinecoin_timetravel_a_SOURCES = \
+# timetravel related libraries
+crypto_libmachinecoin_timetravel_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
+crypto_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) -fPIC
+crypto_libmachinecoin_timetravel_a_SOURCES = \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -522,7 +522,7 @@ machinecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 # machinecoinconsensus library #
 if BUILD_MACHINECOIN_LIBS
 include_HEADERS = script/machinecoinconsensus.h
-libmachinecoinconsensus_la_SOURCES = $(crypto_libmachinecoin_crypto_a_SOURCES) $(timetravel_libmachinecoin_timetravel_a_SOURCES) $(libmachinecoin_consensus_a_SOURCES)
+libmachinecoinconsensus_la_SOURCES = $(crypto_libmachinecoin_crypto_a_SOURCES) $(crypto_libmachinecoin_timetravel_a_SOURCES) $(libmachinecoin_consensus_a_SOURCES)
 
 if GLIBC_BACK_COMPAT
   libmachinecoinconsensus_la_SOURCES += compat/glibc_compat.cpp
