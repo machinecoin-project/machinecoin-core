@@ -296,7 +296,7 @@ libmachinecoin_wallet_a_SOURCES = \
 
 # timetravel related libraries
 crypto_libmachinecoin_timetravel_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
-crypto_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) -fPIC
+crypto_libmachinecoin_timetravel_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 crypto_libmachinecoin_timetravel_a_SOURCES = \
   crypto/aes_helper.c \
   crypto/blake.c \
