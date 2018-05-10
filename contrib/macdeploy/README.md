@@ -1,4 +1,4 @@
-﻿### MacDeploy ###
+### MacDeploy ###
 
 For Snow Leopard (which uses [Python 2.6](http://www.python.org/download/releases/2.6/)), you will need the param_parser package:
 	
