@@ -194,6 +194,7 @@ MACHINECOIN_CORE_H = \
   zmq/zmqconfig.h\
   zmq/zmqnotificationinterface.h \
   zmq/zmqpublishnotifier.h \
+  crypto/scrypt.h \
   $(MACHINECOIN_TIMETRAVEL_H)
 
 
@@ -338,9 +339,6 @@ crypto_libmachinecoin_crypto_a_SOURCES = \
   crypto/hmac_sha512.h \
   crypto/ripemd160.cpp \
   crypto/ripemd160.h \
-  crypto/scrypt.cpp \
-  crypto/scrypt-sse2.cpp \
-  crypto/scrypt.h \
   crypto/sha1.cpp \
   crypto/sha1.h \
   crypto/sha256.cpp \
@@ -386,6 +384,9 @@ libmachinecoin_consensus_a_SOURCES = \
   utilstrencodings.cpp \
   utilstrencodings.h \
   version.h \
+  crypto/scrypt.cpp \
+  crypto/scrypt-sse2.cpp \
+  crypto/scrypt.h \
   $(MACHINECOIN_TIMETRAVEL) \
   $(MACHINECOIN_TIMETRAVEL_H)
 
@@ -400,6 +401,7 @@ libmachinecoin_common_a_SOURCES = \
   compressor.cpp \
   core_read.cpp \
   core_write.cpp \
+  crypto/scrypt.cpp \
   $(MACHINECOIN_TIMETRAVEL) \
   key.cpp \
   keystore.cpp \
