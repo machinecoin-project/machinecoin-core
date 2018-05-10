@@ -125,5 +125,5 @@ int machinecoinconsensus_verify_script(const unsigned char *scriptPubKey, unsign
 unsigned int machinecoinconsensus_version()
 {
     // Just use the API version for now
-    return machinecoinconsensus_API_VER;
+    return MACHINECOINCONSENSUS_API_VER;
 }

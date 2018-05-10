@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # Copyright (c) 2015-2017 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -165,7 +165,7 @@ def check_PE_NX(executable):
 
 CHECKS = {
 'ELF': [
-    ('PIE', check_ELF_PIE),
+    # ('PIE', check_ELF_PIE),
     ('NX', check_ELF_NX),
     ('RELRO', check_ELF_RELRO),
     ('Canary', check_ELF_Canary)

@@ -101,20 +101,6 @@ MACHINECOIN_CORE_H = \
   consensus/tx_verify.h \
   core_io.h \
   core_memusage.h \
-	 crypto/scrypt.h \
-  crypto/sph_types.h \
-  crypto/sph_blake.h \
-  crypto/sph_bmw.h \
-  crypto/sph_groestl.h \
-  crypto/sph_skein.h \
-  crypto/sph_jh.h \
-  crypto/sph_keccak.h \
-  crypto/sph_luffa.h \
-  crypto/sph_cubehash.h \
-  crypto/sph_shavite.h \
-  crypto/sph_simd.h \
-  crypto/sph_echo.h \
-  crypto/hashblock.h \
   cuckoocache.h \
   fs.h \
   dsnotificationinterface.h \
@@ -207,7 +193,9 @@ MACHINECOIN_CORE_H = \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h\
   zmq/zmqnotificationinterface.h \
-  zmq/zmqpublishnotifier.h
+  zmq/zmqpublishnotifier.h \
+  crypto/scrypt.h \
+  $(MACHINECOIN_TIMETRAVEL_H)
 
 
 obj/build.h: FORCE
@@ -306,8 +294,38 @@ libmachinecoin_wallet_a_SOURCES = \
   wallet/walletutil.cpp \
   $(MACHINECOIN_CORE_H)
 
+# timetravel related libraries
+MACHINECOIN_TIMETRAVEL = \
+  crypto/aes_helper.c \
+  crypto/blake.c \
+  crypto/bmw.c \
+  crypto/groestl.c \
+  crypto/skein.c \
+  crypto/jh.c \
+  crypto/keccak.c \
+  crypto/luffa.c \
+  crypto/cubehash.c \
+  crypto/shavite.c \
+  crypto/simd.c \
+  crypto/echo.c
+
+MACHINECOIN_TIMETRAVEL_H = \
+  crypto/sph_types.h \
+  crypto/sph_blake.h \
+  crypto/sph_bmw.h \
+  crypto/sph_groestl.h \
+  crypto/sph_skein.h \
+  crypto/sph_jh.h \
+  crypto/sph_keccak.h \
+  crypto/sph_luffa.h \
+  crypto/sph_cubehash.h \
+  crypto/sph_shavite.h \
+  crypto/sph_simd.h \
+  crypto/sph_echo.h \
+  crypto/hashblock.h
+
 # crypto primitives library
-crypto_libmachinecoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libmachinecoin_crypto_a_CPPFLAGS = $(AM_CPPFLAGS) $(SSL_CFLAGS)
 crypto_libmachinecoin_crypto_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 crypto_libmachinecoin_crypto_a_SOURCES = \
   crypto/aes.cpp \
@@ -343,33 +361,6 @@ libmachinecoin_consensus_a_SOURCES = \
   consensus/merkle.h \
   consensus/params.h \
   consensus/validation.h \
-  crypto/scrypt.cpp \
-  crypto/aes_helper.c \
-  crypto/blake.c \
-  crypto/bmw.c \
-  crypto/groestl.c \
-  crypto/skein.c \
-  crypto/jh.c \
-  crypto/keccak.c \
-  crypto/luffa.c \
-  crypto/cubehash.c \
-  crypto/shavite.c \
-  crypto/simd.c \
-  crypto/echo.c \
-  crypto/scrypt.h \
-  crypto/sph_types.h \
-  crypto/sph_blake.h \
-  crypto/sph_bmw.h \
-  crypto/sph_groestl.h \
-  crypto/sph_skein.h \
-  crypto/sph_jh.h \
-  crypto/sph_keccak.h \
-  crypto/sph_luffa.h \
-  crypto/sph_cubehash.h \
-  crypto/sph_shavite.h \
-  crypto/sph_simd.h \
-  crypto/sph_echo.h \
-  crypto/hashblock.h \
   hash.cpp \
   hash.h \
   prevector.h \
@@ -392,7 +383,12 @@ libmachinecoin_consensus_a_SOURCES = \
   uint256.h \
   utilstrencodings.cpp \
   utilstrencodings.h \
-  version.h
+  version.h \
+  crypto/scrypt.cpp \
+  crypto/scrypt-sse2.cpp \
+  crypto/scrypt.h \
+  $(MACHINECOIN_TIMETRAVEL) \
+  $(MACHINECOIN_TIMETRAVEL_H)
 
 # common: shared between machinecoind, and machinecoin-qt and non-server tools
 libmachinecoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES)
@@ -406,18 +402,7 @@ libmachinecoin_common_a_SOURCES = \
   core_read.cpp \
   core_write.cpp \
   crypto/scrypt.cpp \
-  crypto/aes_helper.c \
-  crypto/blake.c \
-  crypto/bmw.c \
-  crypto/groestl.c \
-  crypto/skein.c \
-  crypto/jh.c \
-  crypto/keccak.c \
-  crypto/luffa.c \
-  crypto/cubehash.c \
-  crypto/shavite.c \
-  crypto/simd.c \
-  crypto/echo.c \
+  $(MACHINECOIN_TIMETRAVEL) \
   key.cpp \
   keystore.cpp \
   netaddress.cpp \
@@ -530,6 +515,7 @@ machinecoin_tx_LDADD = \
   $(LIBMACHINECOIN_UTIL) \
   $(LIBMACHINECOIN_CONSENSUS) \
   $(LIBMACHINECOIN_CRYPTO) \
+  $(LIBMACHINECOIN_TIMETRAVEL) \
   $(LIBSECP256K1)
 
 machinecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
@@ -545,8 +531,8 @@ if GLIBC_BACK_COMPAT
 endif
 
 libmachinecoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libmachinecoinconsensus_la_LIBADD = $(LIBSECP256K1)
-libmachinecoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_MACHINECOIN_INTERNAL
+libmachinecoinconsensus_la_LIBADD = $(LIBSECP256K1) $(CRYPTO_LIBS) $(BOOST_LIBS)
+libmachinecoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_MACHINECOIN_INTERNAL $(SSL_CFLAGS)
 libmachinecoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 endif

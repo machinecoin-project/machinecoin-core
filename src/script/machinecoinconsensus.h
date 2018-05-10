@@ -21,7 +21,7 @@
   #elif defined(HAVE_FUNC_ATTRIBUTE_VISIBILITY)
     #define EXPORT_SYMBOL __attribute__ ((visibility ("default")))
   #endif
-#elif defined(MSC_VER) && !defined(STATIC_LIBmachinecoinconsensus)
+#elif defined(MSC_VER) && !defined(STATIC_LIBMACHINECOINCONSENSUS)
   #define EXPORT_SYMBOL __declspec(dllimport)
 #endif
 
@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#define machinecoinconsensus_API_VER 1
+#define MACHINECOINCONSENSUS_API_VER 1
 
 typedef enum machinecoinconsensus_error_t
 {
