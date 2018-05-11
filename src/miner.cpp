@@ -171,7 +171,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     
     // Fill masternode and governance payment information
     if (nHeight >= chainparams.GetConsensus().nMasternodePaymentsStartBlock)
-      FillBlockPayments(coinbaseTx, nHeight, nFees + GetBlockSubsidy(nHeight, chainparams.GetConsensus()), pblock->txoutMasternode, pblock->voutSuperblock);
+        FillBlockPayments(coinbaseTx, nHeight, nFees + GetBlockSubsidy(nHeight, chainparams.GetConsensus()), pblock->txoutMasternode, pblock->voutSuperblock);
     
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
