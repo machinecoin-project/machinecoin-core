@@ -419,7 +419,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
                     pnode->fMasternode = true;
                 }
                 pnode->MaybeSetAddrName(std::string(pszDest));
-                LogPrintf("Failed to open new connection, already connected\n");
+                CloseSocket(hSocket);
                 return pnode;
             }
         }
