@@ -382,6 +382,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             // we have existing connection to this node but it was not a connection to masternode,
             // change flag and add reference so that we can correctly clear it later
             if(fConnectToMasternode && !pnode->fMasternode) {
+                pnode->AddRef();
                 pnode->fMasternode = true;
             }
             return pnode;
@@ -414,6 +415,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
                 // we have existing connection to this node but it was not a connection to masternode,
                 // change flag and add reference so that we can correctly clear it later
                 if(fConnectToMasternode && !pnode->fMasternode) {
+                    pnode->AddRef();
                     pnode->fMasternode = true;
                 }
                 pnode->MaybeSetAddrName(std::string(pszDest));
