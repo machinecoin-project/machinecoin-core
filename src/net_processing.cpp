@@ -1734,6 +1734,16 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             pfrom->fDisconnect = true;
             return false;
         }
+      
+        if (nVersion == PREVENT_HARDFORK_PROTO_VERSION)
+        {
+            // disconnect from peers older than this proto version
+            LogPrint(MCLog::NET, "peer=%d using obsolete version %i; disconnecting\n", pfrom->GetId(), nVersion);
+            connman->PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE,
+                               strprintf("Version must be %d or greater", MIN_PEER_PROTO_VERSION)));
+            pfrom->fDisconnect = true;
+            return false;
+        }
 
         if (nVersion == 10300)
             nVersion = 300;
