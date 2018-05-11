@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 from __future__ import division, print_function, unicode_literals
 #
 # Copyright (C) 2011  Patrick "p2k" Schneider <me@p2k-network.org>

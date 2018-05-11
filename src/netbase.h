@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef MACHINECOIN_NETBASE_H
-#define MAHCINECOIN_NETBASE_H
+#define MACHINECOIN_NETBASE_H_NETBASE_H
 
 #if defined(HAVE_CONFIG_H)
 #include <config/machinecoin-config.h>
