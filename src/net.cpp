@@ -369,6 +369,12 @@ static CAddress GetBindAddress(SOCKET sock)
 
 CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCountFailure, bool fConnectToMasternode)
 {
+    // TODO: This is different from what we have in Bitcoin which only calls ConnectNode from OpenNetworkConnection
+    //       If we ever switch to using OpenNetworkConnection for MNs as well, this can be removed
+    if (!fNetworkActive) {
+        return nullptr;
+    }
+
     if (pszDest == nullptr) {
         // we clean masternode connections in CMasternodeMan::ProcessMasternodeConnections()
         // so should be safe to skip this and connect to local Hot MN on CActiveMasternode::ManageState()
@@ -379,13 +385,8 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
         CNode* pnode = FindNode((CService)addrConnect);
         if (pnode)
         {
-            // we have existing connection to this node but it was not a connection to masternode,
-            // change flag and add reference so that we can correctly clear it later
-            if(fConnectToMasternode && !pnode->fMasternode) {
-                pnode->AddRef();
-                pnode->fMasternode = true;
-            }
-            return pnode;
+            LogPrintf("Failed to open new connection, already connected\n");
+            return nullptr;
         }
     }
 
@@ -412,14 +413,9 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             CNode* pnode = FindNode((CService)addrConnect);
             if (pnode)
             {
-                // we have existing connection to this node but it was not a connection to masternode,
-                // change flag and add reference so that we can correctly clear it later
-                if(fConnectToMasternode && !pnode->fMasternode) {
-                    pnode->AddRef();
-                    pnode->fMasternode = true;
-                }
                 pnode->MaybeSetAddrName(std::string(pszDest));
-                return pnode;
+                LogPrintf("Failed to open new connection, already connected\n");
+                return nullptr;
             }
         }
     }
