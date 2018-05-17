@@ -136,8 +136,6 @@ void CMasternodeMan::CheckAndRemove(CConnman* connman)
 {
     if(!masternodeSync.IsMasternodeListSynced()) return;
 
-    LogPrintf("CMasternodeMan::CheckAndRemove\n");
-
     {
         // Need LOCK2 here to ensure consistent locking order because code below locks cs_main
         // in CheckMnbAndUpdateMasternodeList()
@@ -307,8 +305,6 @@ void CMasternodeMan::CheckAndRemove(CConnman* connman)
                 ++itv2;
             }
         }
-
-        LogPrintf("CMasternodeMan::CheckAndRemove -- %s\n", ToString());
     }
 
     if(fMasternodesRemoved) {
@@ -768,8 +764,6 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         // see if we have this Masternode
         CMasternode* pmn = Find(mnp.vin.prevout);
-        
-        LogPrintf("NetMsgType::MNPING - pmn: %s", pmn);
 
         // if masternode uses sentinel ping instead of watchdog
         // we shoud update nTimeLastWatchdogVote here if sentinel
@@ -789,11 +783,11 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if(mnp.CheckAndUpdate(pmn, false, nDos, connman)) return;
 
         if(nDos > 0) {
-            LogPrintf("NetMsgType::MNPING - if anything significant failed, mark that node");
+            LogPrintf("NetMsgType::MNPING - if anything significant failed, mark that node\n");
             // if anything significant failed, mark that node
             Misbehaving(pfrom->GetId(), nDos);
         } else if(pmn != NULL) {
-            LogPrintf("NetMsgType::MNPING - nothing significant failed, mn is a known one too");
+            LogPrintf("NetMsgType::MNPING - nothing significant failed, mn is a known one too\n");
             // nothing significant failed, mn is a known one too
             return;
         }
