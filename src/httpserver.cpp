@@ -52,7 +52,7 @@ public:
     {
         // Disable socket accepting if adding this connection puts us equal to the limit
         if (!Interrupted() && m_sockets.insert(fd).second && m_sockets.size() == m_limit) {
-            LogPrint(BCLog::HTTP, "Suspending new connections");
+            LogPrint(MCLog::HTTP, "Suspending new connections");
             for (const auto& listener : m_listeners) {
                 evconnlistener_disable(listener);
             }
@@ -63,7 +63,7 @@ public:
         // Re-enable socket accepting if removing this connection brings us
         // back down under the limit
         if (m_sockets.erase(fd) && m_sockets.size() + 1 == m_limit && !Interrupted()) {
-            LogPrint(BCLog::HTTP, "Resuming new connections\n");
+            LogPrint(MCLog::HTTP, "Resuming new connections\n");
             for (const auto& listener : m_listeners) {
                 evconnlistener_enable(listener);
             }
