@@ -576,7 +576,7 @@ bool CMasternodeBroadcast::CheckOutpoint(int& nDos)
             return false;
         }
         // remember the hash of the block where masternode collateral had minimum required confirmations
-        nCollateralMinConfBlockHash = chainActive[nHeight + Params().GetConsensus().nMasternodeMinimumConfirmations - 1]->GetBlockHash();
+        nCollateralMinConfBlockHash = chainActive[nHeight + Params().GetConsensus().nMasternodeMinimumConfirmations - 1]->GetBlockPoWHash();
     }
 
     LogPrint(MCLog::MN, "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO verified\n");
