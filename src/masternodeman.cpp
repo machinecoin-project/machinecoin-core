@@ -484,22 +484,30 @@ bool CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool f
     */
 
     int nMnCount = CountMasternodes();
+    
+    LogPrintf("nMnCount: %u\n", nMnCount);
 
     for (auto& mnpair : mapMasternodes) {
+        LogPrintf("Is valid for payment?\n");
         if(!mnpair.second.IsValidForPayment()) continue;
 
         //check protocol version
+        LogPrintf("Protocol Version too old?\n");
         if(mnpair.second.nProtocolVersion < mnpayments.GetMinMasternodePaymentsProto()) continue;
 
         //it's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
+        LogPrintf("IsScheduled?\n");
         if(mnpayments.IsScheduled(mnpair.second, nBlockHeight)) continue;
 
         //it's too new, wait for a cycle
+        LogPrintf("Is too new?\n");
         if(fFilterSigTime && mnpair.second.sigTime + (nMnCount*2.6*60) > GetAdjustedTime()) continue;
 
         //make sure it has at least as many confirmations as there are masternodes
+        LogPrintf("Got enough confirmations?\n");
         if(GetUTXOConfirmations(mnpair.first) < nMnCount) continue;
 
+        LogPrintf("Added to vector\n");
         vecMasternodeLastPaid.push_back(std::make_pair(mnpair.second.GetLastPaidBlock(), &mnpair.second));
     }
 
@@ -517,6 +525,7 @@ bool CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool f
         LogPrintf("CMasternode::GetNextMasternodeInQueueForPayment -- ERROR: GetBlockHash() failed at nBlockHeight %d\n", nBlockHeight - 101);
         return false;
     }
+    LogPrintf("GetBlockHash: %s\n", blockHash.ToString());
     // Look at 1/10 of the oldest nodes (by last payment), calculate their scores and pay the best one
     //  -- This doesn't look at who is being paid in the +8-10 blocks, allowing for double payments very rarely
     //  -- 1/100 payments should be a double payment on mainnet - (1/(3000/10))*2
@@ -779,7 +788,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if(pmn && pmn->IsNewStartRequired()) return;
 
         int nDos = 0;
-        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s", mnp.CheckAndUpdate(pmn, false, nDos, connman));
+        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s\n", mnp.CheckAndUpdate(pmn, false, nDos, connman));
         if(mnp.CheckAndUpdate(pmn, false, nDos, connman)) return;
 
         if(nDos > 0) {
