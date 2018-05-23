@@ -309,7 +309,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 
     const CBlockIndex *BlockReading = pindex;
 
-    CScript mnpayee = GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()));
+    CScript mnpayee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
