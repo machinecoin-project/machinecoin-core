@@ -441,7 +441,9 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payeeIn, int nVote
     LOCK(cs_vecPayees);
 
     for (CMasternodePayee& payee : vecPayees) {
-        LogPrintf("payee: %s\n", EncodeDestination(payee.GetPayee()));
+        CTxDestination dest;
+        ExtractDestination(payee.GetPayee(), dest);
+        LogPrintf("payee: %s\n", EncodeDestination(dest));
         LogPrintf("payeeIn: %s\n", EncodeDestination(payeeIn));
         LogPrintf("GetVoteCount: %s\n", payee.GetVoteCount());
         LogPrintf("nVotesReq: %s\n", nVotesReq);
