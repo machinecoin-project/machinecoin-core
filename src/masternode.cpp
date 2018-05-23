@@ -318,6 +318,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
         if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
             mnpayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
+            LogPrintf("Reading block from disk\n");
             CBlock block;
             if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus())) // shouldn't really happen
                 continue;
@@ -325,10 +326,10 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
 
             for (CTxOut txout : block.vtx[0]->vout) {
-                LogPrintf("Script payee: %s", EncodeDestination(mnpayee));
-                LogPrintf("TXOut payee: %s", EncodeDestination(txout.scriptPubKey));
-                LogPrintf("Payee Payment: %s", nMasternodePayment);
-                LogPrintf("TXOut Payment: %s", txout.nValue);
+                LogPrintf("Script payee: %s\n", EncodeDestination(mnpayee));
+                LogPrintf("TXOut payee: %s\n", EncodeDestination(txout.scriptPubKey));
+                LogPrintf("Payee Payment: %s\n", nMasternodePayment);
+                LogPrintf("TXOut Payment: %s\n", txout.nValue);
                 if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
                     nBlockLastPaid = BlockReading->nHeight;
                     nTimeLastPaid = BlockReading->nTime;
