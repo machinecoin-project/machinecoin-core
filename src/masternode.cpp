@@ -313,6 +313,10 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
+    
+    LogPrintf("BlockReading->nHeight: %s\n", BlockReading->nHeight);
+    LogPrintf("nBlockLastPaid: %s\n", nBlockLastPaid);
+    LogPrintf("nMaxBlocksToScanBack: %s\n", nMaxBlocksToScanBack);
 
     for (int i = 0; BlockReading && BlockReading->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
         if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
