@@ -441,7 +441,9 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payeeIn, int nVote
     LOCK(cs_vecPayees);
 
     for (CMasternodePayee& payee : vecPayees) {
-        if (payee.GetVoteCount() >= nVotesReq && payee.GetPayee() == payeeIn) {
+        CTxDestination dest;
+        ExtractDestination(payee.GetPayee(), dest);
+        if (payee.GetVoteCount() >= nVotesReq && EncodeDestination(dest) == EncodeDestination(payeeIn)) {
             return true;
         }
     }
