@@ -313,16 +313,11 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
-    
-    LogPrintf("BlockReading->nHeight: %s\n", BlockReading->nHeight);
-    LogPrintf("nBlockLastPaid: %s\n", nBlockLastPaid);
-    LogPrintf("nMaxBlocksToScanBack: %s\n", nMaxBlocksToScanBack);
 
     for (int i = 0; BlockReading && BlockReading->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
         if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
             mnpayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
-            LogPrintf("Reading block from disk\n");
             CBlock block;
             if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus())) // shouldn't really happen
                 continue;
@@ -330,11 +325,9 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
 
             for (CTxOut txout : block.vtx[0]->vout) {
-                LogPrintf("Script payee: %s\n", EncodeDestination(mnpayee));
-                LogPrintf("TXOut payee: %s\n", EncodeDestination(txout.scriptPubKey));
-                LogPrintf("Payee Payment: %s\n", nMasternodePayment);
-                LogPrintf("TXOut Payment: %s\n", txout.nValue);
-                if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                CTxDestination dest;
+                ExtractDestination(txout.scriptPubKey, dest);
+                if(EncodeDestination(mnpayee) == EncodeDestination(dest) && nMasternodePayment == txout.nValue) {
                     nBlockLastPaid = BlockReading->nHeight;
                     nTimeLastPaid = BlockReading->nTime;
                     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
