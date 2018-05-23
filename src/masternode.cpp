@@ -324,7 +324,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
 
-            for (CTxOut txout : block.vtx[0]->vout)
+            for (CTxOut txout : block.vtx[0]->vout) {
                 LogPrintf("Script payee: %s", EncodeDestination(mnpayee));
                 LogPrintf("TXOut payee: %s", EncodeDestination(txout.scriptPubKey));
                 LogPrintf("Payee Payment: %s", nMasternodePayment);
@@ -335,6 +335,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
                     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
                     return;
                 }
+            }
         }
 
         if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
