@@ -462,7 +462,7 @@ bool GetBlockHash(uint256& hashRet, int nBlockHeight)
     if(chainActive.Tip() == NULL) return false;
     if(nBlockHeight < -1 || nBlockHeight > chainActive.Height()) return false;
     if(nBlockHeight == -1) nBlockHeight = chainActive.Height();
-    hashRet = chainActive[nBlockHeight]->GetBlockPoWHash();
+    hashRet = chainActive[nBlockHeight]->GetBlockHash();
     return true;
 }
 
