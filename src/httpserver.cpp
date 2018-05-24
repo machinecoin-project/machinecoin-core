@@ -586,7 +586,6 @@ void StopHTTPServer()
         delete workQueue;
         workQueue = nullptr;
     }
-    g_limiter.reset();
     if (eventBase) {
         LogPrint(MCLog::HTTP, "Waiting for HTTP event thread to exit\n");
         // Exit the event loop as soon as there are no active events.
@@ -607,6 +606,7 @@ void StopHTTPServer()
         evhttp_free(eventHTTP);
         eventHTTP = nullptr;
     }
+    g_limiter.reset();
     if (eventBase) {
         event_base_free(eventBase);
         eventBase = nullptr;
