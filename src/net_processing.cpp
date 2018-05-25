@@ -923,6 +923,18 @@ void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CB
     }
 
     nTimeBestReceived = GetTime();
+
+    // Update masternode related variables using new block tip.
+    // This will replace the dsnotificationinterface if working.
+    LogPrintf("RUNNING UpdateBlockTip for Masternodes\n");
+    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
+
+    if (fInitialDownload)
+        return;
+
+    mnodeman.UpdatedBlockTip(pindexNew);
+    mnpayments.UpdatedBlockTip(pindexNew, connman);
+    governance.UpdatedBlockTip(pindexNew, connman);
 }
 
 void PeerLogicValidation::BlockChecked(const CBlock& block, const CValidationState& state) {
