@@ -770,24 +770,17 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         // ping flag is actual
         if(pmn && mnp.fSentinelIsCurrent)
             UpdateWatchdogVoteTime(mnp.vin.prevout, mnp.sigTime);
-        
-        //this will crash in case that mn is unknown
-        //LogPrintf("NetMsgType::MNPING - pmn->IsNewStartRequired(): %s", pmn->IsNewStartRequired());
-        
-        //this one is ok because when mn is not known, pmn is false, so pmn->IsNewStartRequired() isnt executed
+
         // too late, new MNANNOUNCE is required
         if(pmn && pmn->IsNewStartRequired()) return;
 
         int nDos = 0;
-        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s", mnp.CheckAndUpdate(pmn, false, nDos, connman));
         if(mnp.CheckAndUpdate(pmn, false, nDos, connman)) return;
 
         if(nDos > 0) {
-            LogPrintf("NetMsgType::MNPING - if anything significant failed, mark that node\n");
             // if anything significant failed, mark that node
             Misbehaving(pfrom->GetId(), nDos);
         } else if(pmn != NULL) {
-            LogPrintf("NetMsgType::MNPING - nothing significant failed, mn is a known one too\n");
             // nothing significant failed, mn is a known one too
             return;
         }
