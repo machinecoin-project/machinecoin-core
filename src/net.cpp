@@ -1213,7 +1213,7 @@ void CConnman::ThreadSocketHandler()
                     pnode->CloseSocketDisconnect();
 
                     // hold in disconnected pool until all refs are released
-                    if (pnode->fRelevantServices || pnode->fInbound)
+                    if (pnode->fInbound)
                         pnode->Release();
                     if (pnode->fMasternode)
                         pnode->Release();
