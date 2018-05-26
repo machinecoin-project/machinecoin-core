@@ -896,8 +896,8 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
 
 void PeerLogicValidation::InitializeCurrentBlockTip() {
     LOCK(cs_main);
-    const CBlockIndex pindexNew = chainActive.Tip();
-    const CBlockIndex pindexFork = NULL;
+    const CBlockIndex *pindexNew = chainActive.Tip();
+    const CBlockIndex *pindexFork = NULL;
     bool fInitialDownload = IsInitialBlockDownload();
 
 
