@@ -484,7 +484,6 @@ void StopHTTPServer()
         evhttp_free(eventHTTP);
         eventHTTP = nullptr;
     }
-    g_limiter.reset();
     if (eventBase) {
         event_base_free(eventBase);
         eventBase = nullptr;
