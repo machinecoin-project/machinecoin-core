@@ -51,7 +51,6 @@
 #include <warnings.h>
 
 #include <activemasternode.h>
-#include <dsnotificationinterface.h>
 #include <flat-database.h>
 #include <governance.h>
 #include <masternode-payments.h>
@@ -95,8 +94,6 @@ std::unique_ptr<PeerLogicValidation> peerLogic;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = nullptr;
 #endif
-
-static CDSNotificationInterface* pdsNotificationInterface = nullptr;
 
 #ifdef WIN32
 // Win32 LevelDB doesn't use filedescriptors, and the ones used for
@@ -287,12 +284,6 @@ void Shutdown()
         pzmqNotificationInterface = nullptr;
     }
 #endif
-  
-    if (pdsNotificationInterface) {
-        UnregisterValidationInterface(pdsNotificationInterface);
-        delete pdsNotificationInterface;
-        pdsNotificationInterface = nullptr;
-    }
 
 #ifndef WIN32
     try {
@@ -1438,9 +1429,6 @@ bool AppInitMain()
 #endif
     uint64_t nMaxOutboundLimit = 0; //unlimited unless -maxuploadtarget is set
     uint64_t nMaxOutboundTimeframe = MAX_UPLOAD_TIMEFRAME;
-
-    pdsNotificationInterface = new CDSNotificationInterface(&connman);
-    RegisterValidationInterface(pdsNotificationInterface);
   
     if (gArgs.IsArgSet("-maxuploadtarget")) {
         nMaxOutboundLimit = gArgs.GetArg("-maxuploadtarget", DEFAULT_MAX_UPLOAD_TARGET)*1024*1024;
@@ -1812,7 +1800,7 @@ bool AppInitMain()
     // force UpdatedBlockTip to initialize nCachedBlockHeight for MN payments and budgets
     // but don't call it directly to prevent triggering of other listeners like zmq etc.
     // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
-    pdsNotificationInterface->InitializeCurrentBlockTip();
+    peerLogic->InitializeCurrentBlockTip();
   
     // ********************************************************* Step 11d: start mac-ps-<smth> threads
 
