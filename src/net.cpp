@@ -2023,12 +2023,6 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
             }
             ++it;
         }
-      
-        m_msgproc->InitializeNode(pnode);
-        {
-            LOCK(cs_vNodes);
-            vNodes.push_back(pnode);
-        }
 
         // ask for data
         PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
