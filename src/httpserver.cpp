@@ -258,9 +258,9 @@ static void http_request_cb(struct evhttp_request* req, void* arg)
 
     // Dispatch to worker thread
     if (i != iend) {
+        LogPrintf("HTTP queue item URI is: %s\n", hreq->GetURI());
         std::unique_ptr<HTTPWorkItem> item(new HTTPWorkItem(std::move(hreq), path, i->handler));
         assert(workQueue);
-        LogPrintf("HTTP queue item path is: %s\n", path);
         if (workQueue->Enqueue(item.get()))
             item.release(); /* if true, queue took ownership */
         else {

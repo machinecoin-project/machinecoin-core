@@ -700,6 +700,7 @@ void CMasternodePayments::CheckPreviousBlockVotes(int nPrevBlockHeight)
         bool found = false;
 
         if (mapMasternodeBlocks.count(nPrevBlockHeight)) {
+            LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- vecPayees size: %s\n", mapMasternodeBlocks[nPrevBlockHeight].vecPayees.size());
             for (auto &p : mapMasternodeBlocks[nPrevBlockHeight].vecPayees) {
                 for (auto &voteHash : p.GetVoteHashes()) {
                     LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop\n");
