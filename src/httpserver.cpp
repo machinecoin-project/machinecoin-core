@@ -88,6 +88,8 @@ public:
     bool Enqueue(WorkItem* item)
     {
         std::unique_lock<std::mutex> lock(cs);
+        LogPrintf("HTTP queue size is: %s\n", queue.size());
+        LogPrintf("HTTP queue item path is: %s\n", item->_path);
         if (queue.size() >= maxDepth) {
             return false;
         }
