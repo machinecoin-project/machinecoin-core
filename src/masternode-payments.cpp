@@ -702,12 +702,14 @@ void CMasternodePayments::CheckPreviousBlockVotes(int nPrevBlockHeight)
         if (mapMasternodeBlocks.count(nPrevBlockHeight)) {
             for (auto &p : mapMasternodeBlocks[nPrevBlockHeight].vecPayees) {
                 for (auto &voteHash : p.GetVoteHashes()) {
+                    LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop\n");
                     if (!mapMasternodePaymentVotes.count(voteHash)) {
                         LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- found = false\n");
                         debugStr += strprintf("CMasternodePayments::CheckPreviousBlockVotes --   could not find vote %s\n",
                                               voteHash.ToString());
                         continue;
                     }
+                    LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop #2\n");
                     auto vote = mapMasternodePaymentVotes[voteHash];
                     if (vote.vinMasternode.prevout == mn.second.vin.prevout) {
                         payee = vote.payee;
@@ -715,6 +717,7 @@ void CMasternodePayments::CheckPreviousBlockVotes(int nPrevBlockHeight)
                         found = true;
                         break;
                     }
+                    LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop #3\n");
                 }
             }
         }
