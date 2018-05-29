@@ -54,9 +54,9 @@ public:
     }
 
     std::unique_ptr<HTTPRequest> req;
+    std::string path;
 
 private:
-    std::string path;
     HTTPRequestHandler func;
 };
 
