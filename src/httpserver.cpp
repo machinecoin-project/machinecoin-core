@@ -92,6 +92,7 @@ public:
             return false;
         }
         queue.emplace_back(std::unique_ptr<WorkItem>(item));
+        LogPrintf("HTTP queue size is: %s\n", queue.size());
         cond.notify_one();
         return true;
     }
@@ -259,8 +260,7 @@ static void http_request_cb(struct evhttp_request* req, void* arg)
     if (i != iend) {
         std::unique_ptr<HTTPWorkItem> item(new HTTPWorkItem(std::move(hreq), path, i->handler));
         assert(workQueue);
-        LogPrintf("HTTP queue size is: %s\n", queue.size());
-        LogPrintf("HTTP queue item URI is: %s\n", item->GetURI());
+        LogPrintf("HTTP queue item URI is: %s\n", hreq->GetURI());
         if (workQueue->Enqueue(item.get()))
             item.release(); /* if true, queue took ownership */
         else {
