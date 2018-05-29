@@ -314,26 +314,34 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
+    
+    LogPrintf("CMasternode::UpdateLastPaid -- started\n");
 
     for (int i = 0; BlockReading && BlockReading->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
         if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
             mnpayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 1))
         {
+            LogPrintf("CMasternode::UpdateLastPaid -- Reading block\n");
             CBlock block;
             if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus())) // shouldn't really happen
                 continue;
-
+            
+            LogPrintf("CMasternode::UpdateLastPaid -- Get MN payment amount\n");
             CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
 
+            LogPrintf("CMasternode::UpdateLastPaid -- BOOST_FOREACH\n");
             BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout) {
                 if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                    LogPrintf("CMasternode::UpdateLastPaid -- matching\n");
                     nBlockLastPaid = BlockReading->nHeight;
                     nTimeLastPaid = BlockReading->nTime;
                     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
                     return;
                 }
+                LogPrintf("CMasternode::UpdateLastPaid -- not matching\n");
             }
         }
+        LogPrintf("CMasternode::UpdateLastPaid -- IF statement failed\n");
 
         if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
         BlockReading = BlockReading->pprev;
