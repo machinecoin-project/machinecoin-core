@@ -89,7 +89,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(cs);
         LogPrintf("HTTP queue size is: %s\n", queue.size());
-        LogPrintf("HTTP queue item path is: %s\n", item->_path);
+        LogPrintf("HTTP queue item path is: %s\n", item->path);
         if (queue.size() >= maxDepth) {
             return false;
         }
