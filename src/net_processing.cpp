@@ -581,6 +581,10 @@ void PeerLogicValidation::InitializeNode(CNode *pnode) {
         LOCK(cs_main);
         mapNodeState.emplace_hint(mapNodeState.end(), std::piecewise_construct, std::forward_as_tuple(nodeid), std::forward_as_tuple(addr, std::move(addrName)));
     }
+    if(pnode->fMasternode) {
+        LogPrintf("Push Masternode Version\n");
+        PushNodeVersion(pnode, connman, GetTime());
+    }
     if(!pnode->fInbound)
         PushNodeVersion(pnode, connman, GetTime());
 }
@@ -1807,9 +1811,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
         // Be shy and don't send version until we hear
         if (pfrom->fInbound)
-            PushNodeVersion(pfrom, connman, GetAdjustedTime());
-        
-        if (pfrom->fMasternode)
             PushNodeVersion(pfrom, connman, GetAdjustedTime());
 
         connman->PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::VERACK));
