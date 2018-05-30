@@ -2013,7 +2013,7 @@ void CConnman::ThreadMnbRequestConnections()
         PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));*/
         
         // Retry every 60 seconds if a connection was attempted, otherwise two seconds
-        if (!interruptNet.sleep_for(std::chrono::seconds(tried ? 60 : 2)))
+        if (!interruptNet.sleep_for(std::chrono::seconds(60)))
             return;
     }
 }
