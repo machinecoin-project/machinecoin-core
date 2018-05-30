@@ -2038,10 +2038,12 @@ void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
     } else if (FindNode(std::string(pszDest)))
         return;
 
+    CNode* pnode = nullptr;
+
     if (fMasternode == true)
-        CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, true);
+        pnode = ConnectNode(addrConnect, pszDest, fCountFailure, true);
     else
-        CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
+        pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
 
     if (!pnode)
         return;
