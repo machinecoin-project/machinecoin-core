@@ -1993,7 +1993,7 @@ void CConnman::ThreadMnbRequestConnections()
 
         if(p.first == CService() || p.second.empty()) continue;
 
-        OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, info.strAddedNode.c_str(), false, false, true, true);
+        OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true);
         if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
             continue;
 
