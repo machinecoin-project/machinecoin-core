@@ -1984,39 +1984,19 @@ void CConnman::ThreadOpenAddedConnections()
     }
 }
 
-void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connect)
+void CConnman::ThreadMnbRequestConnections()
 {
-    // Connecting to specific addresses, no masternode connections available
-    if (!connect.empty())
-        return;
-
-    while (!interruptNet)
+    while (true)
     {
-        if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
-            return;
-
         CSemaphoreGrant grant(*semMasternodeOutbound);
-        if (interruptNet)
-            return;
-
         std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
+
         if(p.first == CService() || p.second.empty()) continue;
 
-        CNode* pnode = ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, false, true);
-
-        if (!pnode)
-            continue;
-        if (pnode->fDisconnect)
+        OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, info.strAddedNode.c_str(), false, false, true, true);
+        if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
             continue;
 
-        grant.MoveTo(pnode->grantMasternodeOutbound);
-        
-        m_msgproc->InitializeNode(pnode);
-        {
-            LogPrintf("Initialize Node\n");
-            LOCK(cs_vNodes);
-            vNodes.push_back(pnode);
-        }
         /*const CNetMsgMaker msgMaker(pnode->GetSendVersion());
         // compile request vector
         std::vector<CInv> vToFetch;
@@ -2031,11 +2011,15 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
 
         // ask for data
         PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));*/
+        
+        // Retry every 60 seconds if a connection was attempted, otherwise two seconds
+        if (!interruptNet.sleep_for(std::chrono::seconds(tried ? 60 : 2)))
+            return;
     }
 }
 
 // if successful, this moves the passed grant to the constructed node
-void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler, bool manual_connection)
+void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler, bool manual_connection, bool fMasternode)
 {
     //
     // Initiate outbound network connection
@@ -2054,7 +2038,10 @@ void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
     } else if (FindNode(std::string(pszDest)))
         return;
 
-    CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
+    if (fMasternode == true)
+        CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, true);
+    else
+        CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
 
     if (!pnode)
         return;

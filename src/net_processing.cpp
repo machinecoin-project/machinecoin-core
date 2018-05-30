@@ -581,10 +581,6 @@ void PeerLogicValidation::InitializeNode(CNode *pnode) {
         LOCK(cs_main);
         mapNodeState.emplace_hint(mapNodeState.end(), std::piecewise_construct, std::forward_as_tuple(nodeid), std::forward_as_tuple(addr, std::move(addrName)));
     }
-    if(pnode->fMasternode) {
-        LogPrintf("Push Masternode Version\n");
-        PushNodeVersion(pnode, connman, GetTime());
-    }
     if(!pnode->fInbound)
         PushNodeVersion(pnode, connman, GetTime());
 }
