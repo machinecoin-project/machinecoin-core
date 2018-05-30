@@ -2002,15 +2002,11 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
         std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
         if(p.first == CService() || p.second.empty()) continue;
 
-        ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, false, true);
+        CNode* pnode = ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, false, true);
 
-        LOCK(cs_vNodes);
-
-        CNode *pnode = FindNode(p.first);
         if(!pnode || pnode->fDisconnect) continue;
         
         const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-
         grant.MoveTo(pnode->grantMasternodeOutbound);
 
         // compile request vector
@@ -2022,6 +2018,12 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
                 LogPrint(MCLog::MN, "ThreadMnbRequestConnections -- asking for mnb %s from addr=%s\n", it->ToString(), p.first.ToString());
             }
             ++it;
+        }
+        
+        m_msgproc->InitializeNode(pnode);
+        {
+            LOCK(cs_vNodes);
+            vNodes.push_back(pnode);
         }
 
         // ask for data
