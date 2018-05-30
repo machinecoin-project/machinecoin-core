@@ -2017,14 +2017,7 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
             LOCK(cs_vNodes);
             vNodes.push_back(pnode);
         }
-        
-        LogPrintf("After initialize Node\n");
-        pnode = FindNode(p.first);
-        if (!pnode)
-            continue;
-
-        LogPrintf("Found Node\n");
-        const CNetMsgMaker msgMaker(pnode->GetSendVersion());
+        /*const CNetMsgMaker msgMaker(pnode->GetSendVersion());
         // compile request vector
         std::vector<CInv> vToFetch;
         std::set<uint256>::iterator it = p.second.begin();
@@ -2037,7 +2030,7 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
         }
 
         // ask for data
-        PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
+        PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));*/
     }
 }
 
