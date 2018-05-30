@@ -2005,9 +2005,9 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
         CNode* pnode = ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, false, true);
 
         if (!pnode)
-            return;
+            continue;
         if (pnode->fDisconnect)
-            return;
+            continue;
 
         grant.MoveTo(pnode->grantMasternodeOutbound);
         
