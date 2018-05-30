@@ -416,7 +416,7 @@ private:
     void AddOneShot(const std::string& strDest);
     void ProcessOneShot();
     void ThreadOpenConnections(std::vector<std::string> connect);
-    void ThreadMnbRequestConnections(std::vector<std::string> connect);
+    void ThreadMnbRequestConnections();
     void ThreadMessageHandler();
     void AcceptConnection(const ListenSocket& hListenSocket);
     void ThreadSocketHandler();
