@@ -1986,7 +1986,7 @@ void CConnman::ThreadOpenAddedConnections()
 
 void CConnman::ThreadMnbRequestConnections()
 {
-    while (true)
+    while (!interruptNet)
     {
         CSemaphoreGrant grant(*semMasternodeOutbound);
         std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
@@ -2013,7 +2013,7 @@ void CConnman::ThreadMnbRequestConnections()
         PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));*/
         
         // Retry every 60 seconds if a connection was attempted, otherwise two seconds
-        if (!interruptNet.sleep_for(std::chrono::seconds(60)))
+        if (!interruptNet.sleep_for(std::chrono::seconds(2)))
             return;
     }
 }
