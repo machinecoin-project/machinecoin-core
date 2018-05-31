@@ -1995,7 +1995,7 @@ void CConnman::ThreadMnbRequestConnections()
 
         OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true);
         if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
-            continue;
+            return;
 
         /*const CNetMsgMaker msgMaker(pnode->GetSendVersion());
         // compile request vector
