@@ -167,7 +167,7 @@ public:
                 {506003, uint256S("0x6ea758bfa652aa7b6ac492d6452deac5cc9e3eac154f49fd1032afd6c0a7520d")},  // Machinecoin: checkpoint at 506003
                 {509513, uint256S("0x28e590f96c1c02da1ffb58cba0b01eeaddf1dc572e0eee498339469f8a33b4bf")},  // Machinecoin: checkpoint at 509513
                 {519233, uint256S("0x9ce85218bfa6bd422944565602ff6cfa35828d99bbd9c145be0eb014174852d5")},  // Machinecoin: checkpoint at 519233
-                {519233, uint256S("0xfdcf0cf1f2b8ebacade5b26f7b32cf1dfcef0bfc2d7c7341129fb6252ab3d69a")},  // Machinecoin: checkpoint at 520178
+                {520178, uint256S("0xfdcf0cf1f2b8ebacade5b26f7b32cf1dfcef0bfc2d7c7341129fb6252ab3d69a")},  // Machinecoin: checkpoint at 520178
             }
         };
 
