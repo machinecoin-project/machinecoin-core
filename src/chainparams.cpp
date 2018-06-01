@@ -186,6 +186,9 @@ public:
         consensus.nGovernanceFilterElements = 20000;
         consensus.nMasternodeMinimumConfirmations = 15;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
+        
+        // chain rules
+        consensus.fEnforceMasternodePayments = true; // Disconnect blocks with no masternode payment
     }
 };
 
@@ -289,6 +292,9 @@ public:
         consensus.nGovernanceFilterElements = 500;
         consensus.nMasternodeMinimumConfirmations = 1;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
+
+        // chain rules
+        consensus.fEnforceMasternodePayments = true; // Disconnect blocks with no masternode payment
     }
 };
 
@@ -375,6 +381,9 @@ public:
         consensus.nGovernanceFilterElements = 500;
         consensus.nMasternodeMinimumConfirmations = 1;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
+
+        // chain rules
+        consensus.fEnforceMasternodePayments = true; // Disconnect blocks with no masternode payment
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55); // Machinecoin N
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
