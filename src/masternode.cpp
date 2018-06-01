@@ -325,7 +325,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
             CBlock block;
             if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus())) {
                 LogPrintf("CMasternode::UpdateLastPaid -- failed to read block");
-                continue;
+                return;
             }
 
             LogPrintf("CMasternode::UpdateLastPaid -- Get MN payment amount\n");
