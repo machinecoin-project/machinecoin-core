@@ -3102,6 +3102,12 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     if (nSigOps * WITNESS_SCALE_FACTOR > MAX_BLOCK_SIGOPS_COST)
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
 
+    if (consensusParams.fEnforceMasternodePayments) {
+        if(!mnpayments.IsTransactionValid(block.vtx[0], 513400, block.vtx[0]->GetValueOut())) { // NOTE: block 513400 is hardcoded..update this if we're going to change MN payment percentage
+            return state.DoS(100, false, REJECT_INVALID, "bad-cb-payment", false, "no masternode payment (enforced)");
+        }
+    }
+
     if (fCheckPOW && fCheckMerkleRoot)
         block.fChecked = true;
 
