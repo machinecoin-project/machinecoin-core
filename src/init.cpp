@@ -1830,7 +1830,7 @@ bool AppInitMain()
     connOptions.nLocalServices = nLocalServices;
     connOptions.nMaxConnections = nMaxConnections;
     connOptions.nMaxOutbound = std::min(MAX_OUTBOUND_CONNECTIONS, connOptions.nMaxConnections);
-    connOptions.nMaxMasternodeOutbound = MAX_OUTBOUND_MASTERNODE_CONNECTIONS;
+    connOptions.nMaxMasternodeOutbound = std::min(MAX_OUTBOUND_MASTERNODE_CONNECTIONS, connOptions.nMaxConnections);
     connOptions.nMaxAddnode = MAX_ADDNODE_CONNECTIONS;
     connOptions.nMaxFeeler = 1;
     connOptions.nBestHeight = chain_active_height;
