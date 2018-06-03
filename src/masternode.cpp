@@ -343,7 +343,6 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
                 LogPrintf("CMasternode::UpdateLastPaid -- not matching\n");
             }
         }
-        LogPrintf("CMasternode::UpdateLastPaid -- IF statement failed\n");
 
         if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
         BlockReading = BlockReading->pprev;

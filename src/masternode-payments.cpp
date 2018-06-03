@@ -439,9 +439,6 @@ bool CMasternodeBlockPayees::GetBestPayee(CScript& payeeRet)
 bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payeeIn, int nVotesReq)
 {
     LOCK(cs_vecPayees);
-    
-    // Check size of vecPayees and see if it's cleared at some point or growing endless
-    LogPrintf("CMasternodeBlockPayees::HasPayeeWithVotes -- vecPayees size = %s\n", vecPayees.size());
 
     for (CMasternodePayee& payee : vecPayees) {
         if (payee.GetVoteCount() >= nVotesReq &&  payee.GetPayee() == payeeIn) {
