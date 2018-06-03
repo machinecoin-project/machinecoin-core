@@ -61,9 +61,6 @@ struct Params {
     int nGovernanceMinQuorum; // Min absolute vote count to trigger an action
     int nGovernanceFilterElements;
     int nMasternodeMinimumConfirmations;
-    
-    // chain rules
-    bool fEnforceMasternodePayments; // Disconnect blocks with no masternode payment
 
     /** Block height at which BIP16 becomes active */
     int BIP16Height;

@@ -109,7 +109,7 @@ public:
         consensus.nMinimumChainWork = uint256S("00000000000000000000000000000000000000000000000001a9edf0c5499215");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x28e590f96c1c02da1ffb58cba0b01eeaddf1dc572e0eee498339469f8a33b4bf"); // 509513
+        consensus.defaultAssumeValid = uint256S("0x984955d6caeec86e92ba36dc6d35c2f4a0593f4b1415cd166f3f5ad7ebcff5b7"); // 521234
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -168,15 +168,16 @@ public:
                 {509513, uint256S("0x28e590f96c1c02da1ffb58cba0b01eeaddf1dc572e0eee498339469f8a33b4bf")},  // Machinecoin: checkpoint at 509513
                 {519233, uint256S("0x9ce85218bfa6bd422944565602ff6cfa35828d99bbd9c145be0eb014174852d5")},  // Machinecoin: checkpoint at 519233
                 {520203, uint256S("0xa4e80117f39da350c6aac3568e635e3f107fac72ce562ae39539b93841e2d33f")},  // Machinecoin: checkpoint at 520203
+                {521234, uint256S("0x984955d6caeec86e92ba36dc6d35c2f4a0593f4b1415cd166f3f5ad7ebcff5b7")},  // Machinecoin: checkpoint at 521234
             }
         };
 
         chainTxData = ChainTxData{
             // Data as of block c69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975 (height 506003).
-            1527852629, // * UNIX timestamp of last known number of transactions
-            591954,     // * total number of transactions between genesis and that timestamp
+            1528024340, // * UNIX timestamp of last known number of transactions
+            593247,     // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            500.0       // * estimated number of transactions per second after that timestamp
+            5.0       // * estimated number of transactions per second after that timestamp
         };
       
         // Masternodes
@@ -187,9 +188,6 @@ public:
         consensus.nGovernanceFilterElements = 20000;
         consensus.nMasternodeMinimumConfirmations = 15;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        
-        // chain rules
-        consensus.fEnforceMasternodePayments = true; // Disconnect blocks with no masternode payment
     }
 };
 
@@ -293,9 +291,6 @@ public:
         consensus.nGovernanceFilterElements = 500;
         consensus.nMasternodeMinimumConfirmations = 1;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-
-        // chain rules
-        consensus.fEnforceMasternodePayments = true; // Disconnect blocks with no masternode payment
     }
 };
 
@@ -382,9 +377,6 @@ public:
         consensus.nGovernanceFilterElements = 500;
         consensus.nMasternodeMinimumConfirmations = 1;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
-
-        // chain rules
-        consensus.fEnforceMasternodePayments = true; // Disconnect blocks with no masternode payment
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,55); // Machinecoin N
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5); // Machinecoin 3
