@@ -1987,7 +1987,7 @@ void CConnman::ThreadMnbRequestConnections()
 {
     while (!interruptNet)
     {
-        CSemaphoreGrant grant(*semMasternodeOutbound);
+        CSemaphoreGrant grant(*semOutbound);
         std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
 
         if(p.first == CService() || p.second.empty()) continue;
