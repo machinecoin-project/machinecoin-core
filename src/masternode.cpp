@@ -307,45 +307,50 @@ std::string CMasternode::GetStatus() const
 void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScanBack)
 {
     if(!pindex) return;
-
-    const CBlockIndex *BlockReading = pindex->pprev;
+    
+    const CBlockIndex *pindexActive = chainActive.Tip();
+    assert(pindexActive);
 
     CScript mnpayee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()))));
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
+    LOCK(cs_main);
     LOCK(cs_mapMasternodeBlocks);
     
     LogPrintf("CMasternode::UpdateLastPaid -- started\n");
+    LogPrintf("CMasternode::UpdateLastPaid -- nHeight = %s\n", pindexActive->nHeight);
+    LogPrintf("CMasternode::UpdateLastPaid -- nMaxBlocksToScanBack = %s\n", nMaxBlocksToScanBack);
 
-    for (int i = 0; BlockReading && BlockReading->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
-        if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
-            mnpayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2))
+    for (int i = 0; pindexActive->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
+        if(mnpayments.mapMasternodeBlocks.count(pindexActive->nHeight) &&
+            mnpayments.mapMasternodeBlocks[pindexActive->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
             LogPrintf("CMasternode::UpdateLastPaid -- Reading block\n");
+
             CBlock block;
-            if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus())) {
-                LogPrintf("CMasternode::UpdateLastPaid -- failed to read block");
-                return;
-            }
+            if(ReadBlockFromDisk(block, pindexActive, Params().GetConsensus())) {
+                LogPrintf("CMasternode::UpdateLastPaid -- Get MN payment amount\n");
+                CAmount nMasternodePayment = GetMasternodePayment(pindexActive->nHeight, block.vtx[0]->GetValueOut());
 
-            LogPrintf("CMasternode::UpdateLastPaid -- Get MN payment amount\n");
-            CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
-
-            LogPrintf("CMasternode::UpdateLastPaid -- BOOST_FOREACH\n");
-            BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout) {
-                if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
-                    LogPrintf("CMasternode::UpdateLastPaid -- matching\n");
-                    nBlockLastPaid = BlockReading->nHeight;
-                    nTimeLastPaid = BlockReading->nTime;
-                    LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
-                    return;
+                LogPrintf("CMasternode::UpdateLastPaid -- BOOST_FOREACH\n");
+                BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout) {
+                    if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                        LogPrintf("CMasternode::UpdateLastPaid -- matching\n");
+                        nBlockLastPaid = pindexActive->nHeight;
+                        nTimeLastPaid = pindexActive->nTime;
+                        LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
+                        return;
+                    }
+                    LogPrintf("CMasternode::UpdateLastPaid -- not matching\n");
                 }
-                LogPrintf("CMasternode::UpdateLastPaid -- not matching\n");
+            }
+            else {
+                return;
             }
         }
 
-        if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
-        BlockReading = BlockReading->pprev;
+        if (pindexActive->pprev == nullptr) { assert(pindexActive); break; }
+        pindexActive = pindexActive->pprev;
     }
 
     // Last payment for this masternode wasn't found in latest mnpayments blocks
