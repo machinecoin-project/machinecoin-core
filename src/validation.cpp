@@ -1145,25 +1145,20 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
 
     // Open history file to read
     CAutoFile filein(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
-    if (filein.IsNull()) {
-        LogPrintf("ReadBlockFromDisk: OpenBlockFile failed\n", e.what());
+    if (filein.IsNull())
         return error("ReadBlockFromDisk: OpenBlockFile failed for %s", pos.ToString());
-    }
 
     // Read block
     try {
         filein >> block;
     }
     catch (const std::exception& e) {
-        LogPrintf("Deserialize or I/O error %s\n", e.what());
         return error("%s: Deserialize or I/O error - %s at %s", __func__, e.what(), pos.ToString());
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams)) {
-        LogPrintf("ReadBlockFromDisk: Errors in block header\n");
+    if (!CheckProofOfWork(block.GetPoWHash(), block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
-    }
 
     return true;
 }
@@ -1178,12 +1173,9 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
     if (!ReadBlockFromDisk(block, blockPos, consensusParams))
         return false;
-    if (block.GetHash() != pindex->GetBlockHash()) {
-        LogPrintf("ReadBlockFromDisk(CBlock&, CBlockIndex*): GetHash() doesn't match index for\n");
+    if (block.GetHash() != pindex->GetBlockHash())
         return error("ReadBlockFromDisk(CBlock&, CBlockIndex*): GetHash() doesn't match index for %s at %s",
                 pindex->ToString(), pindex->GetBlockPos().ToString());
-    }
-
     return true;
 }
 
