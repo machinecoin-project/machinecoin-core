@@ -1146,7 +1146,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
     // Open history file to read
     CAutoFile filein(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
     if (filein.IsNull()) {
-        LogPrintf("ReadBlockFromDisk: OpenBlockFile failed\n");
+        LogPrintf("ReadBlockFromDisk: OpenBlockFile failed\n", e.what());
         return error("ReadBlockFromDisk: OpenBlockFile failed for %s", pos.ToString());
     }
 
