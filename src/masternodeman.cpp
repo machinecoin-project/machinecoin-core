@@ -1425,7 +1425,7 @@ bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBr
 
 void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex)
 {
-    LOCK(cs);
+    LOCK(cs_main);
 
     if(fLiteMode || !masternodeSync.IsWinnersListSynced() || mapMasternodes.empty()) return;
 

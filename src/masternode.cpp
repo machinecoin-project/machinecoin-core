@@ -314,11 +314,12 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     CScript mnpayee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()))));
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
-    LOCK(cs_main);
     LOCK(cs_mapMasternodeBlocks);
     
     LogPrintf("CMasternode::UpdateLastPaid -- started\n");
     LogPrintf("CMasternode::UpdateLastPaid -- nHeight = %s\n", pindexActive->nHeight);
+    LogPrintf("CMasternode::UpdateLastPaid -- nBlockLastPaid = %s\n", nBlockLastPaid);
+    LogPrintf("CMasternode::UpdateLastPaid -- nTimeLastPaid = %s\n", nTimeLastPaid);
     LogPrintf("CMasternode::UpdateLastPaid -- nMaxBlocksToScanBack = %s\n", nMaxBlocksToScanBack);
 
     for (int i = 0; pindexActive->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
