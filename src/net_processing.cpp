@@ -906,8 +906,6 @@ void PeerLogicValidation::InitializeCurrentBlockTip() {
         return;
 
     masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
-    
-    LogPrintf("fInitialDownload = %s\n", fInitialDownload);
 
     if (fInitialDownload)
         return;
