@@ -478,7 +478,6 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
     CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, addr_bind, pszDest ? pszDest : "", false);
     
     if(fConnectToMasternode) {
-        pnode->AddRef();
         pnode->fMasternode = true;
     }
     
@@ -1211,9 +1210,6 @@ void CConnman::ThreadSocketHandler()
 
                     // hold in disconnected pool until all refs are released
                     pnode->Release();
-
-                    if (pnode->fMasternode)
-                        pnode->Release();
 
                     vNodesDisconnected.push_back(pnode);
                 }
