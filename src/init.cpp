@@ -1800,7 +1800,7 @@ bool AppInitMain()
     // force UpdatedBlockTip to initialize nCachedBlockHeight for MN payments and budgets
     // but don't call it directly to prevent triggering of other listeners like zmq etc.
     // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
-    peerLogic->InitializeCurrentBlockTip(false);
+    peerLogic->InitializeCurrentBlockTip();
   
     // ********************************************************* Step 11d: start mac-ps-<smth> threads
 

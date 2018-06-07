@@ -894,10 +894,10 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
     });
 }
 
-void PeerLogicValidation::InitializeCurrentBlockTip(bool lock) {
+void PeerLogicValidation::InitializeCurrentBlockTip() {
     LOCK(cs_main);
     const CBlockIndex *pindexNew = chainActive.Tip();
-    const CBlockIndex *pindexFork = NULL;
+    const CBlockIndex *pindexFork = nullptr;
     bool fInitialDownload = IsInitialBlockDownload();
 
 
@@ -910,7 +910,7 @@ void PeerLogicValidation::InitializeCurrentBlockTip(bool lock) {
     if (fInitialDownload)
         return;
 
-    mnodeman.UpdatedBlockTip(pindexNew, lock);
+    mnodeman.UpdatedBlockTip(pindexNew, false);
     mnpayments.UpdatedBlockTip(pindexNew, connman);
     governance.UpdatedBlockTip(pindexNew, connman);
 }
@@ -918,6 +918,7 @@ void PeerLogicValidation::InitializeCurrentBlockTip(bool lock) {
 void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload) {
     masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
 
+    LogPrintf("fInitialDownloa = %s\n", fInitialDownload);
     if (!fInitialDownload) mnodeman.UpdatedBlockTip(pindexNew);
     if (!fInitialDownload) mnpayments.UpdatedBlockTip(pindexNew, connman);
     if (!fInitialDownload) governance.UpdatedBlockTip(pindexNew, connman);
