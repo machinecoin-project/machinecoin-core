@@ -310,8 +310,6 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     
     const CBlockIndex *pindexActive = chainActive.Tip();
     assert(pindexActive);
-  
-    if(pindexActive->nHeight < Params().GetConsensus().nMasternodePaymentsStartBlock) return;
 
     CScript mnpayee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()))));
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
