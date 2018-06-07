@@ -906,6 +906,8 @@ void PeerLogicValidation::InitializeCurrentBlockTip() {
         return;
 
     masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
+    
+    LogPrintf("fInitialDownload = %s\n", fInitialDownload);
 
     if (fInitialDownload)
         return;
@@ -918,10 +920,11 @@ void PeerLogicValidation::InitializeCurrentBlockTip() {
 void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload) {
     masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
 
-    LogPrintf("fInitialDownloa = %s\n", fInitialDownload);
-    if (!fInitialDownload) mnodeman.UpdatedBlockTip(pindexNew);
-    if (!fInitialDownload) mnpayments.UpdatedBlockTip(pindexNew, connman);
-    if (!fInitialDownload) governance.UpdatedBlockTip(pindexNew, connman);
+    if (!fInitialDownload) {
+        mnodeman.UpdatedBlockTip(pindexNew);
+        mnpayments.UpdatedBlockTip(pindexNew, connman);
+        governance.UpdatedBlockTip(pindexNew, connman);
+    }
 
     const int nNewHeight = pindexNew->nHeight;
     connman->SetBestHeight(nNewHeight);
