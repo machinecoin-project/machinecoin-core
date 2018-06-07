@@ -853,6 +853,7 @@ public:
 
     int GetRefCount() const
     {
+        LogPrintf("RefCount: %s\n", nRefCount);
         assert(nRefCount >= 0);
         return nRefCount;
     }
