@@ -853,7 +853,7 @@ public:
 
     int GetRefCount() const
     {
-        LogPrintf("RefCount: %s\n", nRefCount);
+        if (nRefCount == -1) nRefCount = 0
         assert(nRefCount >= 0);
         return nRefCount;
     }
@@ -877,14 +877,12 @@ public:
 
     CNode* AddRef()
     {
-        LogPrintf("AddRef\n");
         nRefCount++;
         return this;
     }
 
     void Release()
     {
-        LogPrintf("Release\n");
         nRefCount--;
     }
 
