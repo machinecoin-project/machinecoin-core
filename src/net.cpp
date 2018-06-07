@@ -388,6 +388,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             // we have existing connection to this node but it was not a connection to masternode,
             // change flag and add reference so that we can correctly clear it later
             if(fConnectToMasternode && !pnode->fMasternode) {
+                pnode->AddRef();
                 pnode->fMasternode = true;
             }
             return pnode;
@@ -413,6 +414,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             // In that case, drop the connection that was just created, and return the existing CNode instead.
             // Also store the name we used to connect in that CNode, so that future FindNode() calls to that
             // name catch this early.
+            LOCK(cs_vNodes);
             CNode* pnode = FindNode((CService)addrConnect);
             if (pnode)
             {
@@ -420,6 +422,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
                 // we have existing connection to this node but it was not a connection to masternode,
                 // change flag and add reference so that we can correctly clear it later
                 if(fConnectToMasternode && !pnode->fMasternode) {
+                    pnode->AddRef();
                     pnode->fMasternode = true;
                 }
                 LogPrintf("Failed to open new connection, already connected\n");
@@ -477,6 +480,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
     CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, addr_bind, pszDest ? pszDest : "", false);
     
     if(fConnectToMasternode) {
+        pnode->AddRef();
         pnode->fMasternode = true;
     }
     
@@ -1209,6 +1213,9 @@ void CConnman::ThreadSocketHandler()
 
                     // hold in disconnected pool until all refs are released
                     pnode->Release();
+
+                    if (pnode->fMasternode)
+                        pnode->Release();
 
                     vNodesDisconnected.push_back(pnode);
                 }
