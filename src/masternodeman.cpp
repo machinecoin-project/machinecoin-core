@@ -1423,9 +1423,9 @@ bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBr
     return true;
 }
 
-void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex)
+void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex, bool lock)
 {
-    LOCK(cs_main);
+    if (lock) LOCK(cs_main);
 
     if(fLiteMode || !masternodeSync.IsWinnersListSynced() || mapMasternodes.empty()) return;
 
@@ -1522,7 +1522,7 @@ void CMasternodeMan::SetMasternodeLastPing(const COutPoint& outpoint, const CMas
     }
 }
 
-void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex)
+void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex, bool lock)
 {
     nCachedBlockHeight = pindex->nHeight;
     LogPrint(MCLog::MN, "CMasternodeMan::UpdatedBlockTip -- nCachedBlockHeight=%d\n", nCachedBlockHeight);
@@ -1531,7 +1531,7 @@ void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex)
 
     if(fMasterNode) {
         // normal wallet does not need to update this every block, doing update on rpc call should be enough
-        UpdateLastPaid(pindex);
+        UpdateLastPaid(pindex, lock);
     }
 }
 

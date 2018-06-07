@@ -196,7 +196,7 @@ public:
     bool CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBroadcast mnb, int& nDos, CConnman* connman);
     bool IsMnbRecoveryRequested(const uint256& hash) { return mMnbRecoveryRequests.count(hash); }
 
-    void UpdateLastPaid(const CBlockIndex* pindex);
+    void UpdateLastPaid(const CBlockIndex* pindex, bool lock = true);
 
     void AddDirtyGovernanceObjectHash(const uint256& nHash)
     {
@@ -222,7 +222,7 @@ public:
     bool IsMasternodePingedWithin(const COutPoint& outpoint, int nSeconds, int64_t nTimeToCheckAt = -1);
     void SetMasternodeLastPing(const COutPoint& outpoint, const CMasternodePing& mnp);
 
-    void UpdatedBlockTip(const CBlockIndex *pindex);
+    void UpdatedBlockTip(const CBlockIndex *pindex, bool lock = true);
 
     /**
      * Called to notify CGovernanceManager that the masternode index has been updated.

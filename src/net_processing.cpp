@@ -894,7 +894,7 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
     });
 }
 
-void PeerLogicValidation::InitializeCurrentBlockTip() {
+void PeerLogicValidation::InitializeCurrentBlockTip(bool lock) {
     LOCK(cs_main);
     const CBlockIndex *pindexNew = chainActive.Tip();
     const CBlockIndex *pindexFork = NULL;
@@ -910,7 +910,7 @@ void PeerLogicValidation::InitializeCurrentBlockTip() {
     if (fInitialDownload)
         return;
 
-    mnodeman.UpdatedBlockTip(pindexNew);
+    mnodeman.UpdatedBlockTip(pindexNew, lock);
     mnpayments.UpdatedBlockTip(pindexNew, connman);
     governance.UpdatedBlockTip(pindexNew, connman);
 }
