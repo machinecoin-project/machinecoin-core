@@ -1213,6 +1213,9 @@ void CConnman::ThreadSocketHandler()
 
                     // hold in disconnected pool until all refs are released
                     pnode->Release();
+                    
+                    if (pnode->fInbound)
+                        pnode->Release();
 
                     if (pnode->fMasternode)
                         pnode->Release();
