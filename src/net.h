@@ -853,8 +853,7 @@ public:
 
     int GetRefCount() const
     {
-        if (nRefCount != -1)
-            assert(nRefCount >= 0);
+        assert(nRefCount >= 0);
         return nRefCount;
     }
 
