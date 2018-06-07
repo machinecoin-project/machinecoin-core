@@ -388,7 +388,6 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
             // we have existing connection to this node but it was not a connection to masternode,
             // change flag and add reference so that we can correctly clear it later
             if(fConnectToMasternode && !pnode->fMasternode) {
-                pnode->AddRef();
                 pnode->fMasternode = true;
             }
             return pnode;
@@ -422,7 +421,6 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
                 // we have existing connection to this node but it was not a connection to masternode,
                 // change flag and add reference so that we can correctly clear it later
                 if(fConnectToMasternode && !pnode->fMasternode) {
-                    pnode->AddRef();
                     pnode->fMasternode = true;
                 }
                 LogPrintf("Failed to open new connection, already connected\n");
@@ -1213,9 +1211,6 @@ void CConnman::ThreadSocketHandler()
 
                     // hold in disconnected pool until all refs are released
                     pnode->Release();
-                    
-                    if (pnode->fInbound)
-                        pnode->Release();
 
                     if (pnode->fMasternode)
                         pnode->Release();
