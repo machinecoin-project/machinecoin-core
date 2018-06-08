@@ -2,7 +2,7 @@
 =====================================
 
 [![Discord](https://discordapp.com/api/guilds/306493503318261760/embed.png)](https://discord.gg/75mVAPA)
-[![Build Status](https://travis-ci.org/machinecoin-project/machinecoin-core.svg?branch=master)](https://travis-ci.org/machinecoin-project/machinecoin-core)
+[![Build Status](https://build.machinecoin.io/job/machinecoin-core/badge/icon)](https://build.machinecoin.io/job/machinecoin-core/)
 
 https://machinecoin.io
 
