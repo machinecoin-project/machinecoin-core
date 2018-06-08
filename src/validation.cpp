@@ -2045,12 +2045,12 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     // TODO: resync data (both ways?) and try to reprocess this block later.
     std::string strError = "";
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
-        return state.DoS(0, error("ConnectBlock(MAC): %s", strError), REJECT_INVALID, "bad-cb-amount");
+        return state.DoS(20, error("ConnectBlock(MAC): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
     
     if (pindex->nHeight > Params().GetConsensus().nMasternodePaymentsStartBlock) {
         if (!IsBlockPayeeValid(block.vtx[0], pindex->nHeight, blockReward)) {
-            return state.DoS(0, error("ConnectBlock(MAC): couldn't find masternode or superblock payments"),
+            return state.DoS(20, error("ConnectBlock(MAC): couldn't find masternode or superblock payments"),
                                     REJECT_INVALID, "bad-cb-payee");
         }
     }
