@@ -258,7 +258,7 @@ static void http_request_cb(struct evhttp_request* req, void* arg)
 
     // Dispatch to worker thread
     if (i != iend) {
-        LogPrintf("HTTP queue item URI is: %s\n", hreq->GetURI());
+        LogPrintf("HTTP queue item GetRequestMethod is: %s\n", hreq->GetRequestMethod());
         std::unique_ptr<HTTPWorkItem> item(new HTTPWorkItem(std::move(hreq), path, i->handler));
         assert(workQueue);
         if (workQueue->Enqueue(item.get()))
