@@ -48,7 +48,4 @@ static const int UPDATED_DIFF_ADJUST_ALGO = 70016;
 //! implemented masternodes to machinecoin
 static const int IMPLEMENTED_MASTERNODES = 70017;
 
-//! prevent hardfork (many chains) from invalid 0.16 update
-static const int PREVENT_HARDFORK_PROTO_VERSION = 70017;
-
 #endif // MACHINECOIN_VERSION_H
