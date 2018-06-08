@@ -315,34 +315,22 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
-    
-    LogPrintf("CMasternode::UpdateLastPaid -- started\n");
-    LogPrintf("CMasternode::UpdateLastPaid -- nHeight = %s\n", pindexActive->nHeight);
-    LogPrintf("CMasternode::UpdateLastPaid -- nBlockLastPaid = %s\n", nBlockLastPaid);
-    LogPrintf("CMasternode::UpdateLastPaid -- nTimeLastPaid = %s\n", nTimeLastPaid);
-    LogPrintf("CMasternode::UpdateLastPaid -- nMaxBlocksToScanBack = %s\n", nMaxBlocksToScanBack);
 
     for (int i = 0; pindexActive->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
         if(mnpayments.mapMasternodeBlocks.count(pindexActive->nHeight) &&
             mnpayments.mapMasternodeBlocks[pindexActive->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
-            LogPrintf("CMasternode::UpdateLastPaid -- Reading block\n");
-
             CBlock block;
             if(ReadBlockFromDisk(block, pindexActive, Params().GetConsensus())) {
-                LogPrintf("CMasternode::UpdateLastPaid -- Get MN payment amount\n");
                 CAmount nMasternodePayment = GetMasternodePayment(pindexActive->nHeight, block.vtx[0]->GetValueOut());
 
-                LogPrintf("CMasternode::UpdateLastPaid -- BOOST_FOREACH\n");
                 BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout) {
                     if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
-                        LogPrintf("CMasternode::UpdateLastPaid -- matching\n");
                         nBlockLastPaid = pindexActive->nHeight;
                         nTimeLastPaid = pindexActive->nTime;
                         LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
                         return;
                     }
-                    LogPrintf("CMasternode::UpdateLastPaid -- not matching\n");
                 }
             }
             else {
@@ -356,7 +344,7 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 
     // Last payment for this masternode wasn't found in latest mnpayments blocks
     // or it was found in mnpayments blocks but wasn't found in the blockchain.
-    LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- keeping old %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
+    // LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- keeping old %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
 }
 
 #ifdef ENABLE_WALLET
@@ -371,7 +359,6 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     auto Log = [&strErrorRet](std::string sErr)->bool
     {
         strErrorRet = sErr;
-        LogPrintf("CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
     };
 
@@ -422,7 +409,6 @@ bool CMasternodeBroadcast::Create(const COutPoint& outpoint, const CService& ser
     auto Log = [&strErrorRet,&mnbRet](std::string sErr)->bool
     {
         strErrorRet = sErr;
-        LogPrintf("CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         mnbRet = CMasternodeBroadcast();
         return false;
     };
