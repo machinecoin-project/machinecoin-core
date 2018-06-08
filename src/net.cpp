@@ -469,6 +469,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
     CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, addr_bind, pszDest ? pszDest : "", false);
     
     if(fConnectToMasternode) {
+        pnode->AddRef();
         pnode->fMasternode = true;
     }
     
@@ -1200,7 +1201,10 @@ void CConnman::ThreadSocketHandler()
                     pnode->CloseSocketDisconnect();
 
                     // hold in disconnected pool until all refs are released
-                    pnode->Release();
+                    if (pnode->fInbound)
+                        pnode->Release();
+                    if (pnode->fMasternode)
+                        pnode->Release();
 
                     vNodesDisconnected.push_back(pnode);
                 }
@@ -1968,35 +1972,20 @@ void CConnman::ThreadOpenAddedConnections()
     }
 }
 
-void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connect)
+void CConnman::ThreadMnbRequestConnections()
 {
-    // Connecting to specific addresses, no masternode connections available
-    if (!connect.empty())
-        return;
-
     while (!interruptNet)
     {
-        if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
-            return;
-
-        CSemaphoreGrant grant(*semMasternodeOutbound);
-        if (interruptNet)
-            return;
-
+        CSemaphoreGrant grant(*semOutbound);
         std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
+
         if(p.first == CService() || p.second.empty()) continue;
 
-        ConnectNode(CAddress(p.first, NODE_NETWORK), NULL, false, true);
+        OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true);
+        if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
+            return;
 
-        LOCK(cs_vNodes);
-
-        CNode *pnode = FindNode(p.first);
-        if(!pnode || pnode->fDisconnect) continue;
-        
-        const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-
-        grant.MoveTo(pnode->grantMasternodeOutbound);
-
+        /*const CNetMsgMaker msgMaker(pnode->GetSendVersion());
         // compile request vector
         std::vector<CInv> vToFetch;
         std::set<uint256>::iterator it = p.second.begin();
@@ -2009,12 +1998,12 @@ void CConnman::ThreadMnbRequestConnections(const std::vector<std::string> connec
         }
 
         // ask for data
-        PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
+        PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));*/
     }
 }
 
 // if successful, this moves the passed grant to the constructed node
-void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler, bool manual_connection)
+void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler, bool manual_connection, bool fMasternode)
 {
     //
     // Initiate outbound network connection
@@ -2033,7 +2022,12 @@ void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
     } else if (FindNode(std::string(pszDest)))
         return;
 
-    CNode* pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
+    CNode* pnode = nullptr;
+
+    if (fMasternode == true)
+        pnode = ConnectNode(addrConnect, pszDest, fCountFailure, true);
+    else
+        pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
 
     if (!pnode)
         return;
@@ -2365,13 +2359,13 @@ bool CConnman::Start(CScheduler& scheduler, const Options& connOptions)
         // initialize semaphore
         semOutbound = MakeUnique<CSemaphore>(std::min((nMaxOutbound + nMaxFeeler), nMaxConnections));
     }
+    if (semMasternodeOutbound == nullptr) {
+        // initialize semaphore
+        semMasternodeOutbound = MakeUnique<CSemaphore>(std::min((nMaxMasternodeOutbound + nMaxFeeler), nMaxConnections));
+    }
     if (semAddnode == nullptr) {
         // initialize semaphore
         semAddnode = MakeUnique<CSemaphore>(nMaxAddnode);
-    }
-    if (semMasternodeOutbound == nullptr) {
-        // initialize semaphore
-        semMasternodeOutbound = MakeUnique<CSemaphore>(MAX_OUTBOUND_MASTERNODE_CONNECTIONS);
     }
 
     //
@@ -2408,13 +2402,11 @@ bool CConnman::Start(CScheduler& scheduler, const Options& connOptions)
     }
     if (connOptions.m_use_addrman_outgoing || !connOptions.m_specified_outgoing.empty())
         threadOpenConnections = std::thread(&TraceThread<std::function<void()> >, "opencon", std::function<void()>(std::bind(&CConnman::ThreadOpenConnections, this, connOptions.m_specified_outgoing)));
-  
+    
+    threadMnbRequestConnections = std::thread(&TraceThread<std::function<void()> >, "mnbcon", std::function<void()>(std::bind(&CConnman::ThreadMnbRequestConnections, this)));
+
     // Process messages
     threadMessageHandler = std::thread(&TraceThread<std::function<void()> >, "msghand", std::function<void()>(std::bind(&CConnman::ThreadMessageHandler, this)));
-
-    // Initiate masternode connections
-    // maybe move this into if statement above
-    threadMnbRequestConnections = std::thread(&TraceThread<std::function<void()> >, "mnbcon", std::function<void()>(std::bind(&CConnman::ThreadMnbRequestConnections, this, connOptions.m_specified_outgoing)));
 
     // Dump network addresses
     scheduler.scheduleEvery(std::bind(&CConnman::DumpData, this), DUMP_ADDRESSES_INTERVAL * 1000);
@@ -2475,10 +2467,6 @@ void CConnman::Stop()
         threadDNSAddressSeed.join();
     if (threadSocketHandler.joinable())
         threadSocketHandler.join();
-  
-    if (semMasternodeOutbound)
-        for (int i=0; i<MAX_OUTBOUND_MASTERNODE_CONNECTIONS; i++)
-            semMasternodeOutbound->post();
 
     if (fAddressesInitialized)
     {

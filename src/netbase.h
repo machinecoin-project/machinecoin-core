@@ -62,7 +62,6 @@ bool CloseSocket(SOCKET& hSocket);
 bool SetSocketNonBlocking(const SOCKET& hSocket, bool fNonBlocking);
 /** Set the TCP_NODELAY flag on a socket */
 bool SetSocketNoDelay(const SOCKET& hSocket);
-bool SetListenSocketDeferred(const SOCKET& sock);
 /**
  * Convert milliseconds to a struct timeval for e.g. select.
  */

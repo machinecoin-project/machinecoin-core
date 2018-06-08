@@ -770,24 +770,17 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         // ping flag is actual
         if(pmn && mnp.fSentinelIsCurrent)
             UpdateWatchdogVoteTime(mnp.vin.prevout, mnp.sigTime);
-        
-        //this will crash in case that mn is unknown
-        //LogPrintf("NetMsgType::MNPING - pmn->IsNewStartRequired(): %s", pmn->IsNewStartRequired());
-        
-        //this one is ok because when mn is not known, pmn is false, so pmn->IsNewStartRequired() isnt executed
+
         // too late, new MNANNOUNCE is required
         if(pmn && pmn->IsNewStartRequired()) return;
 
         int nDos = 0;
-        LogPrintf("NetMsgType::MNPING - mnp.CheckAndUpdate(): %s", mnp.CheckAndUpdate(pmn, false, nDos, connman));
         if(mnp.CheckAndUpdate(pmn, false, nDos, connman)) return;
 
         if(nDos > 0) {
-            LogPrintf("NetMsgType::MNPING - if anything significant failed, mark that node\n");
             // if anything significant failed, mark that node
             Misbehaving(pfrom->GetId(), nDos);
         } else if(pmn != NULL) {
-            LogPrintf("NetMsgType::MNPING - nothing significant failed, mn is a known one too\n");
             // nothing significant failed, mn is a known one too
             return;
         }
@@ -1029,8 +1022,8 @@ bool CMasternodeMan::SendVerifyRequest(const CAddress& addr, const std::vector<C
         return false;
     }
 
-    CNode* pnode = connman->ConnectNode(addr, NULL, false, true);
-    if(pnode == NULL) {
+    CNode* pnode = connman->ConnectNode(addr, nullptr, false, true);
+    if(pnode == nullptr) {
         LogPrintf("CMasternodeMan::SendVerifyRequest -- can't connect to node to verify it, addr=%s\n", addr.ToString());
         return false;
     }
@@ -1430,9 +1423,9 @@ bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBr
     return true;
 }
 
-void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex)
+void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex, bool lock)
 {
-    LOCK(cs);
+    if (lock) LOCK(cs_main);
 
     if(fLiteMode || !masternodeSync.IsWinnersListSynced() || mapMasternodes.empty()) return;
 
@@ -1529,7 +1522,7 @@ void CMasternodeMan::SetMasternodeLastPing(const COutPoint& outpoint, const CMas
     }
 }
 
-void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex)
+void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex, bool lock)
 {
     nCachedBlockHeight = pindex->nHeight;
     LogPrint(MCLog::MN, "CMasternodeMan::UpdatedBlockTip -- nCachedBlockHeight=%d\n", nCachedBlockHeight);
@@ -1538,7 +1531,7 @@ void CMasternodeMan::UpdatedBlockTip(const CBlockIndex *pindex)
 
     if(fMasterNode) {
         // normal wallet does not need to update this every block, doing update on rpc call should be enough
-        UpdateLastPaid(pindex);
+        UpdateLastPaid(pindex, lock);
     }
 }
 

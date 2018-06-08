@@ -103,7 +103,6 @@ MACHINECOIN_CORE_H = \
   core_memusage.h \
   cuckoocache.h \
   fs.h \
-  dsnotificationinterface.h \
   governance.h \
   governance-classes.h \
   governance-exceptions.h \
@@ -216,7 +215,6 @@ libmachinecoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   consensus/tx_verify.cpp \
-  dsnotificationinterface.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \

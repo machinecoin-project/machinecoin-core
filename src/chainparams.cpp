@@ -109,7 +109,7 @@ public:
         consensus.nMinimumChainWork = uint256S("00000000000000000000000000000000000000000000000001a9edf0c5499215");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xabdd33a576f6e1c0a81bffb1586bb5e582cd920cb6492f319179b8067b98656b"); // 509500
+        consensus.defaultAssumeValid = uint256S("0x984955d6caeec86e92ba36dc6d35c2f4a0593f4b1415cd166f3f5ad7ebcff5b7"); // 521234
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -166,15 +166,18 @@ public:
                 {506003, uint256S("0x6ea758bfa652aa7b6ac492d6452deac5cc9e3eac154f49fd1032afd6c0a7520d")},  // Machinecoin: checkpoint at 506003
                 {506003, uint256S("0x6ea758bfa652aa7b6ac492d6452deac5cc9e3eac154f49fd1032afd6c0a7520d")},  // Machinecoin: checkpoint at 506003
                 {509513, uint256S("0x28e590f96c1c02da1ffb58cba0b01eeaddf1dc572e0eee498339469f8a33b4bf")},  // Machinecoin: checkpoint at 509513
+                {519233, uint256S("0x9ce85218bfa6bd422944565602ff6cfa35828d99bbd9c145be0eb014174852d5")},  // Machinecoin: checkpoint at 519233
+                {520203, uint256S("0xa4e80117f39da350c6aac3568e635e3f107fac72ce562ae39539b93841e2d33f")},  // Machinecoin: checkpoint at 520203
+                {521234, uint256S("0x984955d6caeec86e92ba36dc6d35c2f4a0593f4b1415cd166f3f5ad7ebcff5b7")},  // Machinecoin: checkpoint at 521234
             }
         };
 
         chainTxData = ChainTxData{
             // Data as of block c69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975 (height 506003).
-            1525454386, // * UNIX timestamp of last known number of transactions
-            573703,     // * total number of transactions between genesis and that timestamp
+            1528024340, // * UNIX timestamp of last known number of transactions
+            593247,     // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            500.0       // * estimated number of transactions per second after that timestamp
+            5.0       // * estimated number of transactions per second after that timestamp
         };
       
         // Masternodes

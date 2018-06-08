@@ -16,6 +16,7 @@
 #include <util.h>
 #include <wallet/wallet.h>
 
+#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
 
@@ -306,38 +307,39 @@ std::string CMasternode::GetStatus() const
 void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScanBack)
 {
     if(!pindex) return;
+    
+    const CBlockIndex *pindexActive = chainActive.Tip();
+    assert(pindexActive);
 
-    const CBlockIndex *BlockReading = pindex;
-
-    CScript mnpayee = GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()));
+    CScript mnpayee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()))));
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
 
-    for (int i = 0; BlockReading && BlockReading->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
-        if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
-            mnpayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2))
+    for (int i = 0; pindexActive->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
+        if(mnpayments.mapMasternodeBlocks.count(pindexActive->nHeight) &&
+            mnpayments.mapMasternodeBlocks[pindexActive->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
             CBlock block;
-            if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus())) // shouldn't really happen
-                continue;
+            if(ReadBlockFromDisk(block, pindexActive, Params().GetConsensus())) {
+                CAmount nMasternodePayment = GetMasternodePayment(pindexActive->nHeight, block.vtx[0]->GetValueOut());
 
-            CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
-
-            for (CTxOut txout : block.vtx[0]->vout) {
-                CTxDestination dest;
-                ExtractDestination(txout.scriptPubKey, dest);
-                if(EncodeDestination(mnpayee) == EncodeDestination(dest) && nMasternodePayment == txout.nValue) {
-                    nBlockLastPaid = BlockReading->nHeight;
-                    nTimeLastPaid = BlockReading->nTime;
-                    LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
-                    return;
+                BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout) {
+                    if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                        nBlockLastPaid = pindexActive->nHeight;
+                        nTimeLastPaid = pindexActive->nTime;
+                        LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", vin.prevout.ToStringShort(), nBlockLastPaid);
+                        return;
+                    }
                 }
+            }
+            else {
+                return;
             }
         }
 
-        if (BlockReading->pprev == NULL) { assert(BlockReading); break; }
-        BlockReading = BlockReading->pprev;
+        if (pindexActive->pprev == nullptr) { assert(pindexActive); break; }
+        pindexActive = pindexActive->pprev;
     }
 
     // Last payment for this masternode wasn't found in latest mnpayments blocks
@@ -357,7 +359,6 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     auto Log = [&strErrorRet](std::string sErr)->bool
     {
         strErrorRet = sErr;
-        LogPrintf("CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
     };
 
@@ -368,11 +369,17 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     if (!CMessageSigner::GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew))
         return Log(strprintf("Invalid masternode key %s", strKeyMasternode));
 
+    const COutPoint outpt(uint256S(strTxHash), std::stoi(strOutputIndex));
+
     CWalletRef gotWallet = nullptr;
     for (CWalletRef pwallet : vpwallets) {
-        if (gotWallet == nullptr)
-            if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
+        if (gotWallet == nullptr) {
+            pwallet->UnlockCoin(outpt);
+            if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex)) {
                 gotWallet = pwallet;
+                pwallet->LockCoin(outpt);
+            }
+        }
     }
     if (gotWallet == nullptr)
         return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
@@ -402,7 +409,6 @@ bool CMasternodeBroadcast::Create(const COutPoint& outpoint, const CService& ser
     auto Log = [&strErrorRet,&mnbRet](std::string sErr)->bool
     {
         strErrorRet = sErr;
-        LogPrintf("CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         mnbRet = CMasternodeBroadcast();
         return false;
     };
