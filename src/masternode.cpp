@@ -388,8 +388,10 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     for (CWalletRef pwallet : vpwallets) {
         if (gotWallet == nullptr) {
             pwallet->UnlockCoin(outpt);
-            if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex))
+            if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex)) {
                 gotWallet = pwallet;
+                pwallet->LockCoin(outpt);
+            }
         }
     }
     if (gotWallet == nullptr)
