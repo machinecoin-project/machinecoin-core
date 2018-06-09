@@ -1984,6 +1984,9 @@ void CConnman::ThreadMnbRequestConnections()
         OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true, p.second);
         if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
             return;
+        
+        if (!interruptNet.sleep_for(std::chrono::seconds(60)))
+            return;
     }
 }
 
