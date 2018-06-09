@@ -2019,7 +2019,7 @@ void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
         while(it != second.end()) {
             if(*it != uint256()) {
                 vToFetch.push_back(CInv(MSG_MASTERNODE_ANNOUNCE, *it));
-                LogPrint(MCLog::MN, "ThreadMnbRequestConnections -- asking for mnb %s from addr=%s\n", it->ToString(), p.first.ToString());
+                LogPrint(MCLog::MN, "ThreadMnbRequestConnections -- asking for mnb %s from addr=%s\n", it->ToString(), addrConnect.ToStringIPPort());
             }
             ++it;
         }
