@@ -697,31 +697,23 @@ void CMasternodePayments::CheckPreviousBlockVotes(int nPrevBlockHeight)
         bool found = false;
 
         if (mapMasternodeBlocks.count(nPrevBlockHeight)) {
-            LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- vecPayees size: %s\n", mapMasternodeBlocks[nPrevBlockHeight].vecPayees.size());
             for (auto &p : mapMasternodeBlocks[nPrevBlockHeight].vecPayees) {
                 for (auto &voteHash : p.GetVoteHashes()) {
-                    LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop\n");
                     if (!mapMasternodePaymentVotes.count(voteHash)) {
-                        LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- found = false\n");
                         debugStr += strprintf("CMasternodePayments::CheckPreviousBlockVotes --   could not find vote %s\n",
                                               voteHash.ToString());
                         continue;
                     }
-                    LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop #2\n");
                     auto vote = mapMasternodePaymentVotes[voteHash];
                     if (vote.vinMasternode.prevout == mn.second.vin.prevout) {
                         payee = vote.payee;
-                        LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- found = true\n");
                         found = true;
                         break;
                     }
-                    LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- inside loop #3\n");
                 }
             }
         }
         
-        LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- after loop\n");
-
         if (!found) {
             debugStr += strprintf("CMasternodePayments::CheckPreviousBlockVotes --   %s - no vote received\n",
                                   mn.second.vin.prevout.ToStringShort());
@@ -729,8 +721,6 @@ void CMasternodePayments::CheckPreviousBlockVotes(int nPrevBlockHeight)
             continue;
         }
         
-        LogPrintf("CMasternodePayments::CheckPreviousBlockVotes -- found still true\n");
-
         CTxDestination address1;
         ExtractDestination(payee, address1);
 
