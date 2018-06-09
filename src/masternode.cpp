@@ -311,6 +311,8 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
     const CBlockIndex *pindexActive = chainActive.Tip();
     assert(pindexActive);
 
+    CDiskBlockPos blockPos = pindexActive->GetBlockPos();
+
     CScript mnpayee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()))));
     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", vin.prevout.ToStringShort());
 
@@ -320,8 +322,15 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
         if(mnpayments.mapMasternodeBlocks.count(pindexActive->nHeight) &&
             mnpayments.mapMasternodeBlocks[pindexActive->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
+            if (blockPos.IsNull() == true) {
+                LogPrintf("BlockPos is null\n");
+                return;
+            }
+            LogPrintf("BlockPos is not null\n");
+
             CBlock block;
-            if(ReadBlockFromDisk(block, pindexActive, Params().GetConsensus())) {
+            bool ret = ReadBlockFromDisk(block, blockPos, Params().GetConsensus());
+            if(ret == true) {
                 CAmount nMasternodePayment = GetMasternodePayment(pindexActive->nHeight, block.vtx[0]->GetValueOut());
 
                 BOOST_FOREACH(CTxOut txout, block.vtx[0]->vout) {
