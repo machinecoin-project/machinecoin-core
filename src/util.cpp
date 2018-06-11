@@ -97,7 +97,7 @@ const char * const DEFAULT_DEBUGLOGFILE = "debug.log";
 ArgsManager gArgs;
 
 bool fPrintToConsole = false;
-bool fPrintToDebugLog = true;
+bool fPrintToDebugLog = false;
 
 bool fLogTimestamps = DEFAULT_LOGTIMESTAMPS;
 bool fLogTimeMicros = DEFAULT_LOGTIMEMICROS;
