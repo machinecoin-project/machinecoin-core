@@ -543,8 +543,6 @@ void CMasternodePayments::CheckAndRemove()
     LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePaymentVotes);
 
     int nLimit = GetStorageLimit();
-    
-    LogPrint(MCLog::MN, "CMasternodePayments::CheckAndRemove -- Started\n");
 
     std::map<uint256, CMasternodePaymentVote>::iterator it = mapMasternodePaymentVotes.begin();
     while(it != mapMasternodePaymentVotes.end()) {
@@ -559,7 +557,6 @@ void CMasternodePayments::CheckAndRemove()
         }
     }
     LogPrintf("CMasternodePayments::CheckAndRemove -- %s\n", ToString());
-    LogPrint(MCLog::MN, "CMasternodePayments::CheckAndRemove -- Ended\n");
 }
 
 bool CMasternodePaymentVote::IsValid(CNode* pnode, int nValidationHeight, std::string& strError, CConnman* connman)
