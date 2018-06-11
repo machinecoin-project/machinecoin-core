@@ -1943,12 +1943,12 @@ void ThreadCheckMasternode(CConnman* connman)
                 mnpayments.CheckAndRemove();
             }
             if(fMasterNode && (nTick % (60 * 5) == 0)) {
-                LogPrintf("LogPrintf("\n");\n");
+                LogPrintf("mnodeman.DoFullVerificationStep\n");
                 mnodeman.DoFullVerificationStep(connman);
             }
 
             if(nTick % (60 * 5) == 0) {
-                LogPrintf("LogPrintf("\n");\n");
+                LogPrintf("governance.DoMaintenance\n");
                 governance.DoMaintenance(connman);
             }
         }
