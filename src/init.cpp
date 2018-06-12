@@ -1932,7 +1932,7 @@ void ThreadCheckMasternode(CConnman* connman)
             // slightly postpone first run to give net thread a chance to connect to some peers
             LogPrintf("activeMasternode.ManageState\n");
             if(nTick % MASTERNODE_MIN_MNP_SECONDS == 15)
-                activeMasternode.ManageState(connman);
+                //activeMasternode.ManageState(connman);
 
             if(nTick % 60 == 0) {
                 LogPrintf("mnodeman.ProcessMasternodeConnections\n");
