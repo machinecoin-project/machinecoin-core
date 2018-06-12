@@ -696,6 +696,8 @@ std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestCo
 
     listScheduledMnbRequestConnections.sort();
     std::pair<CService, uint256> pairFront = listScheduledMnbRequestConnections.front();
+    
+    LogPrintf("listScheduledMnbRequestConnections size is: %s\n", listScheduledMnbRequestConnections.size());
 
     // squash hashes from requests with the same CService as the first one into setResult
     std::list< std::pair<CService, uint256> >::iterator it = listScheduledMnbRequestConnections.begin();
