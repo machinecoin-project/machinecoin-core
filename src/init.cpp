@@ -1936,11 +1936,11 @@ void ThreadCheckMasternode(CConnman* connman)
 
             if(nTick % 60 == 0) {
                 LogPrintf("mnodeman.ProcessMasternodeConnections\n");
-                mnodeman.ProcessMasternodeConnections(connman);
+                //mnodeman.ProcessMasternodeConnections(connman);
                 LogPrintf("mnodeman.CheckAndRemove\n");
-                mnodeman.CheckAndRemove(connman);
+                //mnodeman.CheckAndRemove(connman);
                 LogPrintf("mnpayments.CheckAndRemove\n");
-                mnpayments.CheckAndRemove();
+                //mnpayments.CheckAndRemove();
             }
             if(fMasterNode && (nTick % (60 * 5) == 0)) {
                 LogPrintf("mnodeman.DoFullVerificationStep\n");
