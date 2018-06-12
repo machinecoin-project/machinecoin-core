@@ -1976,9 +1976,14 @@ void CConnman::ThreadMnbRequestConnections()
 {
     while (!interruptNet)
     {
+        if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
+            return;
+        
         CSemaphoreGrant grant(*semOutbound);
-        std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
+        if (interruptNet)
+            return;
 
+        std::pair<CService, std::set<uint256> > p = std::make_pair(CService(), std::set<uint256>());
         if(p.first == CService() || p.second.empty()) continue;
 
         OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true, p.second);
@@ -2406,7 +2411,7 @@ bool CConnman::Start(CScheduler& scheduler, const Options& connOptions)
     if (connOptions.m_use_addrman_outgoing || !connOptions.m_specified_outgoing.empty())
         threadOpenConnections = std::thread(&TraceThread<std::function<void()> >, "opencon", std::function<void()>(std::bind(&CConnman::ThreadOpenConnections, this, connOptions.m_specified_outgoing)));
     
-    //threadMnbRequestConnections = std::thread(&TraceThread<std::function<void()> >, "mnbcon", std::function<void()>(std::bind(&CConnman::ThreadMnbRequestConnections, this)));
+    threadMnbRequestConnections = std::thread(&TraceThread<std::function<void()> >, "mnbcon", std::function<void()>(std::bind(&CConnman::ThreadMnbRequestConnections, this)));
 
     // Process messages
     threadMessageHandler = std::thread(&TraceThread<std::function<void()> >, "msghand", std::function<void()>(std::bind(&CConnman::ThreadMessageHandler, this)));
@@ -2460,8 +2465,8 @@ void CConnman::Stop()
 {
     if (threadMessageHandler.joinable())
         threadMessageHandler.join();
-    //if (threadMnbRequestConnections.joinable())
-    //    threadMnbRequestConnections.join();
+    if (threadMnbRequestConnections.joinable())
+        threadMnbRequestConnections.join();
     if (threadOpenConnections.joinable())
         threadOpenConnections.join();
     if (threadOpenAddedConnections.joinable())
