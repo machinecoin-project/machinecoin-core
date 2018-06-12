@@ -1926,7 +1926,7 @@ void ThreadCheckMasternode(CConnman* connman)
 
             LogPrintf("mnodeman.Check\n");
             // make sure to check all masternodes first
-            mnodeman.Check();
+            // mnodeman.Check();
 
             // check if we should activate or ping every few minutes,
             // slightly postpone first run to give net thread a chance to connect to some peers
