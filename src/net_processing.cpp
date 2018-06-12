@@ -1763,16 +1763,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             pfrom->fDisconnect = true;
             return false;
         }
-      
-        if (nVersion == PREVENT_HARDFORK_PROTO_VERSION)
-        {
-            // disconnect from peers older than this proto version
-            LogPrint(MCLog::NET, "peer=%d using obsolete version %i; disconnecting\n", pfrom->GetId(), nVersion);
-            connman->PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE,
-                               strprintf("Version must be %d or greater", MIN_PEER_PROTO_VERSION)));
-            pfrom->fDisconnect = true;
-            return false;
-        }
 
         if (nVersion == 10300)
             nVersion = 300;
@@ -1910,7 +1900,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             // Mark this node as currently connected, so we update its timestamp later.
             LOCK(cs_main);
             State(pfrom->GetId())->fCurrentlyConnected = true;
-            LogPrintf("New outbound peer connected: version: %d, blocks=%d, peer=%d%s\n",
+            LogPrint(MCLog::NET, "New outbound peer connected: version: %d, blocks=%d, peer=%d%s\n",
                       pfrom->nVersion.load(), pfrom->nStartingHeight, pfrom->GetId(),
                       (fLogIPs ? strprintf(", peeraddr=%s", pfrom->addr.ToString()) : ""));
         }

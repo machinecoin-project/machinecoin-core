@@ -1976,34 +1976,24 @@ void CConnman::ThreadMnbRequestConnections()
 {
     while (!interruptNet)
     {
+        if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
+            return;
+        
         CSemaphoreGrant grant(*semOutbound);
-        std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
-
-        if(p.first == CService() || p.second.empty()) continue;
-
-        OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true);
-        if (!interruptNet.sleep_for(std::chrono::milliseconds(500)))
+        if (interruptNet)
             return;
 
-        /*const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-        // compile request vector
-        std::vector<CInv> vToFetch;
-        std::set<uint256>::iterator it = p.second.begin();
-        while(it != p.second.end()) {
-            if(*it != uint256()) {
-                vToFetch.push_back(CInv(MSG_MASTERNODE_ANNOUNCE, *it));
-                LogPrint(MCLog::MN, "ThreadMnbRequestConnections -- asking for mnb %s from addr=%s\n", it->ToString(), p.first.ToString());
-            }
-            ++it;
-        }
+        std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
+        if(p.first == CService() || p.second.empty()) continue;
 
-        // ask for data
-        PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));*/
+        OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true, p.second);
+        if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
+            return;
     }
 }
 
 // if successful, this moves the passed grant to the constructed node
-void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler, bool manual_connection, bool fMasternode)
+void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound, const char *pszDest, bool fOneShot, bool fFeeler, bool manual_connection, bool fMasternode, std::set<uint256> second)
 {
     //
     // Initiate outbound network connection
@@ -2024,8 +2014,9 @@ void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
 
     CNode* pnode = nullptr;
 
-    if (fMasternode == true)
+    if (fMasternode == true) {
         pnode = ConnectNode(addrConnect, pszDest, fCountFailure, true);
+    }
     else
         pnode = ConnectNode(addrConnect, pszDest, fCountFailure, false);
 
@@ -2044,6 +2035,23 @@ void CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
     {
         LOCK(cs_vNodes);
         vNodes.push_back(pnode);
+        
+        if (fMasternode == true) {
+            const CNetMsgMaker msgMaker(pnode->GetSendVersion());
+            // compile request vector
+            std::vector<CInv> vToFetch;
+            std::set<uint256>::iterator it = second.begin();
+            while(it != second.end()) {
+                if(*it != uint256()) {
+                    vToFetch.push_back(CInv(MSG_MASTERNODE_ANNOUNCE, *it));
+                    LogPrint(MCLog::MN, "ThreadMnbRequestConnections -- asking for mnb %s from addr=%s\n", it->ToString(), addrConnect.ToStringIPPort());
+                }
+                ++it;
+            }
+
+            // ask for data
+            PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
+        }
     }
 }
 

@@ -111,11 +111,11 @@ bool CGovernanceTriggerManager::AddNewTrigger(uint256 nHash)
         pSuperblock = pSuperblockTmp;
     }
     catch(std::exception& e) {
-        LogPrintf("CGovernanceTriggerManager::AddNewTrigger -- Error creating superblock: %s\n", e.what());
+        LogPrint(MCLog::GOV, "CGovernanceTriggerManager::AddNewTrigger -- Error creating superblock: %s\n", e.what());
         return false;
     }
     catch(...) {
-        LogPrintf("CGovernanceTriggerManager::AddNewTrigger: Unknown Error creating superblock\n");
+        LogPrint(MCLog::GOV, "CGovernanceTriggerManager::AddNewTrigger: Unknown Error creating superblock\n");
         return false;
     }
 
@@ -254,14 +254,14 @@ bool CSuperblockManager::IsSuperblockTriggered(int nBlockHeight)
     for (CSuperblock_sptr pSuperblock : vecTriggers)
     {
         if(!pSuperblock) {
-            LogPrintf("CSuperblockManager::IsSuperblockTriggered -- Non-superblock found, continuing\n");
+            LogPrint(MCLog::GOV, "CSuperblockManager::IsSuperblockTriggered -- Non-superblock found, continuing\n");
             continue;
         }
 
         CGovernanceObject* pObj = pSuperblock->GetGovernanceObject();
 
         if(!pObj) {
-            LogPrintf("CSuperblockManager::IsSuperblockTriggered -- pObj == NULL, continuing\n");
+            LogPrint(MCLog::GOV, "CSuperblockManager::IsSuperblockTriggered -- pObj == NULL, continuing\n");
             continue;
         }
 
@@ -373,7 +373,7 @@ void CSuperblockManager::CreateSuperblock(CMutableTransaction& txNewRet, int nBl
 
             // TODO: PRINT NICE N.N MAC OUTPUT
 
-            LogPrintf("NEW Superblock : output %d (addr %s, amount %d)\n", i, EncodeDestination(address1), payment.nAmount);
+            LogPrint(MCLog::GOV, "NEW Superblock : output %d (addr %s, amount %d)\n", i, EncodeDestination(address1), payment.nAmount);
         }
     }
 }
@@ -476,14 +476,14 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
     if (vecParsed1.size() != vecParsed2.size()) {
         std::ostringstream ostr;
         ostr << "CSuperblock::ParsePaymentSchedule -- Mismatched payments and amounts";
-        LogPrintf("%s\n", ostr.str());
+        LogPrint(MCLog::GOV, "%s\n", ostr.str());
         throw std::runtime_error(ostr.str());
     }
 
     if (vecParsed1.size() == 0) {
         std::ostringstream ostr;
         ostr << "CSuperblock::ParsePaymentSchedule -- Error no payments";
-        LogPrintf("%s\n", ostr.str());
+        LogPrint(MCLog::GOV, "%s\n", ostr.str());
         throw std::runtime_error(ostr.str());
     }
 
@@ -498,7 +498,7 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
         if (!IsValidDestinationString(vecParsed1[i])) {
             std::ostringstream ostr;
             ostr << "CSuperblock::ParsePaymentSchedule -- Invalid Machinecoin Address : " <<  vecParsed1[i];
-            LogPrintf("%s\n", ostr.str());
+            LogPrint(MCLog::GOV, "%s\n", ostr.str());
             throw std::runtime_error(ostr.str());
         }
 
@@ -513,7 +513,7 @@ void CSuperblock::ParsePaymentSchedule(std::string& strPaymentAddresses, std::st
             std::ostringstream ostr;
             ostr << "CSuperblock::ParsePaymentSchedule -- Invalid payment found: address = " << vecParsed1[i]
                  << ", amount = " << nAmount;
-            LogPrintf("%s\n", ostr.str());
+            LogPrint(MCLog::GOV, "%s\n", ostr.str());
             throw std::runtime_error(ostr.str());
         }
     }
@@ -555,7 +555,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
     // shared pointers there's no way our object can get deleted while this
     // code is running.
     if(!IsValidBlockHeight(nBlockHeight)) {
-        LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, incorrect block height\n");
+        LogPrint(MCLog::GOV, "CSuperblock::IsValid -- ERROR: Block invalid, incorrect block height\n");
         return false;
     }
 
@@ -577,7 +577,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
         // This means the block cannot have all the superblock payments
         // so it is not valid.
         // TODO: could that be that we just hit coinbase size limit?
-        LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, too few superblock payments\n");
+        LogPrint(MCLog::GOV, "CSuperblock::IsValid -- ERROR: Block invalid, too few superblock payments\n");
         return false;
     }
 
@@ -585,14 +585,14 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
     CAmount nPaymentsTotalAmount = GetPaymentsTotalAmount();
     CAmount nPaymentsLimit = GetPaymentsLimit(nBlockHeight);
     if(nPaymentsTotalAmount > nPaymentsLimit) {
-        LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, payments limit exceeded: payments %lld, limit %lld\n", nPaymentsTotalAmount, nPaymentsLimit);
+        LogPrint(MCLog::GOV, "CSuperblock::IsValid -- ERROR: Block invalid, payments limit exceeded: payments %lld, limit %lld\n", nPaymentsTotalAmount, nPaymentsLimit);
         return false;
     }
 
     // miner should not get more than he would usually get
     CAmount nBlockValue = txNew->GetValueOut();
     if(nBlockValue > blockReward + nPaymentsTotalAmount) {
-        LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid, block value limit exceeded: block %lld, limit %lld\n", nBlockValue, blockReward + nPaymentsTotalAmount);
+        LogPrint(MCLog::GOV, "CSuperblock::IsValid -- ERROR: Block invalid, block value limit exceeded: block %lld, limit %lld\n", nBlockValue, blockReward + nPaymentsTotalAmount);
         return false;
     }
 
@@ -601,7 +601,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
         CGovernancePayment payment;
         if(!GetPayment(i, payment)) {
             // This shouldn't happen so log a warning
-            LogPrintf("CSuperblock::IsValid -- WARNING: Failed to find payment: %d of %d total payments\n", i, nPayments);
+            LogPrint(MCLog::GOV, "CSuperblock::IsValid -- WARNING: Failed to find payment: %d of %d total payments\n", i, nPayments);
             continue;
         }
 
@@ -623,7 +623,7 @@ bool CSuperblock::IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmoun
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, EncodeDestination(address1));
+            LogPrint(MCLog::GOV, "CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, EncodeDestination(address1));
 
             return false;
         }

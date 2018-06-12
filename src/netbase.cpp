@@ -337,7 +337,7 @@ static bool Socks5(const std::string& strDest, int port, const ProxyCredentials 
     }
     uint8_t pchRet1[2];
     if ((recvr = InterruptibleRecv(pchRet1, 2, SOCKS5_RECV_TIMEOUT, hSocket)) != IntrRecvError::OK) {
-        LogPrintf("Socks5() connect to %s:%d failed: InterruptibleRecv() timeout or other failure\n", strDest, port);
+        LogPrint(MCLog::NET, "Socks5() connect to %s:%d failed: InterruptibleRecv() timeout or other failure\n", strDest, port);
         return false;
     }
     if (pchRet1[0] != SOCKSVersion::SOCKS5) {
@@ -399,7 +399,7 @@ static bool Socks5(const std::string& strDest, int port, const ProxyCredentials 
     }
     if (pchRet2[1] != SOCKS5Reply::SUCCEEDED) {
         // Failures to connect to a peer that are not proxy errors
-        LogPrintf("Socks5() connect to %s:%d failed: %s\n", strDest, port, Socks5ErrorString(pchRet2[1]));
+        LogPrint(MCLog::NET, "Socks5() connect to %s:%d failed: %s\n", strDest, port, Socks5ErrorString(pchRet2[1]));
         return false;
     }
     if (pchRet2[2] != 0x00) { // Reserved field must be 0
@@ -437,7 +437,7 @@ SOCKET CreateSocket(const CService &addrConnect)
     struct sockaddr_storage sockaddr;
     socklen_t len = sizeof(sockaddr);
     if (!addrConnect.GetSockAddr((struct sockaddr*)&sockaddr, &len)) {
-        LogPrintf("Cannot create socket for %s: unsupported network\n", addrConnect.ToString());
+        LogPrint(MCLog::NET, "Cannot create socket for %s: unsupported network\n", addrConnect.ToString());
         return INVALID_SOCKET;
     }
 
@@ -447,7 +447,7 @@ SOCKET CreateSocket(const CService &addrConnect)
 
     if (!IsSelectableSocket(hSocket)) {
         CloseSocket(hSocket);
-        LogPrintf("Cannot create connection: non-selectable socket created (fd >= FD_SETSIZE ?)\n");
+        LogPrint(MCLog::NET, "Cannot create connection: non-selectable socket created (fd >= FD_SETSIZE ?)\n");
         return INVALID_SOCKET;
     }
 
@@ -463,7 +463,7 @@ SOCKET CreateSocket(const CService &addrConnect)
     // Set to non-blocking
     if (!SetSocketNonBlocking(hSocket, true)) {
         CloseSocket(hSocket);
-        LogPrintf("ConnectSocketDirectly: Setting socket to non-blocking failed, error %s\n", NetworkErrorString(WSAGetLastError()));
+        LogPrint(MCLog::NET, "ConnectSocketDirectly: Setting socket to non-blocking failed, error %s\n", NetworkErrorString(WSAGetLastError()));
     }
     return hSocket;
 }
@@ -473,11 +473,11 @@ bool ConnectSocketDirectly(const CService &addrConnect, const SOCKET& hSocket, i
     struct sockaddr_storage sockaddr;
     socklen_t len = sizeof(sockaddr);
     if (hSocket == INVALID_SOCKET) {
-        LogPrintf("Cannot connect to %s: invalid socket\n", addrConnect.ToString());
+        LogPrint(MCLog::NET, "Cannot connect to %s: invalid socket\n", addrConnect.ToString());
         return false;
     }
     if (!addrConnect.GetSockAddr((struct sockaddr*)&sockaddr, &len)) {
-        LogPrintf("Cannot connect to %s: unsupported network\n", addrConnect.ToString());
+        LogPrint(MCLog::NET, "Cannot connect to %s: unsupported network\n", addrConnect.ToString());
         return false;
     }
     if (connect(hSocket, (struct sockaddr*)&sockaddr, len) == SOCKET_ERROR)
@@ -498,7 +498,7 @@ bool ConnectSocketDirectly(const CService &addrConnect, const SOCKET& hSocket, i
             }
             if (nRet == SOCKET_ERROR)
             {
-                LogPrintf("select() for %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
+                LogPrint(MCLog::NET, "select() for %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
                 return false;
             }
             socklen_t nRetSize = sizeof(nRet);
@@ -508,12 +508,12 @@ bool ConnectSocketDirectly(const CService &addrConnect, const SOCKET& hSocket, i
             if (getsockopt(hSocket, SOL_SOCKET, SO_ERROR, &nRet, &nRetSize) == SOCKET_ERROR)
 #endif
             {
-                LogPrintf("getsockopt() for %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
+                LogPrint(MCLog::NET, "getsockopt() for %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
                 return false;
             }
             if (nRet != 0)
             {
-                LogPrintf("connect() to %s failed after select(): %s\n", addrConnect.ToString(), NetworkErrorString(nRet));
+                LogPrint(MCLog::NET, "connect() to %s failed after select(): %s\n", addrConnect.ToString(), NetworkErrorString(nRet));
                 return false;
             }
         }
@@ -523,7 +523,7 @@ bool ConnectSocketDirectly(const CService &addrConnect, const SOCKET& hSocket, i
         else
 #endif
         {
-            LogPrintf("connect() to %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
+            LogPrint(MCLog::NET, "connect() to %s failed: %s\n", addrConnect.ToString(), NetworkErrorString(WSAGetLastError()));
             return false;
         }
     }
@@ -683,7 +683,7 @@ bool CloseSocket(SOCKET& hSocket)
     int ret = close(hSocket);
 #endif
     if (ret) {
-        LogPrintf("Socket close failed: %d. Error: %s\n", hSocket, NetworkErrorString(WSAGetLastError()));
+        LogPrint(MCLog::NET, "Socket close failed: %d. Error: %s\n", hSocket, NetworkErrorString(WSAGetLastError()));
     }
     hSocket = INVALID_SOCKET;
     return ret != SOCKET_ERROR;
