@@ -1983,7 +1983,7 @@ void CConnman::ThreadMnbRequestConnections()
         if (interruptNet)
             return;
 
-        std::pair<CService, std::set<uint256> > p = std::make_pair(CService(), std::set<uint256>());
+        std::pair<CService, std::set<uint256> > p = mnodeman.PopScheduledMnbRequestConnection();
         if(p.first == CService() || p.second.empty()) continue;
 
         OpenNetworkConnection(CAddress(p.first, NODE_NONE), false, &grant, nullptr, false, false, true, true, p.second);

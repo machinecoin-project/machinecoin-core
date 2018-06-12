@@ -687,7 +687,7 @@ void CMasternodeMan::ProcessMasternodeConnections(CConnman* connman)
 
 std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestConnection()
 {
-    LOCK(cs);
+    //LOCK(cs);
     if(listScheduledMnbRequestConnections.empty()) {
         return std::make_pair(CService(), std::set<uint256>());
     }
