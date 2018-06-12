@@ -78,7 +78,7 @@ bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockRewar
         }
 
         // triggered but invalid? that's weird
-        LogPrintf("IsBlockValueValid -- ERROR: Invalid superblock detected at height %d: %s", nBlockHeight, block.vtx[0]->ToString());
+        LogPrint(MCLog::MN, "IsBlockValueValid -- ERROR: Invalid superblock detected at height %d: %s", nBlockHeight, block.vtx[0]->ToString());
         // should NOT allow invalid superblocks, when superblocks are enabled
         strErrorRet = strprintf("invalid superblock detected at height %d", nBlockHeight);
         return false;
@@ -189,7 +189,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
         masternode_info_t mnInfo;
         if(!mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true, nCount, mnInfo)) {
             // ...and we can't calculate it on our own
-            LogPrintf("CMasternodePayments::FillBlockPayee -- Failed to detect masternode to pay\n");
+            LogPrint(MCLog::MN, "CMasternodePayments::FillBlockPayee -- Failed to detect masternode to pay\n");
             return;
         }
         // fill payee with locally calculated winner and hope for the best
@@ -205,7 +205,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
     txoutMasternodeRet = CTxOut(masternodePayment, payee);
     txNew.vout.push_back(txoutMasternodeRet);
 
-    LogPrintf("CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(CScriptID(payee)));
+    LogPrint(MCLog::MN, "CMasternodePayments::FillBlockPayee -- Masternode payment %lld to %s\n", masternodePayment, EncodeDestination(CScriptID(payee)));
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto() {
@@ -228,14 +228,14 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
 
         if(netfulfilledman.HasFulfilledRequest(pfrom->addr, NetMsgType::MASTERNODEPAYMENTSYNC)) {
             // Asking for the payments list multiple times in a short period of time is no good
-            LogPrintf("MASTERNODEPAYMENTSYNC -- peer already asked me for the list, peer=%d\n", pfrom->GetId());
+            LogPrint(MCLog::MN, "MASTERNODEPAYMENTSYNC -- peer already asked me for the list, peer=%d\n", pfrom->GetId());
             Misbehaving(pfrom->GetId(), 20);
             return;
         }
         netfulfilledman.AddFulfilledRequest(pfrom->addr, NetMsgType::MASTERNODEPAYMENTSYNC);
 
         Sync(pfrom, connman);
-        LogPrintf("MASTERNODEPAYMENTSYNC -- Sent Masternode payment votes to peer %d\n", pfrom->GetId());
+        LogPrint(MCLog::MN, "MASTERNODEPAYMENTSYNC -- Sent Masternode payment votes to peer %d\n", pfrom->GetId());
 
     } else if (strCommand == NetMsgType::MASTERNODEPAYMENTVOTE) { // Masternode Payments Vote for the Winner
 
@@ -280,14 +280,14 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
         }
 
         if(!CanVote(vote.vinMasternode.prevout, vote.nBlockHeight)) {
-            LogPrintf("MASTERNODEPAYMENTVOTE -- masternode already voted, masternode=%s\n", vote.vinMasternode.prevout.ToStringShort());
+            LogPrint(MCLog::MN, "MASTERNODEPAYMENTVOTE -- masternode already voted, masternode=%s\n", vote.vinMasternode.prevout.ToStringShort());
             return;
         }
 
         masternode_info_t mnInfo;
         if(!mnodeman.GetMasternodeInfo(vote.vinMasternode.prevout, mnInfo)) {
             // mn was not found, so we can't check vote, some info is probably missing
-            LogPrintf("MASTERNODEPAYMENTVOTE -- masternode is missing %s\n", vote.vinMasternode.prevout.ToStringShort());
+            LogPrint(MCLog::MN, "MASTERNODEPAYMENTVOTE -- masternode is missing %s\n", vote.vinMasternode.prevout.ToStringShort());
             mnodeman.AskForMN(pfrom, vote.vinMasternode.prevout, connman);
             return;
         }
@@ -295,7 +295,7 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
         int nDos = 0;
         if(!vote.CheckSignature(mnInfo.pubKeyMasternode, nCachedBlockHeight, nDos)) {
             if(nDos) {
-                LogPrintf("MASTERNODEPAYMENTVOTE -- ERROR: invalid signature\n");
+                LogPrint(MCLog::MN, "MASTERNODEPAYMENTVOTE -- ERROR: invalid signature\n");
                 Misbehaving(pfrom->GetId(), nDos);
             } else {
                 // only warn about anything non-critical (i.e. nDos == 0) in debug mode
@@ -331,12 +331,12 @@ bool CMasternodePaymentVote::Sign()
                 ScriptToAsmStr(payee);
 
     if(!CMessageSigner::SignMessage(strMessage, vchSig, activeMasternode.keyMasternode)) {
-        LogPrintf("CMasternodePaymentVote::Sign -- SignMessage() failed\n");
+        LogPrint(MCLog::MN, "CMasternodePaymentVote::Sign -- SignMessage() failed\n");
         return false;
     }
 
     if(!CMessageSigner::VerifyMessage(activeMasternode.pubKeyMasternode, vchSig, strMessage, strError)) {
-        LogPrintf("CMasternodePaymentVote::Sign -- VerifyMessage() failed, error: %s\n", strError);
+        LogPrint(MCLog::MN, "CMasternodePaymentVote::Sign -- VerifyMessage() failed, error: %s\n", strError);
         return false;
     }
 
@@ -490,7 +490,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew, CA
         }
     }
 
-    LogPrintf("CMasternodeBlockPayees::IsTransactionValid -- ERROR: Missing required payment, possible payees: '%s', amount: %f MAC\n", strPayeesPossible, (float)nMasternodePayment/COIN);
+    LogPrint(MCLog::MN, "CMasternodeBlockPayees::IsTransactionValid -- ERROR: Missing required payment, possible payees: '%s', amount: %f MAC\n", strPayeesPossible, (float)nMasternodePayment/COIN);
     return false;
 }
 
@@ -556,7 +556,7 @@ void CMasternodePayments::CheckAndRemove()
             ++it;
         }
     }
-    LogPrintf("CMasternodePayments::CheckAndRemove -- %s\n", ToString());
+    LogPrint(MCLog::MN, "CMasternodePayments::CheckAndRemove -- %s\n", ToString());
 }
 
 bool CMasternodePaymentVote::IsValid(CNode* pnode, int nValidationHeight, std::string& strError, CConnman* connman)
@@ -600,7 +600,7 @@ bool CMasternodePaymentVote::IsValid(CNode* pnode, int nValidationHeight, std::s
         // Only ban for new mnw which is out of bounds, for old mnw MN list itself might be way too much off
         if(nRank > MNPAYMENTS_SIGNATURES_TOTAL*2 && nBlockHeight > nValidationHeight) {
             strError = strprintf("Masternode is not in the top %d (%d)", MNPAYMENTS_SIGNATURES_TOTAL*2, nRank);
-            LogPrintf("CMasternodePaymentVote::IsValid -- Error: %s\n", strError);
+            LogPrint(MCLog::MN, "CMasternodePaymentVote::IsValid -- Error: %s\n", strError);
             Misbehaving(pnode->GetId(), 20);
         }
         // Still invalid however
@@ -636,18 +636,18 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight, CConnman* connman)
 
     // LOCATE THE NEXT MASTERNODE WHICH SHOULD BE PAID
 
-    LogPrintf("CMasternodePayments::ProcessBlock -- Start: nBlockHeight=%d, masternode=%s\n", nBlockHeight, activeMasternode.outpoint.ToStringShort());
+    LogPrint(MCLog::MN, "CMasternodePayments::ProcessBlock -- Start: nBlockHeight=%d, masternode=%s\n", nBlockHeight, activeMasternode.outpoint.ToStringShort());
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
     int nCount = 0;
     masternode_info_t mnInfo;
 
     if (!mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true, nCount, mnInfo)) {
-        LogPrintf("CMasternodePayments::ProcessBlock -- ERROR: Failed to find masternode to pay\n");
+        LogPrint(MCLog::MN, "CMasternodePayments::ProcessBlock -- ERROR: Failed to find masternode to pay\n");
         return false;
     }
 
-    LogPrintf("CMasternodePayments::ProcessBlock -- Masternode found by GetNextMasternodeInQueueForPayment(): %s\n", mnInfo.vin.prevout.ToStringShort());
+    LogPrint(MCLog::MN, "CMasternodePayments::ProcessBlock -- Masternode found by GetNextMasternodeInQueueForPayment(): %s\n", mnInfo.vin.prevout.ToStringShort());
 
 
     CScript payee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(mnInfo.pubKeyCollateralAddress.GetID()))));
@@ -657,13 +657,13 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight, CConnman* connman)
     CTxDestination address1;
     ExtractDestination(payee, address1);
 
-    LogPrintf("CMasternodePayments::ProcessBlock -- vote: payee=%s, nBlockHeight=%d\n", EncodeDestination(address1), nBlockHeight);
+    LogPrint(MCLog::MN, "CMasternodePayments::ProcessBlock -- vote: payee=%s, nBlockHeight=%d\n", EncodeDestination(address1), nBlockHeight);
 
     // SIGN MESSAGE TO NETWORK WITH OUR MASTERNODE KEYS
 
-    LogPrintf("CMasternodePayments::ProcessBlock -- Signing vote\n");
+    LogPrint(MCLog::MN, "CMasternodePayments::ProcessBlock -- Signing vote\n");
     if (voteNew.Sign()) {
-        LogPrintf("CMasternodePayments::ProcessBlock -- AddPaymentVote()\n");
+        LogPrint(MCLog::MN, "CMasternodePayments::ProcessBlock -- AddPaymentVote()\n");
 
         if (AddPaymentVote(voteNew)) {
             voteNew.Relay(connman);
@@ -806,7 +806,7 @@ void CMasternodePayments::Sync(CNode* pnode, CConnman* connman)
         }
     }
 
-    LogPrintf("CMasternodePayments::Sync -- Sent %d votes to peer %d\n", nInvCount, pnode->GetId());
+    LogPrint(MCLog::MN, "CMasternodePayments::Sync -- Sent %d votes to peer %d\n", nInvCount, pnode->GetId());
 
     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::SYNCSTATUSCOUNT, MASTERNODE_SYNC_MNW, nInvCount));
 }
@@ -831,7 +831,7 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman* co
             vToFetch.push_back(CInv(MSG_MASTERNODE_PAYMENT_BLOCK, pindex->GetBlockHash()));
             // We should not violate GETDATA rules
             if(vToFetch.size() == MAX_INV_SZ) {
-                LogPrintf("CMasternodePayments::SyncLowDataPaymentBlocks -- asking peer %d for %d blocks\n", pnode->GetId(), MAX_INV_SZ);
+                LogPrint(MCLog::MN, "CMasternodePayments::SyncLowDataPaymentBlocks -- asking peer %d for %d blocks\n", pnode->GetId(), MAX_INV_SZ);
                 connman->PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
                 // connman->PushMessage(pnode, NetMsgType::GETDATA, vToFetch);
                 // Start filling new batch
@@ -868,7 +868,7 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman* co
         }
         // We should not violate GETDATA rules
         if(vToFetch.size() == MAX_INV_SZ) {
-            LogPrintf("CMasternodePayments::SyncLowDataPaymentBlocks -- asking peer %d for %d payment blocks\n", pnode->GetId(), MAX_INV_SZ);
+            LogPrint(MCLog::MN, "CMasternodePayments::SyncLowDataPaymentBlocks -- asking peer %d for %d payment blocks\n", pnode->GetId(), MAX_INV_SZ);
             connman->PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
             // connman->PushMessage(pnode, NetMsgType::GETDATA, vToFetch);
             // Start filling new batch
@@ -878,7 +878,7 @@ void CMasternodePayments::RequestLowDataPaymentBlocks(CNode* pnode, CConnman* co
     }
     // Ask for the rest of it
     if(!vToFetch.empty()) {
-        LogPrintf("CMasternodePayments::SyncLowDataPaymentBlocks -- asking peer %d for %d payment blocks\n", pnode->GetId(), vToFetch.size());
+        LogPrint(MCLog::MN, "CMasternodePayments::SyncLowDataPaymentBlocks -- asking peer %d for %d payment blocks\n", pnode->GetId(), vToFetch.size());
         connman->PushMessage(pnode, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
         // connman->PushMessage(pnode, NetMsgType::GETDATA, vToFetch);
     }
