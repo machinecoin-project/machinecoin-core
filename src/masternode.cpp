@@ -323,10 +323,8 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
             mnpayments.mapMasternodeBlocks[pindexActive->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
             if (blockPos.IsNull() == true) {
-                LogPrint(MCLog::MN, "BlockPos is null\n");
                 return;
             }
-            LogPrint(MCLog::MN, "BlockPos is not null\n");
 
             CBlock block;
             bool ret = ReadBlockFromDisk(block, blockPos, Params().GetConsensus());
