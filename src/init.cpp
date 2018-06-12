@@ -1907,48 +1907,36 @@ void ThreadCheckMasternode(CConnman* connman)
     RenameThread("mac-mn");
 
     unsigned int nTick = 0;
-    
-    LogPrintf("STARTED \n");
 
     while (true)
     {
-        LogPrintf("Inside Loop & Sleep\n");
         MilliSleep(1000);
 
-        LogPrintf("ProcessTick\n");
         // try to sync from all available nodes, one step at a time
         masternodeSync.ProcessTick(connman);
 
-        LogPrintf("If\n");
         if(masternodeSync.IsBlockchainSynced() && !ShutdownRequested()) {
 
             nTick++;
 
-            LogPrintf("mnodeman.Check\n");
             // make sure to check all masternodes first
-            // mnodeman.Check();
+            mnodeman.Check();
 
             // check if we should activate or ping every few minutes,
             // slightly postpone first run to give net thread a chance to connect to some peers
-            LogPrintf("activeMasternode.ManageState\n");
             if(nTick % MASTERNODE_MIN_MNP_SECONDS == 15)
-                //activeMasternode.ManageState(connman);
+                activeMasternode.ManageState(connman);
 
             if(nTick % 60 == 0) {
-                LogPrintf("mnodeman.ProcessMasternodeConnections\n");
-                //mnodeman.ProcessMasternodeConnections(connman);
-                LogPrintf("mnodeman.CheckAndRemove\n");
-                //mnodeman.CheckAndRemove(connman);
-                LogPrintf("mnpayments.CheckAndRemove\n");
-                //mnpayments.CheckAndRemove();
+                mnodeman.ProcessMasternodeConnections(connman);
+                mnodeman.CheckAndRemove(connman);
+                mnpayments.CheckAndRemove();
             }
             if(fMasterNode && (nTick % (60 * 5) == 0)) {
-                LogPrintf("mnodeman.DoFullVerificationStep\n");
                 mnodeman.DoFullVerificationStep(connman);
             }
 
             if(nTick % (60 * 5) == 0) {
-                LogPrintf("governance.DoMaintenance\n");
                 governance.DoMaintenance(connman);
             }
         }
