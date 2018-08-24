@@ -14,7 +14,6 @@
 #include <stdint.h>
 #include <vector>
 #ifndef WIN32
-#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #endif

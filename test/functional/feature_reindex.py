@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # Copyright (c) 2014-2017 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,8 +10,7 @@
 """
 
 from test_framework.test_framework import MachinecoinTestFramework
-from test_framework.util import assert_equal
-import time
+from test_framework.util import wait_until
 
 class ReindexTest(MachinecoinTestFramework):
 
@@ -25,9 +24,7 @@ class ReindexTest(MachinecoinTestFramework):
         self.stop_nodes()
         extra_args = [["-reindex-chainstate" if justchainstate else "-reindex", "-checkblockindex=1"]]
         self.start_nodes(extra_args)
-        while self.nodes[0].getblockcount() < blockcount:
-            time.sleep(0.1)
-        assert_equal(self.nodes[0].getblockcount(), blockcount)
+        wait_until(lambda: self.nodes[0].getblockcount() == blockcount)
         self.log.info("Success")
 
     def run_test(self):

@@ -6,7 +6,7 @@
 #ifndef NETFULFILLEDMAN_H
 #define NETFULFILLEDMAN_H
 
-#include <protocol.h>
+#include <netaddress.h>
 #include <serialize.h>
 #include <sync.h>
 
@@ -19,11 +19,13 @@ class CNetFulfilledRequestManager
 {
 private:
     typedef std::map<std::string, int64_t> fulfilledreqmapentry_t;
-    typedef std::map<CNetAddr, fulfilledreqmapentry_t> fulfilledreqmap_t;
+    typedef std::map<CService, fulfilledreqmapentry_t> fulfilledreqmap_t;
 
     //keep track of what node has/was asked for and when
     fulfilledreqmap_t mapFulfilledRequests;
     CCriticalSection cs_mapFulfilledRequests;
+    
+    void RemoveFulfilledRequest(const CService& addr, const std::string& strRequest);
 
 public:
     CNetFulfilledRequestManager() {}
@@ -36,9 +38,8 @@ public:
         READWRITE(mapFulfilledRequests);
     }
 
-    void AddFulfilledRequest(CAddress addr, std::string strRequest); // expire after 1 hour by default
-    bool HasFulfilledRequest(CAddress addr, std::string strRequest);
-    void RemoveFulfilledRequest(CAddress addr, std::string strRequest);
+    void AddFulfilledRequest(const CService& addr, const std::string& strRequest);
+    bool HasFulfilledRequest(const CService& addr, const std::string& strRequest);
 
     void CheckAndRemove();
     void Clear();

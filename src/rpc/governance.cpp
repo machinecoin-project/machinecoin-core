@@ -24,8 +24,6 @@
 #include <utilmoneystr.h>
 #include <wallet/wallet.h>
 
-#include <boost/lexical_cast.hpp>
-
 #include <univalue.h>
 
 using namespace std;
@@ -56,7 +54,7 @@ UniValue gobject(const JSONRPCRequest& request)
 #endif // ENABLE_WALLET
                 "  submit             - Submit governance object to network\n"
                 "  deserialize        - Deserialize governance object from hex string to JSON\n"
-                "  count              - Count governance objects and votes\n"
+                "  count              - Count governance objects and votes (additional param: 'json' or 'all', default: 'json')\n"
                 "  get                - Get governance object by hash\n"
                 "  getvotes           - Get all votes for a governance object hash (including old votes)\n"
                 "  getcurrentvotes    - Get only current (tallying) votes for a governance object hash (does not include old votes)\n"
@@ -68,8 +66,19 @@ UniValue gobject(const JSONRPCRequest& request)
                 );
 
 
-    if(strCommand == "count")
-        return governance.ToString();
+    if(strCommand == "count") {
+        std::string strMode{"json"};
+
+        if (request.params.size() == 2) {
+            strMode = request.params[1].get_str();
+        }
+
+        if (request.params.size() > 2 || (strMode != "json" && strMode != "all")) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Correct usage is 'gobject count ( \"json\"|\"all\" )'");
+        }
+
+        return strMode == "json" ? governance.ToJson() : governance.ToString();
+    }
     /*
         ------ Example Governance Item ------
 
@@ -108,12 +117,12 @@ UniValue gobject(const JSONRPCRequest& request)
         int nRevision = 1;
 
         int64_t nTime = GetAdjustedTime();
-        std::string strData = request.params[1].get_str();
+        std::string strDataHex = request.params[1].get_str();
 
-        CGovernanceObject govobj(hashParent, nRevision, nTime, uint256(), strData);
+        CGovernanceObject govobj(hashParent, nRevision, nTime, uint256(), strDataHex);
 
         if(govobj.GetObjectType() == GOVERNANCE_OBJECT_PROPOSAL) {
-            CProposalValidator validator(strData);
+            CProposalValidator validator(strDataHex);
             if(!validator.Validate())  {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid proposal data, error messages:" + validator.GetErrorMessages());
             }
@@ -150,32 +159,34 @@ UniValue gobject(const JSONRPCRequest& request)
 
         std::string strRevision = request.params[2].get_str();
         std::string strTime = request.params[3].get_str();
-        int nRevision = boost::lexical_cast<int>(strRevision);
-        int nTime = boost::lexical_cast<int>(strTime);
-        std::string strData = request.params[4].get_str();
+        int nRevision = atoi(strRevision);
+        int64_t nTime = atoi64(strTime);
+        std::string strDataHex = request.params[4].get_str();
 
         // CREATE A NEW COLLATERAL TRANSACTION FOR THIS SPECIFIC OBJECT
 
-        CGovernanceObject govobj(hashParent, nRevision, nTime, uint256(), strData);
+        CGovernanceObject govobj(hashParent, nRevision, nTime, uint256(), strDataHex);
 
         if(govobj.GetObjectType() == GOVERNANCE_OBJECT_PROPOSAL) {
-            CProposalValidator validator(strData);
+            CProposalValidator validator(strDataHex);
             if(!validator.Validate())  {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid proposal data, error messages:" + validator.GetErrorMessages());
             }
         }
 
-        if((govobj.GetObjectType() == GOVERNANCE_OBJECT_TRIGGER) ||
-           (govobj.GetObjectType() == GOVERNANCE_OBJECT_WATCHDOG)) {
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Trigger and watchdog objects need not be prepared (however only masternodes can create them)");
+        if(govobj.GetObjectType() == GOVERNANCE_OBJECT_TRIGGER) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Trigger objects need not be prepared (however only masternodes can create them)");
         }
 
-        {
-            LOCK(cs_main);
-            std::string strError = "";
-            if(!govobj.IsValidLocally(strError, false))
-                throw JSONRPCError(RPC_INTERNAL_ERROR, "Governance object is not valid - " + govobj.GetHash().ToString() + " - " + strError);
+        if(govobj.GetObjectType() == GOVERNANCE_OBJECT_WATCHDOG) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Watchdogs are deprecated");
         }
+
+        LOCK(cs_main);
+
+        std::string strError = "";
+        if(!govobj.IsValidLocally(strError, false))
+            throw JSONRPCError(RPC_INTERNAL_ERROR, "Governance object is not valid - " + govobj.GetHash().ToString() + " - " + strError);
 
         CWalletTx wtx;        
         CWalletRef gotWallet = nullptr;
@@ -229,24 +240,27 @@ UniValue gobject(const JSONRPCRequest& request)
 
         std::string strRevision = request.params[2].get_str();
         std::string strTime = request.params[3].get_str();
-        int nRevision = boost::lexical_cast<int>(strRevision);
-        int nTime = boost::lexical_cast<int>(strTime);
-        std::string strData = request.params[4].get_str();
+        int nRevision = atoi(strRevision);
+        int64_t nTime = atoi64(strTime);
+        std::string strDataHex = request.params[4].get_str();
 
-        CGovernanceObject govobj(hashParent, nRevision, nTime, txidFee, strData);
+        CGovernanceObject govobj(hashParent, nRevision, nTime, txidFee, strDataHex);
 
         if(govobj.GetObjectType() == GOVERNANCE_OBJECT_PROPOSAL) {
-            CProposalValidator validator(strData);
+            CProposalValidator validator(strDataHex);
             if(!validator.Validate())  {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid proposal data, error messages:" + validator.GetErrorMessages());
             }
         }
+        
+        if(govobj.GetObjectType() == GOVERNANCE_OBJECT_WATCHDOG) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Watchdogs are deprecated");
+        }
 
         // Attempt to sign triggers if we are a MN
-        if((govobj.GetObjectType() == GOVERNANCE_OBJECT_TRIGGER) ||
-           (govobj.GetObjectType() == GOVERNANCE_OBJECT_WATCHDOG)) {
+        if(govobj.GetObjectType() == GOVERNANCE_OBJECT_TRIGGER) {
             if(fMnFound) {
-                govobj.SetMasternodeVin(activeMasternode.outpoint);
+                govobj.SetMasternodeOutpoint(activeMasternode.outpoint);
                 govobj.Sign(activeMasternode.keyMasternode, activeMasternode.pubKeyMasternode);
             }
             else {
@@ -309,7 +323,7 @@ UniValue gobject(const JSONRPCRequest& request)
         if(eVoteSignal == VOTE_SIGNAL_NONE) {
             throw JSONRPCError(RPC_INVALID_PARAMETER,
                                "Invalid vote signal. Please using one of the following: "
-                               "(funding|valid|delete|endorsed) OR `custom sentinel code` ");
+                               "(funding|valid|delete|endorsed)");
         }
 
         vote_outcome_enum_t eVoteOutcome = CGovernanceVoting::ConvertVoteOutcome(strVoteOutcome);
@@ -341,7 +355,7 @@ UniValue gobject(const JSONRPCRequest& request)
             return returnObj;
         }
 
-        CGovernanceVote vote(mn.vin.prevout, hash, eVoteSignal, eVoteOutcome);
+        CGovernanceVote vote(mn.outpoint, hash, eVoteSignal, eVoteOutcome);
         if(!vote.Sign(activeMasternode.keyMasternode, activeMasternode.pubKeyMasternode)) {
             nFailed++;
             statusObj.push_back(Pair("result", "failed"));
@@ -388,7 +402,7 @@ UniValue gobject(const JSONRPCRequest& request)
         if(eVoteSignal == VOTE_SIGNAL_NONE) {
             throw JSONRPCError(RPC_INVALID_PARAMETER,
                                "Invalid vote signal. Please using one of the following: "
-                               "(funding|valid|delete|endorsed) OR `custom sentinel code` ");
+                               "(funding|valid|delete|endorsed)");
         }
 
         vote_outcome_enum_t eVoteOutcome = CGovernanceVoting::ConvertVoteOutcome(strVoteOutcome);
@@ -399,12 +413,9 @@ UniValue gobject(const JSONRPCRequest& request)
         int nSuccessful = 0;
         int nFailed = 0;
 
-        std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
-        mnEntries = masternodeConfig.getEntries();
-
         UniValue resultsObj(UniValue::VOBJ);
 
-        for (CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {
+        for (const auto& mne : masternodeConfig.getEntries()) {
             std::string strError;
             std::vector<unsigned char> vchMasterNodeSignature;
             std::string strMasterNodeSignMessage;
@@ -445,7 +456,7 @@ UniValue gobject(const JSONRPCRequest& request)
                 continue;
             }
 
-            CGovernanceVote vote(mn.vin.prevout, hash, eVoteSignal, eVoteOutcome);
+            CGovernanceVote vote(mn.outpoint, hash, eVoteSignal, eVoteOutcome);
             if(!vote.Sign(keyMasternode, pubKeyMasternode)){
                 nFailed++;
                 statusObj.push_back(Pair("result", "failed"));
@@ -498,7 +509,7 @@ UniValue gobject(const JSONRPCRequest& request)
         if(eVoteSignal == VOTE_SIGNAL_NONE) {
             throw JSONRPCError(RPC_INVALID_PARAMETER,
                                "Invalid vote signal. Please using one of the following: "
-                               "(funding|valid|delete|endorsed) OR `custom sentinel code` ");
+                               "(funding|valid|delete|endorsed)");
         }
 
         vote_outcome_enum_t eVoteOutcome = CGovernanceVoting::ConvertVoteOutcome(strVoteOutcome);
@@ -511,12 +522,9 @@ UniValue gobject(const JSONRPCRequest& request)
         int nSuccessful = 0;
         int nFailed = 0;
 
-        std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
-        mnEntries = masternodeConfig.getEntries();
-
         UniValue resultsObj(UniValue::VOBJ);
 
-        for (CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries())
+        for (const auto& mne : masternodeConfig.getEntries())
         {
             // IF WE HAVE A SPECIFIC NODE REQUESTED TO VOTE, DO THAT
             if(strAlias != mne.getAlias()) continue;
@@ -616,9 +624,8 @@ UniValue gobject(const JSONRPCRequest& request)
             return "Invalid signal, should be 'valid', 'funding', 'delete', 'endorsed' or 'all'";
 
         std::string strType = "all";
-        if (request.params.size() == 3) strType = request.params[2].get_str();
-        if (strType != "proposals" && strType != "triggers" && strType != "watchdogs" && strType != "all")
-            return "Invalid type, should be 'proposals', 'triggers', 'watchdogs' or 'all'";
+        if (strType != "proposals" && strType != "triggers" && strType != "all")
+            return "Invalid type, should be 'proposals', 'triggers' or 'all'";
 
         // GET STARTING TIME TO QUERY SYSTEM WITH
 
@@ -633,12 +640,12 @@ UniValue gobject(const JSONRPCRequest& request)
 
         LOCK2(cs_main, governance.cs);
 
-        std::vector<CGovernanceObject*> objs = governance.GetAllNewerThan(nStartTime);
+        std::vector<const CGovernanceObject*> objs = governance.GetAllNewerThan(nStartTime);
         governance.UpdateLastDiffTime(GetTime());
 
         // CREATE RESULTS FOR USER
 
-        for (CGovernanceObject* pGovObj : objs)
+        for (const auto& pGovObj : objs)
         {
             if(strCachedSignal == "valid" && !pGovObj->IsSetCachedValid()) continue;
             if(strCachedSignal == "funding" && !pGovObj->IsSetCachedFunding()) continue;
@@ -647,18 +654,17 @@ UniValue gobject(const JSONRPCRequest& request)
 
             if(strType == "proposals" && pGovObj->GetObjectType() != GOVERNANCE_OBJECT_PROPOSAL) continue;
             if(strType == "triggers" && pGovObj->GetObjectType() != GOVERNANCE_OBJECT_TRIGGER) continue;
-            if(strType == "watchdogs" && pGovObj->GetObjectType() != GOVERNANCE_OBJECT_WATCHDOG) continue;
 
             UniValue bObj(UniValue::VOBJ);
-            bObj.push_back(Pair("DataHex",  pGovObj->GetDataAsHex()));
-            bObj.push_back(Pair("DataString",  pGovObj->GetDataAsString()));
+            bObj.push_back(Pair("DataHex",  pGovObj->GetDataAsHexString()));
+            bObj.push_back(Pair("DataString",  pGovObj->GetDataAsPlainString()));
             bObj.push_back(Pair("Hash",  pGovObj->GetHash().ToString()));
             bObj.push_back(Pair("CollateralHash",  pGovObj->GetCollateralHash().ToString()));
             bObj.push_back(Pair("ObjectType", pGovObj->GetObjectType()));
             bObj.push_back(Pair("CreationTime", pGovObj->GetCreationTime()));
-            const CTxIn& masternodeVin = pGovObj->GetMasternodeVin();
-            if(masternodeVin != CTxIn()) {
-                bObj.push_back(Pair("SigningMasternode", masternodeVin.prevout.ToStringShort()));
+            const COutPoint& masternodeOutpoint = pGovObj->GetMasternodeOutpoint();
+            if(masternodeOutpoint != COutPoint()) {
+                bObj.push_back(Pair("SigningMasternode", masternodeOutpoint.ToStringShort()));
             }
 
             // REPORT STATUS FOR FUNDING VOTES SPECIFICALLY
@@ -702,15 +708,15 @@ UniValue gobject(const JSONRPCRequest& request)
         // REPORT BASIC OBJECT STATS
 
         UniValue objResult(UniValue::VOBJ);
-        objResult.push_back(Pair("DataHex",  pGovObj->GetDataAsHex()));
-        objResult.push_back(Pair("DataString",  pGovObj->GetDataAsString()));
+        objResult.push_back(Pair("DataHex",  pGovObj->GetDataAsHexString()));
+        objResult.push_back(Pair("DataString",  pGovObj->GetDataAsPlainString()));
         objResult.push_back(Pair("Hash",  pGovObj->GetHash().ToString()));
         objResult.push_back(Pair("CollateralHash",  pGovObj->GetCollateralHash().ToString()));
         objResult.push_back(Pair("ObjectType", pGovObj->GetObjectType()));
         objResult.push_back(Pair("CreationTime", pGovObj->GetCreationTime()));
-        const CTxIn& masternodeVin = pGovObj->GetMasternodeVin();
-        if(masternodeVin != CTxIn()) {
-            objResult.push_back(Pair("SigningMasternode", masternodeVin.prevout.ToStringShort()));
+        const COutPoint& masternodeOutpoint = pGovObj->GetMasternodeOutpoint();
+        if(masternodeOutpoint != COutPoint()) {
+            objResult.push_back(Pair("SigningMasternode", masternodeOutpoint.ToStringShort()));
         }
 
         // SHOW (MUCH MORE) INFORMATION ABOUT VOTES FOR GOVERNANCE OBJECT (THAN LIST/DIFF ABOVE)
@@ -787,7 +793,7 @@ UniValue gobject(const JSONRPCRequest& request)
         // GET MATCHING VOTES BY HASH, THEN SHOW USERS VOTE INFORMATION
 
         std::vector<CGovernanceVote> vecVotes = governance.GetMatchingVotes(hash);
-        for (CGovernanceVote vote : vecVotes) {
+        for (const auto& vote : vecVotes) {
             bResult.push_back(Pair(vote.GetHash().ToString(),  vote.ToString()));
         }
 
@@ -810,8 +816,7 @@ UniValue gobject(const JSONRPCRequest& request)
         if (request.params.size() == 4) {
             uint256 txid = ParseHashV(request.params[2], "Masternode Collateral hash");
             std::string strVout = request.params[3].get_str();
-            uint32_t vout = boost::lexical_cast<uint32_t>(strVout);
-            mnCollateralOutpoint = COutPoint(txid, vout);
+            mnCollateralOutpoint = COutPoint(txid, (uint32_t)atoi(strVout));
         }
 
         // FIND OBJECT USER IS LOOKING FOR
@@ -831,7 +836,7 @@ UniValue gobject(const JSONRPCRequest& request)
         // GET MATCHING VOTES BY HASH, THEN SHOW USERS VOTE INFORMATION
 
         std::vector<CGovernanceVote> vecVotes = governance.GetCurrentVotes(hash, mnCollateralOutpoint);
-        for (CGovernanceVote vote : vecVotes) {
+        for (const auto& vote : vecVotes) {
             bResult.push_back(Pair(vote.GetHash().ToString(),  vote.ToString()));
         }
 
@@ -863,7 +868,7 @@ UniValue voteraw(const JSONRPCRequest& request)
     if(eVoteSignal == VOTE_SIGNAL_NONE)  {
         throw JSONRPCError(RPC_INVALID_PARAMETER,
                            "Invalid vote signal. Please using one of the following: "
-                           "(funding|valid|delete|endorsed) OR `custom sentinel code` ");
+                           "(funding|valid|delete|endorsed)");
     }
 
     vote_outcome_enum_t eVoteOutcome = CGovernanceVoting::ConvertVoteOutcome(strVoteOutcome);
@@ -913,7 +918,8 @@ UniValue getgovernanceinfo(const JSONRPCRequest& request)
             "\nResult:\n"
             "{\n"
             "  \"governanceminquorum\": xxxxx,           (numeric) the absolute minimum number of votes needed to trigger a governance action\n"
-            "  \"masternodewatchdogmaxseconds\": xxxxx,  (numeric) sentinel watchdog expiration time in seconds\n"
+            "  \"masternodewatchdogmaxseconds\": xxxxx,  (numeric) sentinel watchdog expiration time in seconds (DEPRECATED)\n"
+            "  \"sentinelpingmaxseconds\": xxxxx,        (numeric) sentinel ping expiration time in seconds\n"
             "  \"proposalfee\": xxx.xx,                  (numeric) the collateral transaction fee which must be paid to create a proposal in " + CURRENCY_UNIT + "\n"
             "  \"superblockcycle\": xxxxx,               (numeric) the number of blocks between superblocks\n"
             "  \"lastsuperblock\": xxxxx,                (numeric) the block number of the last superblock\n"
@@ -925,36 +931,18 @@ UniValue getgovernanceinfo(const JSONRPCRequest& request)
             + HelpExampleRpc("getgovernanceinfo", "")
             );
     }
+    
+    LOCK(cs_main);
 
-    // Compute last/next superblock
-    int nLastSuperblock, nNextSuperblock;
+    int nLastSuperblock = 0, nNextSuperblock = 0;
+    int nBlockHeight = chainActive.Height();
 
-    // Get current block height
-    int nBlockHeight = 0;
-    {
-        LOCK(cs_main);
-        nBlockHeight = (int)chainActive.Height();
-    }
-
-    // Get chain parameters
-    int nSuperblockStartBlock = Params().GetConsensus().nSuperblockStartBlock;
-    int nSuperblockCycle = Params().GetConsensus().nSuperblockCycle;
-
-    // Get first superblock
-    int nFirstSuperblockOffset = (nSuperblockCycle - nSuperblockStartBlock % nSuperblockCycle) % nSuperblockCycle;
-    int nFirstSuperblock = nSuperblockStartBlock + nFirstSuperblockOffset;
-
-    if(nBlockHeight < nFirstSuperblock){
-        nLastSuperblock = 0;
-        nNextSuperblock = nFirstSuperblock;
-    } else {
-        nLastSuperblock = nBlockHeight - nBlockHeight % nSuperblockCycle;
-        nNextSuperblock = nLastSuperblock + nSuperblockCycle;
-    }
+    CSuperblock::GetNearestSuperblocksHeights(nBlockHeight, nLastSuperblock, nNextSuperblock);
 
     UniValue obj(UniValue::VOBJ);
     obj.push_back(Pair("governanceminquorum", Params().GetConsensus().nGovernanceMinQuorum));
-    obj.push_back(Pair("masternodewatchdogmaxseconds", MASTERNODE_WATCHDOG_MAX_SECONDS));
+    obj.push_back(Pair("masternodewatchdogmaxseconds", MASTERNODE_SENTINEL_PING_MAX_SECONDS));
+    obj.push_back(Pair("sentinelpingmaxseconds", MASTERNODE_SENTINEL_PING_MAX_SECONDS));
     obj.push_back(Pair("proposalfee", ValueFromAmount(GOVERNANCE_PROPOSAL_FEE_TX)));
     obj.push_back(Pair("superblockcycle", Params().GetConsensus().nSuperblockCycle));
     obj.push_back(Pair("lastsuperblock", nLastSuperblock));
@@ -996,7 +984,7 @@ static const CRPCCommand commands[] =
   //  --------------------- ------------------------  -----------------------  ----------
     { "governance",         "gobject",                &gobject,                {"command"} },
     { "governance",         "getgovernanceinfo",      &getgovernanceinfo,      {"command"} },
-    { "governance",         "getsuperblockbudget",    &getsuperblockbudget,    {"command"} },
+    { "governance",         "getsuperblockbudget",    &getsuperblockbudget,    {"index"} },
     { "governance",         "voteraw",                &voteraw,                {"command"} },
 };
 

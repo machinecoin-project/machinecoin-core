@@ -87,7 +87,7 @@
 const int64_t nStartupTime = GetTime();
 
 // Machinecoin only features
-bool fMasterNode = false;
+bool fMasternodeMode = false;
 bool fLiteMode = false;
 
 const char * const MACHINECOIN_CONF_FILENAME = "machinecoin.conf";

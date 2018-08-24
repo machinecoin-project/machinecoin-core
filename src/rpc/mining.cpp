@@ -510,7 +510,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             checktxtime = std::chrono::steady_clock::now() + std::chrono::minutes(1);
 
             WaitableLock lock(csBestBlock);
-            while (chainActive.Tip()->GetBlockHash() == hashWatchedChain && IsRPCRunning())
+            while (hashBestBlock == hashWatchedChain && IsRPCRunning())
             {
                 if (cvBlockChange.wait_until(lock, checktxtime) == std::cv_status::timeout)
                 {
@@ -716,27 +716,27 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         CTxDestination dest;
         ExtractDestination(pblock->txoutMasternode.scriptPubKey, dest);
         masternodeObj.push_back(Pair("payee", EncodeDestination(dest).c_str()));
-        masternodeObj.push_back(Pair("script", HexStr(pblock->txoutMasternode.scriptPubKey.begin(), pblock->txoutMasternode.scriptPubKey.end())));
+        masternodeObj.push_back(Pair("script", HexStr(pblock->txoutMasternode.scriptPubKey)));
         masternodeObj.push_back(Pair("amount", pblock->txoutMasternode.nValue));
     }
     result.push_back(Pair("masternode", masternodeObj));
-    result.push_back(Pair("masternode_payments_started", pindexPrev->nHeight + 1 > Params().GetConsensus().nMasternodePaymentsStartBlock));
+    result.push_back(Pair("masternode_payments_started", pindexPrev->nHeight + 1 > consensusParams.nMasternodePaymentsStartBlock));
     result.push_back(Pair("masternode_payments_enforced", true));
 
     UniValue superblockObjArray(UniValue::VARR);
     if(pblock->voutSuperblock.size()) {
-        for (const CTxOut& txout : pblock->voutSuperblock) {
+        for (const auto& txout : pblock->voutSuperblock) {
             UniValue entry(UniValue::VOBJ);
             CTxDestination dest;
             ExtractDestination(txout.scriptPubKey, dest);
             entry.push_back(Pair("payee", EncodeDestination(dest).c_str()));
-            entry.push_back(Pair("script", HexStr(txout.scriptPubKey.begin(), txout.scriptPubKey.end())));
+            entry.push_back(Pair("script", HexStr(txout.scriptPubKey)));
             entry.push_back(Pair("amount", txout.nValue));
             superblockObjArray.push_back(entry);
         }
     }
     result.push_back(Pair("superblock", superblockObjArray));
-    result.push_back(Pair("superblocks_started", pindexPrev->nHeight + 1 > Params().GetConsensus().nSuperblockStartBlock));
+    result.push_back(Pair("superblocks_started", pindexPrev->nHeight + 1 > consensusParams.nSuperblockStartBlock));
     result.push_back(Pair("superblocks_enabled", true));
 
     if (!pblocktemplate->vchCoinbaseCommitment.empty() && fSupportsSegwit) {
