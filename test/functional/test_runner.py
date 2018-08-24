@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # Copyright (c) 2014-2017 The Machinecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -133,6 +133,7 @@ BASE_SCRIPTS= [
     'feature_logging.py',
     'p2p_node_network_limited.py',
     'feature_config_args.py',
+    'feature_help.py',
     # Don't append tests at the end to avoid merge conflicts
     # Put them in a random line within the section that fits their approximate run-time
 ]

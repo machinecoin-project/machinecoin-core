@@ -7,6 +7,7 @@
 #include <masternode.h>
 #include <masternode-sync.h>
 #include <masternodeman.h>
+#include <netbase.h>
 #include <protocol.h>
 
 // Keep track of the active Masternode
@@ -15,7 +16,7 @@ CActiveMasternode activeMasternode;
 void CActiveMasternode::ManageState(CConnman* connman)
 {
     LogPrint(MCLog::MN, "CActiveMasternode::ManageState -- Start\n");
-    if(!fMasterNode) {
+    if(!fMasternodeMode) {
         LogPrint(MCLog::MN, "CActiveMasternode::ManageState -- Not a masternode, returning\n");
         return;
     }
@@ -98,7 +99,7 @@ bool CActiveMasternode::SendMasternodePing(CConnman* connman)
     CMasternodePing mnp(outpoint);
     mnp.nSentinelVersion = nSentinelVersion;
     mnp.fSentinelIsCurrent =
-            (abs(GetAdjustedTime() - nSentinelPingTime) < MASTERNODE_WATCHDOG_MAX_SECONDS);
+            (abs(GetAdjustedTime() - nSentinelPingTime) < MASTERNODE_SENTINEL_PING_MAX_SECONDS);
     if(!mnp.Sign(keyMasternode, pubKeyMasternode)) {
         LogPrint(MCLog::MN, "CActiveMasternode::SendMasternodePing -- ERROR: Couldn't sign Masternode Ping\n");
         return false;
@@ -181,12 +182,16 @@ void CActiveMasternode::ManageStateInitial(CConnman* connman)
         return;
     }
 
+    // Check socket connectivity
     LogPrint(MCLog::MN, "CActiveMasternode::ManageStateInitial -- Checking inbound connection to '%s'\n", service.ToString());
+    SOCKET hSocket = CreateSocket(service);
+    bool fConnected = ConnectSocketDirectly(service, hSocket, nConnectTimeout) && IsSelectableSocket(hSocket);
+    CloseSocket(hSocket);
 
-    if(!connman->ConnectNode(CAddress(service, NODE_NETWORK), nullptr, false, true)) {
+    if (!fConnected) {
         nState = ACTIVE_MASTERNODE_NOT_CAPABLE;
         strNotCapableReason = "Could not connect to " + service.ToString();
-        LogPrint(MCLog::MN, "CActiveMasternode::ManageStateInitial -- %s: %s\n", GetStateString(), strNotCapableReason);
+        LogPrintf("CActiveMasternode::ManageStateInitial -- %s: %s\n", GetStateString(), strNotCapableReason);
         return;
     }
 
@@ -224,7 +229,7 @@ void CActiveMasternode::ManageStateRemote()
         }
         if(nState != ACTIVE_MASTERNODE_STARTED) {
             LogPrint(MCLog::MN, "CActiveMasternode::ManageStateRemote -- STARTED!\n");
-            outpoint = infoMn.vin.prevout;
+            outpoint = infoMn.outpoint;
             service = infoMn.addr;
             fPingerEnabled = true;
             nState = ACTIVE_MASTERNODE_STARTED;

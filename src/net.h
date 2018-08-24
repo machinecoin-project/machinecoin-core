@@ -180,14 +180,15 @@ public:
     void Interrupt();
     bool GetNetworkActive() const { return fNetworkActive; };
     void SetNetworkActive(bool active);
-    void OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound = nullptr, const char *strDest = nullptr, bool fOneShot = false, bool fFeeler = false, bool manual_connection = false, bool fMasternode = false, std::set<uint256> second = std::set<uint256>());
+    bool OpenNetworkConnection(const CAddress& addrConnect, bool fCountFailure, CSemaphoreGrant *grantOutbound = nullptr, const char *strDest = nullptr, bool fOneShot = false, bool fFeeler = false, bool manual_connection = false, bool fConnectToMasternode = false);
+    bool OpenMasternodeConnection(const CAddress& addrConnect);
     bool CheckIncomingNonce(uint64_t nonce);
     
     // fConnectToMasternode should be 'true' only if you want this node to allow to connect to itself
     // and/or you want it to be disconnected on CMasternodeMan::ProcessMasternodeConnections()
     // Unfortunately, can't make this method private like in Machinecoin,
     // because it's used in many Machinecoin-specific places (masternode).
-    CNode* ConnectNode(CAddress addrConnect, const char *pszDest = NULL, bool fCountFailure = false, bool fConnectToMasternode = false);
+    CNode* ConnectNode(CAddress addrConnect, const char *pszDest = NULL, bool fCountFailure = false);
 
     struct CFullyConnectedOnly {
         bool operator() (const CNode* pnode) const {
@@ -204,6 +205,29 @@ public:
     constexpr static const CAllNodes AllNodes{};
 
     bool ForNode(NodeId id, std::function<bool(CNode* pnode)> func);
+    bool ForNode(NodeId id, std::function<bool(const CNode* pnode)> cond, std::function<bool(CNode* pnode)> func);
+    bool ForNode(const CService& addr, std::function<bool(const CNode* pnode)> cond, std::function<bool(CNode* pnode)> func);
+
+    template<typename Callable>
+    bool ForNode(const CService& addr, Callable&& func)
+    {
+        return ForNode(addr, FullyConnectedOnly, func);
+    }
+
+    template<typename Callable>
+    bool ForNode(NodeId id, Callable&& func)
+    {
+        return ForNode(id, FullyConnectedOnly, func);
+    }
+
+    bool IsConnected(const CService& addr, std::function<bool(const CNode* pnode)> cond)
+    {
+        return ForNode(addr, cond, [](CNode* pnode){
+            return true;
+        });
+    }
+
+    bool IsMasternodeOrDisconnectRequested(const CService& addr);
 
     void PushMessage(CNode* pnode, CSerializedNetMsg&& msg);
 
@@ -270,6 +294,7 @@ public:
     };
     
     // Masternodes
+    std::vector<CNode*> CopyNodeVector(std::function<bool(const CNode* pnode)> cond);
     std::vector<CNode*> CopyNodeVector();
     void ReleaseNodeVector(const std::vector<CNode*>& vecNodes);
     void RelayInv(CInv &inv, const int minProtoVersion = MIN_PEER_PROTO_VERSION);
@@ -320,6 +345,7 @@ public:
 
     bool AddNode(const std::string& node);
     bool RemoveAddedNode(const std::string& node);
+    bool AddPendingMasternode(const CService& addr);
     std::vector<AddedNodeInfo> GetAddedNodeInfo();
 
     size_t GetNodeCount(NumConnections num);
@@ -416,7 +442,7 @@ private:
     void AddOneShot(const std::string& strDest);
     void ProcessOneShot();
     void ThreadOpenConnections(std::vector<std::string> connect);
-    void ThreadMnbRequestConnections();
+    void ThreadOpenMasternodeConnections(std::vector<std::string> connect);
     void ThreadMessageHandler();
     void AcceptConnection(const ListenSocket& hListenSocket);
     void ThreadSocketHandler();
@@ -484,6 +510,8 @@ private:
     CCriticalSection cs_vOneShots;
     std::vector<std::string> vAddedNodes GUARDED_BY(cs_vAddedNodes);
     CCriticalSection cs_vAddedNodes;
+    std::vector<CService> vPendingMasternodes;
+    CCriticalSection cs_vPendingMasternodes;
     std::vector<CNode*> vNodes;
     std::list<CNode*> vNodesDisconnected;
     mutable CCriticalSection cs_vNodes;
@@ -520,7 +548,7 @@ private:
     std::thread threadSocketHandler;
     std::thread threadOpenAddedConnections;
     std::thread threadOpenConnections;
-    std::thread threadMnbRequestConnections;
+    std::thread threadOpenMasternodeConnections;
     std::thread threadMessageHandler;
 
     /** flag for deciding to connect to an extra outbound peer,

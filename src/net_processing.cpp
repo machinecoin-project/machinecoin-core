@@ -31,6 +31,8 @@
 #include <utilmoneystr.h>
 #include <utilstrencodings.h>
 
+#include <memory>
+
 #include <governance.h>
 #include <masternode-payments.h>
 #include <masternode-sync.h>
@@ -895,7 +897,6 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
 }
 
 void PeerLogicValidation::InitializeCurrentBlockTip() {
-    LOCK(cs_main);
     const CBlockIndex *pindexNew = chainActive.Tip();
     const CBlockIndex *pindexFork = nullptr;
     bool fInitialDownload = IsInitialBlockDownload();
@@ -909,6 +910,9 @@ void PeerLogicValidation::InitializeCurrentBlockTip() {
 
     if (fInitialDownload)
         return;
+    
+    if (fLiteMode)
+        return;
 
     mnodeman.UpdatedBlockTip(pindexNew, false);
     mnpayments.UpdatedBlockTip(pindexNew, connman);
@@ -916,14 +920,6 @@ void PeerLogicValidation::InitializeCurrentBlockTip() {
 }
 
 void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload) {
-    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
-
-    if (!fInitialDownload) {
-        mnodeman.UpdatedBlockTip(pindexNew);
-        mnpayments.UpdatedBlockTip(pindexNew, connman);
-        governance.UpdatedBlockTip(pindexNew, connman);
-    }
-
     const int nNewHeight = pindexNew->nHeight;
     connman->SetBestHeight(nNewHeight);
 
@@ -952,6 +948,14 @@ void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CB
     }
 
     nTimeBestReceived = GetTime();
+  
+    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
+
+    if (!fInitialDownload && !fLiteMode) {
+        mnodeman.UpdatedBlockTip(pindexNew);
+        mnpayments.UpdatedBlockTip(pindexNew, connman);
+        governance.UpdatedBlockTip(pindexNew, connman);
+    }
 }
 
 void PeerLogicValidation::BlockChecked(const CBlock& block, const CValidationState& state) {
@@ -1337,7 +1341,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             }
 
             if (!push && inv.type == MSG_GOVERNANCE_OBJECT) {
-                CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                CDataStream ss(SER_NETWORK, pfrom->GetSendVersion());
                 bool topush = false;
                 {
                     if(governance.HaveObjectForHash(inv.hash)) {
@@ -1354,7 +1358,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             }
 
             if (!push && inv.type == MSG_GOVERNANCE_OBJECT_VOTE) {
-                CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                CDataStream ss(SER_NETWORK, pfrom->GetSendVersion());
                 bool topush = false;
                 {
                     if(governance.HaveVoteForHash(inv.hash)) {
@@ -1383,9 +1387,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             if (!push) {
                 vNotFound.push_back(inv);
             }
-
-            // Track requests for our stuff.
-            GetMainSignals().Inventory(inv.hash);
         }
     } // release cs_main
 
@@ -2070,9 +2071,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                     pfrom->AskFor(inv);
                 }
             }
-
-            // Track requests for our stuff
-            GetMainSignals().Inventory(inv.hash);
         }
     }
 

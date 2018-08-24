@@ -23,6 +23,7 @@
 #include <atomic>
 #include <exception>
 #include <map>
+#include <memory>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -34,7 +35,7 @@
 int64_t GetStartupTime();
 
 // Machinecoin only features
-extern bool fMasterNode;
+extern bool fMasternodeMode;
 extern bool fLiteMode;
 
 static const bool DEFAULT_LOGTIMEMICROS = false;

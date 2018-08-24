@@ -318,7 +318,7 @@ void MachinecoinGUI::createActions()
 
 #ifdef ENABLE_WALLET
     QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool()) {
+    if (!fLiteMode && settings.value("fShowMasternodesTab").toBool()) {
         masternodeAction = new QAction(platformStyle->SingleColorIcon(":/icons/masternodes"), tr("&Masternodes"), this);
         masternodeAction->setStatusTip(tr("Browse masternodes"));
         masternodeAction->setToolTip(masternodeAction->statusTip());
@@ -481,7 +481,7 @@ void MachinecoinGUI::createToolBars()
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
         QSettings settings;
-        if (settings.value("fShowMasternodesTab").toBool())
+        if (!fLiteMode && settings.value("fShowMasternodesTab").toBool() && masternodeAction)
         {
             toolbar->addAction(masternodeAction);
         }
@@ -587,7 +587,7 @@ void MachinecoinGUI::setWalletActionsEnabled(bool enabled)
     receiveCoinsMenuAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
     QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool() && masternodeAction) {
+    if (!fLiteMode && settings.value("fShowMasternodesTab").toBool() && masternodeAction) {
         masternodeAction->setEnabled(enabled);
     }
     encryptWalletAction->setEnabled(enabled);
@@ -723,7 +723,7 @@ void MachinecoinGUI::gotoHistoryPage()
 void MachinecoinGUI::gotoMasternodePage()
 {
     QSettings settings;
-    if (settings.value("fShowMasternodesTab").toBool()) {
+    if (!fLiteMode && settings.value("fShowMasternodesTab").toBool() && masternodeAction) {
         masternodeAction->setChecked(true);
         if (walletFrame) walletFrame->gotoMasternodePage();
     }
@@ -902,7 +902,9 @@ void MachinecoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double 
         tooltip += tr("Last received block was generated %1 ago.").arg(timeBehindText);
         tooltip += QString("<br>");
         tooltip += tr("Transactions after this will not yet be visible.");
-    }
+    } //else if (fLiteMode) {
+        //setAdditionalDataSyncProgress(1);
+    //}
 
     // Don't word-wrap this (fixed-width) tooltip
     tooltip = QString("<nobr>") + tooltip + QString("</nobr>");
@@ -926,6 +928,11 @@ void MachinecoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
     QString strSyncStatus;
     tooltip = tr("Up to date") + QString(".<br>") + tooltip;
 
+#ifdef ENABLE_WALLET
+    if(walletFrame)
+        walletFrame->showOutOfSyncWarning(false);
+#endif // ENABLE_WALLET
+
     if(masternodeSync.IsSynced()) {
         progressBarLabel->setVisible(false);
         progressBar->setVisible(false);
@@ -936,11 +943,6 @@ void MachinecoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
             ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
             .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
         spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
-
-#ifdef ENABLE_WALLET
-        if(walletFrame)
-            walletFrame->showOutOfSyncWarning(false);
-#endif // ENABLE_WALLET
 
         progressBar->setFormat(tr("Synchronizing additional data: %p%"));
         progressBar->setMaximum(1000000000);
@@ -1010,6 +1012,7 @@ void MachinecoinGUI::message(const QString &title, const QString &message, unsig
 
         showNormalIfMinimized();
         QMessageBox mBox((QMessageBox::Icon)nMBoxIcon, strTitle, message, buttons, this);
+        mBox.setTextFormat(Qt::PlainText);
         int r = mBox.exec();
         if (ret != nullptr)
             *ret = r == QMessageBox::Ok;
@@ -1030,6 +1033,11 @@ void MachinecoinGUI::changeEvent(QEvent *e)
             if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
             {
                 QTimer::singleShot(0, this, SLOT(hide()));
+                e->ignore();
+            }
+            else if((wsevt->oldState() & Qt::WindowMinimized) && !isMinimized())
+            {
+                QTimer::singleShot(0, this, SLOT(show()));
                 e->ignore();
             }
         }
