@@ -171,15 +171,16 @@ public:
                 {520203, uint256S("0xa4e80117f39da350c6aac3568e635e3f107fac72ce562ae39539b93841e2d33f")},  // Machinecoin: checkpoint at 520203
                 {521234, uint256S("0x984955d6caeec86e92ba36dc6d35c2f4a0593f4b1415cd166f3f5ad7ebcff5b7")},  // Machinecoin: checkpoint at 521234
                 {525273, uint256S("0x854816f4b359a412045ef921a509f87cf6d3b1e611f9de3e055d621a293a56af")},  // Machinecoin: checkpoint at 525273
+                {590590, uint256S("0x99a5e123915a7c4b1ac303c0959150bac5cda54d4256a4ebc992e6d0e334a518")},  // Machinecoin: checkpoint at 590590
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block c69870ed876b17ebcf582ca8cd6362de13ebd83c98556d6518abfa8b4d71a975 (height 506003).
-            1528024340, // * UNIX timestamp of last known number of transactions
-            593247,     // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x99a5e123915a7c4b1ac303c0959150bac5cda54d4256a4ebc992e6d0e334a518 (height 590590).
+            1539827937, // * UNIX timestamp of last known number of transactions
+            678764,     // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            5.0       // * estimated number of transactions per second after that timestamp
+            1.0       // * estimated number of transactions per second after that timestamp
         };
       
         // Masternodes
