@@ -757,7 +757,6 @@ void CMasternodePayments::CheckBlockVotes(int nBlockHeight)
                                               voteHash.ToString());
                         continue;
                     }
-                    auto vote = mapMasternodePaymentVotes[voteHash];
                     if (itVote->second.masternodeOutpoint == mn.second.outpoint) {
                         payee = itVote->second.payee;
                         found = true;
@@ -830,6 +829,8 @@ bool CMasternodePaymentVote::CheckSignature(const CPubKey& pubKeyMasternode, int
                 if(masternodeSync.IsMasternodeListSynced() && nBlockHeight > nValidationHeight) {
                     nDos = 20;
                 }
+                return error("CMasternodePaymentVote::CheckSignature -- Got bad Masternode payment signature, masternode=%s, error: %s",
+                            masternodeOutpoint.ToStringShort(), strError);
             }
         }
     } else {

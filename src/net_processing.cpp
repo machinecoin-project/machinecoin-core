@@ -1293,10 +1293,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
             
             if (!push && inv.type == MSG_MASTERNODE_PAYMENT_VOTE) {
                 if(mnpayments.HasVerifiedPaymentVote(inv.hash)) {
-                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                    ss.reserve(1000);
-                    ss << mnpayments.mapMasternodePaymentVotes[inv.hash];
-                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, ss));
+                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, mnpayments.mapMasternodePaymentVotes[inv.hash]));
                     push = true;
                 }
             }
@@ -1309,10 +1306,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         std::vector<uint256> vecVoteHashes = payee.GetVoteHashes();
                         for (uint256& hash : vecVoteHashes) {
                             if(mnpayments.HasVerifiedPaymentVote(hash)) {
-                                CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                                ss.reserve(1000);
-                                ss << mnpayments.mapMasternodePaymentVotes[hash];
-                                connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, ss));
+                                connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, mnpayments.mapMasternodePaymentVotes[hash]));
                             }
                         }
                     }
@@ -1322,25 +1316,20 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
 
             if (!push && inv.type == MSG_MASTERNODE_ANNOUNCE) {
                 if(mnodeman.mapSeenMasternodeBroadcast.count(inv.hash)){
-                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                    ss.reserve(1000);
-                    ss << mnodeman.mapSeenMasternodeBroadcast[inv.hash].second;
-                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNANNOUNCE, ss));
+                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNANNOUNCE, mnodeman.mapSeenMasternodeBroadcast[inv.hash].second));
                     push = true;
                 }
             }
 
             if (!push && inv.type == MSG_MASTERNODE_PING) {
                 if(mnodeman.mapSeenMasternodePing.count(inv.hash)) {
-                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                    ss.reserve(1000);
-                    ss << mnodeman.mapSeenMasternodePing[inv.hash];
-                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNPING, ss));
+                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNPING, mnodeman.mapSeenMasternodePing[inv.hash]));
                     push = true;
                 }
             }
 
             if (!push && inv.type == MSG_GOVERNANCE_OBJECT) {
+                LogPrint(MCLog::NET, "ProcessGetData -- MSG_GOVERNANCE_OBJECT: inv = %s\n", inv.ToString());
                 CDataStream ss(SER_NETWORK, pfrom->GetSendVersion());
                 bool topush = false;
                 {
@@ -1351,6 +1340,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         }
                     }
                 }
+                LogPrint(MCLog::NET, "ProcessGetData -- MSG_GOVERNANCE_OBJECT: topush = %d, inv = %s\n", topush, inv.ToString());
                 if(topush) {
                     connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNGOVERNANCEOBJECT, ss));
                     push = true;
@@ -1369,6 +1359,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                     }
                 }
                 if(topush) {
+                    LogPrint(MCLog::NET, "ProcessGetData -- pushing: inv = %s\n", inv.ToString());
                     connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNGOVERNANCEOBJECTVOTE, ss));
                     push = true;
                 }
@@ -1376,10 +1367,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
 
             if (!push && inv.type == MSG_MASTERNODE_VERIFY) {
                 if(mnodeman.mapSeenMasternodeVerification.count(inv.hash)) {
-                    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                    ss.reserve(1000);
-                    ss << mnodeman.mapSeenMasternodeVerification[inv.hash];
-                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNVERIFY, ss));
+                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::MNVERIFY, mnodeman.mapSeenMasternodeVerification[inv.hash]));
                     push = true;
                 }
             }
