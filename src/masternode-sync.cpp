@@ -188,7 +188,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                 mnodeman.DsegUpdate(pnode, connman);
             } else if(nRequestedMasternodeAttempt < 4) {
                 //sync payment votes
-                if(pnode->nVersion <= 70018) {
+                if(pnode->nVersion == 70021) {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit())); //sync payment votes
                 } else {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC)); //sync payment votes
@@ -313,7 +313,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
 
                 // ask node for all payment votes it has (new nodes will only return votes for future payments)
                 //sync payment votes
-                if(pnode->nVersion <= 70018) {
+                if(pnode->nVersion == 70021) {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit()));
                 } else {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC));

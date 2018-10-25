@@ -332,21 +332,18 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
             }
 
             CBlock block;
-            bool ret = ReadBlockFromDisk(block, blockPos, Params().GetConsensus());
-            if(ret == true) {
+            if(!ReadBlockFromDisk(block, blockPos, Params().GetConsensus()))
+                continue;
+
                 CAmount nMasternodePayment = GetMasternodePayment(pindexActive->nHeight, block.vtx[0]->GetValueOut());
 
-                for (const auto& txout : block.vtx[0]->vout)
-                    if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
-                        nBlockLastPaid = pindexActive->nHeight;
-                        nTimeLastPaid = pindexActive->nTime;
-                        LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", outpoint.ToStringShort(), nBlockLastPaid);
-                        return;
-                    }
-            }
-            else {
-                return;
-            }
+            for (const auto& txout : block.vtx[0]->vout)
+                if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
+                    nBlockLastPaid = pindexActive->nHeight;
+                    nTimeLastPaid = pindexActive->nTime;
+                    LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", outpoint.ToStringShort(), nBlockLastPaid);
+                    return;
+                }
         }
 
         if (pindexActive->pprev == nullptr) { assert(pindexActive); break; }
@@ -470,7 +467,6 @@ bool CMasternodeBroadcast::SimpleCheck(int& nDos)
     if(nProtocolVersion < mnpayments.GetMinMasternodePaymentsProto()) {
         LogPrintf("CMasternodeBroadcast::SimpleCheck -- outdated Masternode: masternode=%s  nProtocolVersion=%d\n", outpoint.ToStringShort(), nProtocolVersion);
         nActiveState = MASTERNODE_UPDATE_REQUIRED;
-        return false;
     }
 
     CScript pubkeyScript;
@@ -713,11 +709,6 @@ void CMasternodeBroadcast::Relay(CConnman* connman) const
     // Do not relay until fully synced
     if(!masternodeSync.IsSynced()) {
         LogPrint(MCLog::MN, "CMasternodeBroadcast::Relay -- won't relay until fully synced\n");
-        return;
-    }
-
-    if (connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0) {
-        LogPrint(MCLog::MN, "CMasternodeBroadcast::Relay -- won't relay until connected to any node\n");
         return;
     }
 

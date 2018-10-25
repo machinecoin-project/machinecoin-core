@@ -159,7 +159,7 @@ bool CGovernanceVote::Sign(const CKey& keyMasternode, const CPubKey& pubKeyMaste
 {
     std::string strError;
     
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = GetSignatureHash();
 
         if(!CHashSigner::SignHash(hash, keyMasternode, vchSig)) {
@@ -193,7 +193,7 @@ bool CGovernanceVote::CheckSignature(const CPubKey& pubKeyMasternode) const
 {
     std::string strError;
 
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = GetSignatureHash();
 
         if (!CHashSigner::VerifyHash(hash, pubKeyMasternode, vchSig, strError)) {

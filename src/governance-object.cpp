@@ -264,7 +264,7 @@ bool CGovernanceObject::Sign(const CKey& keyMasternode, const CPubKey& pubKeyMas
 {
 std::string strError;
  
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = GetSignatureHash();
 
         if (!CHashSigner::SignHash(hash, keyMasternode, vchSig)) {
@@ -299,7 +299,7 @@ bool CGovernanceObject::CheckSignature(const CPubKey& pubKeyMasternode) const
 {
     std::string strError;
 
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = GetSignatureHash();
         if (!CHashSigner::VerifyHash(hash, pubKeyMasternode, vchSig, strError)) {
             // could be an old object

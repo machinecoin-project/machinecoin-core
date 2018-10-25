@@ -236,7 +236,7 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
         if (!masternodeSync.IsSynced()) return;
 
         // DEPRECATED, should be removed on next protocol bump
-        if(pfrom->nVersion <= 70018) {
+        if(pfrom->nVersion == 70021) {
             int nCountNeeded;
             vRecv >> nCountNeeded;
         }
@@ -367,7 +367,7 @@ bool CMasternodePaymentVote::Sign()
 {
     std::string strError;
     
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = GetSignatureHash();
 
         if(!CHashSigner::SignHash(hash, activeMasternode.keyMasternode, vchSig)) {
@@ -814,7 +814,7 @@ bool CMasternodePaymentVote::CheckSignature(const CPubKey& pubKeyMasternode, int
 
     std::string strError = "";
     
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = GetSignatureHash();
 
         if (!CHashSigner::VerifyHash(hash, pubKeyMasternode, vchSig, strError)) {

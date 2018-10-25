@@ -110,7 +110,7 @@ void CMasternodeMan::AskForMN(CNode* pnode, const COutPoint& outpoint, CConnman*
     mWeAskedForMasternodeListEntry[outpoint][addrSquashed] = GetTime() + DSEG_UPDATE_SECONDS;
 
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-    if (pnode->GetSendVersion() == 70018) {
+    if (pnode->GetSendVersion() == 70021) {
         connman->PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn(outpoint)));
     } else {
         connman->PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, outpoint));
@@ -396,7 +396,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode, CConnman* connman)
     }
   
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
-    if (pnode->GetSendVersion() == 70018) {
+    if (pnode->GetSendVersion() == 70021) {
         connman->PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, CTxIn()));
     } else {
         connman->PushMessage(pnode, msgMaker.Make(NetMsgType::DSEG, COutPoint()));
@@ -682,6 +682,50 @@ bool CMasternodeMan::GetMasternodeRanks(CMasternodeMan::rank_pair_vec_t& vecMast
     return true;
 }
 
+void CMasternodeMan::ProcessMasternodeConnections(CConnman* connman)
+{
+    //we don't care about this for regtest
+    if(Params().NetworkIDString() == CBaseChainParams::REGTEST) return;
+
+    connman->ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
+#ifdef ENABLE_WALLET
+        if(pnode->fMasternode) {
+#else
+        if(pnode->fMasternode) {
+#endif // ENABLE_WALLET
+            LogPrint(MCLog::MN, "Closing Masternode connection: peer=%d, addr=%s\n", pnode->GetId(), pnode->addr.ToString());
+            pnode->fDisconnect = true;
+        }
+    });
+}
+
+std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestConnection()
+{
+    LOCK(cs);
+    if(listScheduledMnbRequestConnections.empty()) {
+        return std::make_pair(CService(), std::set<uint256>());
+    }
+
+    std::set<uint256> setResult;
+
+    listScheduledMnbRequestConnections.sort();
+    std::pair<CService, uint256> pairFront = listScheduledMnbRequestConnections.front();
+    
+    // squash hashes from requests with the same CService as the first one into setResult
+    std::list< std::pair<CService, uint256> >::iterator it = listScheduledMnbRequestConnections.begin();
+    while(it != listScheduledMnbRequestConnections.end()) {
+        if(pairFront.first == it->first) {
+            setResult.insert(it->second);
+            it = listScheduledMnbRequestConnections.erase(it);
+        } else {
+            // since list is sorted now, we can be sure that there is no more hashes left
+            // to ask for from this addr
+            break;
+        }
+    }
+    return std::make_pair(pairFront.first, setResult);
+}
+
 void CMasternodeMan::ProcessPendingMnbRequests(CConnman* connman)
 {
     std::pair<CService, std::set<uint256> > p = PopScheduledMnbRequestConnection();
@@ -724,52 +768,6 @@ void CMasternodeMan::ProcessPendingMnbRequests(CConnman* connman)
     }
     LogPrint(MCLog::MN, "%s -- mapPendingMNB size: %d\n", __func__, mapPendingMNB.size());
 }
-
-void CMasternodeMan::ProcessMasternodeConnections(CConnman* connman)
-{
-    //we don't care about this for regtest
-    if(Params().NetworkIDString() == CBaseChainParams::REGTEST) return;
-
-    connman->ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
-#ifdef ENABLE_WALLET
-        if(pnode->fMasternode) {
-#else
-        if(pnode->fMasternode) {
-#endif // ENABLE_WALLET
-            LogPrint(MCLog::MN, "Closing Masternode connection: peer=%d, addr=%s\n", pnode->GetId(), pnode->addr.ToString());
-            pnode->fDisconnect = true;
-        }
-    });
-}
-
-std::pair<CService, std::set<uint256> > CMasternodeMan::PopScheduledMnbRequestConnection()
-{
-    // this caused high CPU usage, so it'll remain commented out
-    // LOCK(cs);
-    if(listScheduledMnbRequestConnections.empty()) {
-        return std::make_pair(CService(), std::set<uint256>());
-    }
-
-    std::set<uint256> setResult;
-
-    listScheduledMnbRequestConnections.sort();
-    std::pair<CService, uint256> pairFront = listScheduledMnbRequestConnections.front();
-    
-    // squash hashes from requests with the same CService as the first one into setResult
-    std::list< std::pair<CService, uint256> >::iterator it = listScheduledMnbRequestConnections.begin();
-    while(it != listScheduledMnbRequestConnections.end()) {
-        if(pairFront.first == it->first) {
-            setResult.insert(it->second);
-            it = listScheduledMnbRequestConnections.erase(it);
-        } else {
-            // since list is sorted now, we can be sure that there is no more hashes left
-            // to ask for from this addr
-            break;
-        }
-    }
-    return std::make_pair(pairFront.first, setResult);
-}
-
 
 void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman* connman)
 {  
@@ -853,7 +851,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         COutPoint masternodeOutpoint;
 
-        if (pfrom->nVersion <= 70018) {
+        if (pfrom->nVersion == 70021) {
             CTxIn vin;
             vRecv >> vin;
             masternodeOutpoint = vin.prevout;
@@ -1027,7 +1025,7 @@ void CMasternodeMan::DoFullVerificationStep(CConnman* connman)
         }
         LogPrint(MCLog::MN, "CMasternodeMan::DoFullVerificationStep -- Verifying masternode %s rank %d/%d address %s\n",
                     it->second.outpoint.ToStringShort(), it->first, nRanksTotal, it->second.addr.ToString());
-        if(SendVerifyRequest(CAddress(it->second.addr, NODE_WITNESS), vSortedByAddr, connman)) {
+        if(SendVerifyRequest(CAddress(it->second.addr, NODE_NETWORK), vSortedByAddr, connman)) {
             nCount++;
             if(nCount >= MAX_POSE_CONNECTIONS) break;
         }
@@ -1173,7 +1171,7 @@ void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv,
 
     std::string strError;
 
-    if (chainActive.Height() > 600000) {
+    if (chainActive.Height() > 594000) {
         uint256 hash = mnv.GetSignatureHash1(blockHash);
         if(!CHashSigner::SignHash(hash, activeMasternode.keyMasternode, mnv.vchSig1)) {
             LogPrintf("CMasternodeMan::SendVerifyReply -- SignHash() failed\n");
@@ -1199,7 +1197,6 @@ void CMasternodeMan::SendVerifyReply(CNode* pnode, CMasternodeVerification& mnv,
 
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MNVERIFY, mnv));
-    // connman->PushMessage(pnode, NetMsgType::MNVERIFY, mnv);
     netfulfilledman.AddFulfilledRequest(pnode->addr, strprintf("%s", NetMsgType::MNVERIFY)+"-reply");
 }
 
@@ -1257,12 +1254,12 @@ void CMasternodeMan::ProcessVerifyReply(CNode* pnode, CMasternodeVerification& m
         for (auto& mnpair : mapMasternodes) {
             if(CAddress(mnpair.second.addr, NODE_NETWORK) == pnode->addr) {
                 bool fFound = false;
-                if (chainActive.Height() > 600000) {
+                if (chainActive.Height() > 594000) {
                     fFound = CHashSigner::VerifyHash(hash1, mnpair.second.pubKeyMasternode, mnv.vchSig1, strError);
+                    // we don't care about mnv with signature in old format
                 } else {
                     fFound = CMessageSigner::VerifyMessage(mnpair.second.pubKeyMasternode, mnv.vchSig1, strMessage1, strError);
                 }
-                // we don't care about mnv with signature in old format
                 if (fFound) {
                     // found it!
                     prealMasternode = &mnpair.second;
@@ -1281,7 +1278,7 @@ void CMasternodeMan::ProcessVerifyReply(CNode* pnode, CMasternodeVerification& m
 
                     std::string strError;
 
-                    if (chainActive.Height() > 600000) {
+                    if (chainActive.Height() > 594000) {
                         uint256 hash2 = mnv.GetSignatureHash2(blockHash);
 
                         if(!CHashSigner::SignHash(hash2, activeMasternode.keyMasternode, mnv.vchSig2)) {
@@ -1408,7 +1405,7 @@ void CMasternodeMan::ProcessVerifyBroadcast(CNode* pnode, const CMasternodeVerif
             return;
         }
 
-        if (chainActive.Height() > 600000) {
+        if (chainActive.Height() > 594000) {
             uint256 hash1 = mnv.GetSignatureHash1(blockHash);
             uint256 hash2 = mnv.GetSignatureHash2(blockHash);
 
@@ -1567,7 +1564,7 @@ bool CMasternodeMan::CheckMnbAndUpdateMasternodeList(CNode* pfrom, CMasternodeBr
 
 void CMasternodeMan::UpdateLastPaid(const CBlockIndex* pindex, bool lock)
 {
-    if (lock) LOCK2(cs_main, cs);
+    LOCK(cs);
 
     if(fLiteMode || !masternodeSync.IsWinnersListSynced() || mapMasternodes.empty()) return;
 
@@ -1601,7 +1598,7 @@ bool CMasternodeMan::IsSentinelPingActive()
 
 bool CMasternodeMan::AddGovernanceVote(const COutPoint& outpoint, uint256 nGovernanceObjectHash)
 {
-    LOCK2(cs_main, cs);
+    LOCK(cs);
     CMasternode* pmn = Find(outpoint);
     if(!pmn) {
         return false;
@@ -1620,7 +1617,7 @@ void CMasternodeMan::RemoveGovernanceObject(uint256 nGovernanceObjectHash)
 
 void CMasternodeMan::CheckMasternode(const CPubKey& pubKeyMasternode, bool fForce)
 {
-    LOCK(cs);
+    LOCK2(cs_main, cs);
     for (auto& mnpair : mapMasternodes) {
         if (mnpair.second.pubKeyMasternode == pubKeyMasternode) {
             mnpair.second.Check(fForce);
