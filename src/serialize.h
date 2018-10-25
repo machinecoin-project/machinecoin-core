@@ -463,6 +463,10 @@ protected:
 public:
     explicit CCompactSize(uint64_t& nIn) : n(nIn) { }
 
+    unsigned int GetSerializeSize() const {
+        return GetSizeOfCompactSize(n);
+    }
+
     template<typename Stream>
     void Serialize(Stream &s) const {
         WriteCompactSize<Stream>(s, n);
