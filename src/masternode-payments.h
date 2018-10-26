@@ -16,9 +16,11 @@
 class CMasternodePayments;
 class CMasternodePaymentVote;
 class CMasternodeBlockPayees;
+class CChainParams;
 
 static const int MNPAYMENTS_SIGNATURES_REQUIRED         = 6;
 static const int MNPAYMENTS_SIGNATURES_TOTAL            = 10;
+static const int MN_PAYMENTS_UPDATE_THRESHOLD           = 4000
 
 //! minimum peer version that can receive and send masternode payment messages,
 //  vote for masternode and be elected as a payment winner
@@ -230,6 +232,13 @@ public:
 
     bool IsEnoughData() const;
     int GetStorageLimit() const;
+    
+    // EnforceMasternodePayments (nHeight)
+    // in case of a hardfork, this will prevent rejected blocks due to missing masternode payees
+    //
+    // return true, if the current checkpoint + update threshold is less than the current height
+    // return false, if the current checkpoint + update threshold is greater than the current height
+    bool EnforceMasternodePayments(int nHeight) const;
 
     void UpdatedBlockTip(const CBlockIndex *pindex, CConnman* connman);
 };

@@ -471,7 +471,8 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
   
     // when enforcement is on we need information about a masternode payee or otherwise our block is going to be orphaned by the network
     CScript payee;
-    if (!masternodeSync.IsWinnersListSynced()
+    if (EnforceMasternodePayments(pindexPrev->nHeight + 1)
+        && !masternodeSync.IsWinnersListSynced()
         && !mnpayments.GetBlockPayee(chainActive.Height() + 1, payee))
             throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin is downloading masternode winners...");
 
@@ -721,7 +722,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     }
     result.push_back(Pair("masternode", masternodeObj));
     result.push_back(Pair("masternode_payments_started", pindexPrev->nHeight + 1 > consensusParams.nMasternodePaymentsStartBlock));
-    result.push_back(Pair("masternode_payments_enforced", true));
+    result.push_back(Pair("masternode_payments_enforced", EnforceMasternodePayments(pindexPrev->nHeight + 1)));
 
     UniValue superblockObjArray(UniValue::VARR);
     if(pblock->voutSuperblock.size()) {

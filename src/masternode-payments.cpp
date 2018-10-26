@@ -4,6 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <activemasternode.h>
+#include <chainparams.h>
+#include <checkpoints.h>
 #include <consensus/validation.h>
 #include <governance-classes.h>
 #include <masternode-payments.h>
@@ -118,10 +120,17 @@ bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount b
 
     // IF THIS ISN'T A SUPERBLOCK OR SUPERBLOCK IS INVALID, IT SHOULD PAY A MASTERNODE DIRECTLY
     if(mnpayments.IsTransactionValid(txNew, nBlockHeight, blockReward)) {
+        LogPrint(MCLog::MN, "IsBlockPayeeValid -- Valid masternode payment at height %d: %s", nBlockHeight, txNew->ToString());
         return true;
     }
+    
+    if (EnforceMasternodePayments(pindexPrev->nHeight + 1)) {
+        LogPrintf("IsBlockPayeeValid -- ERROR: Invalid masternode payment detected at height %d: %s", nBlockHeight, txNew->ToString());
+        return false;
+    }
 
-    return false;
+    LogPrintf("IsBlockPayeeValid -- WARNING: Masternode payment enforcement is disabled, accepting any payee\n");
+    return true;
 }
 
 void FillBlockPayments(CMutableTransaction& txNew, int nBlockHeight, CAmount blockReward, CTxOut& txoutMasternodeRet, std::vector<CTxOut>& voutSuperblockRet)
@@ -989,6 +998,14 @@ bool CMasternodePayments::IsEnoughData() const
 int CMasternodePayments::GetStorageLimit() const
 {
     return std::max(int(mnodeman.size() * nStorageCoeff), nMinBlocksToStore);
+}
+
+bool CMasternodeMan::EnforceMasternodePayments(int nHeight) const
+{
+    const CChainParams& chainparams = Params();
+    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(params.Checkpoints());
+
+    return (pcheckpoint && nHeight > pcheckpoint->nHeight + MN_PAYMENTS_UPDATE_THRESHOLD);
 }
 
 void CMasternodePayments::UpdatedBlockTip(const CBlockIndex *pindex, CConnman* connman)
