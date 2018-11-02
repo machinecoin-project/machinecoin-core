@@ -751,8 +751,6 @@ private:
      */
     const CBlockIndex* m_last_block_processed;
 
-    CWallet *wallet;
-
 public:
     /*
      * Main wallet lock.

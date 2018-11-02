@@ -122,9 +122,7 @@ class HTTPClosure
 {
 public:
     virtual void operator()() = 0;
-    virtual ~HTTPClosure() {};
-    
-    std::string path;
+    virtual ~HTTPClosure() {}
 };
 
 /** Event class. This can be used either as a cross-thread trigger or as a timer.

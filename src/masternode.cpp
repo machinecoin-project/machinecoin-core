@@ -372,18 +372,14 @@ bool CMasternodeBroadcast::Create(const std::string& strService, const std::stri
 
     const COutPoint outpt(uint256S(strTxHash), std::stoi(strOutputIndex));
 
-    CWalletRef gotWallet = nullptr;
     for (CWalletRef pwallet : vpwallets) {
-        if (gotWallet == nullptr) {
-            pwallet->UnlockCoin(outpt);
-            if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex)) {
-                gotWallet = pwallet;
-                pwallet->LockCoin(outpt);
-            }
+        pwallet->UnlockCoin(outpt);
+        if (pwallet->GetMasternodeOutpointAndKeys(outpoint, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex)) {
+            pwallet->LockCoin(outpt);
+        } else {
+            return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
         }
     }
-    if (gotWallet == nullptr)
-        return Log(strprintf("Could not allocate outpoint %s:%s for masternode %s", strTxHash, strOutputIndex, strService));
 
     CService service;
     if (!Lookup(strService.c_str(), service, 0, false))

@@ -896,15 +896,8 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
     });
 }
 
-void PeerLogicValidation::InitializeCurrentBlockTip() {
-    const CBlockIndex *pindexNew = chainActive.Tip();
-    const CBlockIndex *pindexFork = nullptr;
+void PeerLogicValidation::InitializeCurrentBlockTip(const CBlockIndex *pindexNew) {
     bool fInitialDownload = IsInitialBlockDownload();
-
-
-    // Update masternode related variables using new block tip.
-    if (pindexNew == pindexFork) // blocks were disconnected without any new ones
-        return;
 
     masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
 
