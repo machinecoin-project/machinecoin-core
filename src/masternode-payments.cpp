@@ -124,7 +124,7 @@ bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount b
         return true;
     }
     
-    if (EnforceMasternodePayments(pindexPrev->nHeight + 1)) {
+    if (EnforceMasternodePayments(chainActive.Height())) {
         LogPrintf("IsBlockPayeeValid -- ERROR: Invalid masternode payment detected at height %d: %s", nBlockHeight, txNew->ToString());
         return false;
     }
