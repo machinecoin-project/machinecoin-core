@@ -1000,7 +1000,7 @@ int CMasternodePayments::GetStorageLimit() const
     return std::max(int(mnodeman.size() * nStorageCoeff), nMinBlocksToStore);
 }
 
-bool CMasternodeMan::EnforceMasternodePayments(int nHeight) const
+bool CMasternodePayments::EnforceMasternodePayments(int nHeight) const
 {
     const CChainParams& chainparams = Params();
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(params.Checkpoints());
