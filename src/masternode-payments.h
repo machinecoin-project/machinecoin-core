@@ -20,7 +20,7 @@ class CChainParams;
 
 static const int MNPAYMENTS_SIGNATURES_REQUIRED         = 6;
 static const int MNPAYMENTS_SIGNATURES_TOTAL            = 10;
-static const int MN_PAYMENTS_UPDATE_THRESHOLD           = 4000
+static const int MN_PAYMENTS_UPDATE_THRESHOLD           = 4000;
 
 //! minimum peer version that can receive and send masternode payment messages,
 //  vote for masternode and be elected as a payment winner
