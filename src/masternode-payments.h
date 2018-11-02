@@ -39,6 +39,12 @@ bool IsBlockValueValid(const CBlock& block, int nBlockHeight, CAmount blockRewar
 bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
 void FillBlockPayments(CMutableTransaction& txNew, int nBlockHeight, CAmount blockReward, CTxOut& txoutMasternodeRet, std::vector<CTxOut>& voutSuperblockRet);
 std::string GetRequiredPaymentsString(int nBlockHeight);
+// EnforceMasternodePayments (nHeight)
+// in case of a hardfork, this will prevent rejected blocks due to missing masternode payees
+//
+// return true, if the current checkpoint + update threshold is less than the current height
+// return false, if the current checkpoint + update threshold is greater than the current height
+bool EnforceMasternodePayments(int nHeight) const;
 
 class CMasternodePayee
 {
@@ -232,13 +238,6 @@ public:
 
     bool IsEnoughData() const;
     int GetStorageLimit() const;
-    
-    // EnforceMasternodePayments (nHeight)
-    // in case of a hardfork, this will prevent rejected blocks due to missing masternode payees
-    //
-    // return true, if the current checkpoint + update threshold is less than the current height
-    // return false, if the current checkpoint + update threshold is greater than the current height
-    bool EnforceMasternodePayments(int nHeight) const;
 
     void UpdatedBlockTip(const CBlockIndex *pindex, CConnman* connman);
 };
