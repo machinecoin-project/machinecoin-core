@@ -160,7 +160,7 @@ std::string GetRequiredPaymentsString(int nBlockHeight)
     return mnpayments.GetRequiredPaymentsString(nBlockHeight);
 }
 
-bool CMasternodePayments::EnforceMasternodePayments(int nHeight)
+bool EnforceMasternodePayments(int nHeight)
 {
     const CChainParams& params = Params();
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(params.Checkpoints());

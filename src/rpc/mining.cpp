@@ -471,7 +471,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
   
     // when enforcement is on we need information about a masternode payee or otherwise our block is going to be orphaned by the network
     CScript payee;
-    if (EnforceMasternodePayments(pindexPrev->nHeight + 1)
+    if (EnforceMasternodePayments(chainActive.Tip()->nHeight)
         && !masternodeSync.IsWinnersListSynced()
         && !mnpayments.GetBlockPayee(chainActive.Height() + 1, payee))
             throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin is downloading masternode winners...");
