@@ -44,7 +44,7 @@ std::string GetRequiredPaymentsString(int nBlockHeight);
 //
 // return true, if the current checkpoint + update threshold is less than the current height
 // return false, if the current checkpoint + update threshold is greater than the current height
-bool EnforceMasternodePayments(int nHeight) const;
+bool EnforceMasternodePayments(int nHeight);
 
 class CMasternodePayee
 {

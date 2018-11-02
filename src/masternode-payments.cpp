@@ -124,7 +124,7 @@ bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount b
         return true;
     }
     
-    if (CMasternodePayments::EnforceMasternodePayments(nBlockHeight)) {
+    if (EnforceMasternodePayments(nBlockHeight)) {
         LogPrintf("IsBlockPayeeValid -- ERROR: Invalid masternode payment detected at height %d: %s", nBlockHeight, txNew->ToString());
         return false;
     }
@@ -160,7 +160,7 @@ std::string GetRequiredPaymentsString(int nBlockHeight)
     return mnpayments.GetRequiredPaymentsString(nBlockHeight);
 }
 
-bool CMasternodePayments::EnforceMasternodePayments(int nHeight) const
+bool CMasternodePayments::EnforceMasternodePayments(int nHeight)
 {
     const CChainParams& params = Params();
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(params.Checkpoints());
