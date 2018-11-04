@@ -189,17 +189,17 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
             } else if(nRequestedMasternodeAttempt < 4) {
                 //sync payment votes
                 if(pnode->nVersion == 70018) {
-                    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit())); //sync payment votes
+                    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit())); //sync payment votes
                 } else {
-                    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC)); //sync payment votes
+                    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC)); //sync payment votes
                 }
-                // connman->PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, nMnCount); //sync payment votes
+                // connman.PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, nMnCount); //sync payment votes
                 SendGovernanceSyncRequest(pnode, connman);
             } else {
                 nRequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
             }
             nRequestedMasternodeAttempt++;
-            connman->ReleaseNodeVector(vNodesCopy);
+            connman.ReleaseNodeVector(vNodesCopy);
             return;
         }
 
@@ -314,15 +314,15 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
                 // ask node for all payment votes it has (new nodes will only return votes for future payments)
                 //sync payment votes
                 if(pnode->nVersion == 70018) {
-                    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit()));
+                    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit()));
                 } else {
-                    connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC));
+                    connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC));
                 }
-                // connman->PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit());
+                // connman.PushMessage(pnode, NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit());
                 // ask node for missing pieces only (old nodes will not be asked)
                 mnpayments.RequestLowDataPaymentBlocks(pnode, connman);
 
-                connman->ReleaseNodeVector(vNodesCopy);
+                connman.ReleaseNodeVector(vNodesCopy);
                 return; //this will cause each peer to get one request each six seconds for the various assets we need
             }
 
