@@ -26,8 +26,6 @@
 
 UniValue masternode(const JSONRPCRequest& request)
 {
-    CConnman& connman = *g_connman;
-
     std::string strCommand;
     if (request.params.size() >= 1) {
         strCommand = request.params[0].get_str();
@@ -180,7 +178,7 @@ UniValue masternode(const JSONRPCRequest& request)
                 bool fResult = CMasternodeBroadcast::Create(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strError, mnb);
                 
                 int nDoS;
-                if (fResult && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, g_connman.release())) {
+                if (fResult && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, *g_connman)) {
                     strError = "Failed to verify MNB";
                     fResult = false;
                 }
@@ -189,7 +187,7 @@ UniValue masternode(const JSONRPCRequest& request)
                 if(!fResult) {
                     statusObj.push_back(Pair("errorMessage", strError));
                 }
-                mnodeman.NotifyMasternodeUpdates(&connman);
+                mnodeman.NotifyMasternodeUpdates(*g_connman);
                 break;
             }
         }
@@ -233,7 +231,7 @@ UniValue masternode(const JSONRPCRequest& request)
             bool fResult = CMasternodeBroadcast::Create(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strError, mnb);
 
             int nDoS;
-            if (fResult && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, g_connman.release())) {
+            if (fResult && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, *g_connman)) {
                 strError = "Failed to verify MNB";
                 fResult = false;
             }
@@ -251,7 +249,7 @@ UniValue masternode(const JSONRPCRequest& request)
 
             resultsObj.push_back(Pair("status", statusObj));
         }
-        mnodeman.NotifyMasternodeUpdates(&connman);
+        mnodeman.NotifyMasternodeUpdates(*g_connman);
 
         UniValue returnObj(UniValue::VOBJ);
         returnObj.push_back(Pair("overall", strprintf("Successfully started %d masternodes, failed to start %d, total %d", nSuccessful, nFailed, nSuccessful + nFailed)));
@@ -566,8 +564,6 @@ bool DecodeHexVecMnb(std::vector<CMasternodeBroadcast>& vecMnb, std::string strH
 
 UniValue masternodebroadcast(const JSONRPCRequest& request)
 {
-    CConnman& connman = *g_connman;
-
     std::string strCommand;
     if (request.params.size() >= 1)
         strCommand = request.params[0].get_str();
@@ -769,8 +765,8 @@ UniValue masternodebroadcast(const JSONRPCRequest& request)
             int nDos = 0;
             bool fResult;
             if (mnb.CheckSignature(nDos)) {
-                fResult = mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDos, g_connman.release());
-                mnodeman.NotifyMasternodeUpdates(&connman);
+                fResult = mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDos, *g_connman);
+                mnodeman.NotifyMasternodeUpdates(*g_connman);
             } else fResult = false;
 
             if(fResult) {
@@ -814,8 +810,6 @@ UniValue sentinelping(const JSONRPCRequest& request)
 
 UniValue mnsync(const JSONRPCRequest& request)
 {
-    CConnman& connman = *g_connman;
-
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
             "mnsync [status|next|reset]\n"
@@ -840,14 +834,14 @@ UniValue mnsync(const JSONRPCRequest& request)
 
     if(strMode == "next")
     {
-        masternodeSync.SwitchToNextAsset(&connman);
+        masternodeSync.SwitchToNextAsset(*g_connman);
         return "sync updated to " + masternodeSync.GetAssetName();
     }
 
     if(strMode == "reset")
     {
         masternodeSync.Reset();
-        masternodeSync.SwitchToNextAsset(&connman);
+        masternodeSync.SwitchToNextAsset(*g_connman);
         return "success";
     }
     return "failure";

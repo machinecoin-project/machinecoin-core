@@ -30,8 +30,6 @@ using namespace std;
 
 UniValue gobject(const JSONRPCRequest& request)
 {
-    CConnman& connman = *g_connman;
-
     std::string strCommand;
     if (request.params.size() >= 1)
         strCommand = request.params[0].get_str();
@@ -299,9 +297,9 @@ UniValue gobject(const JSONRPCRequest& request)
 
         if(fMissingConfirmations) {
             governance.AddPostponedObject(govobj);
-            govobj.Relay(&connman);
+            govobj.Relay(*g_connman);
         } else {
-            governance.AddGovernanceObject(govobj, &connman);
+            governance.AddGovernanceObject(govobj, *g_connman);
         }
 
         return govobj.GetHash().ToString();
@@ -367,7 +365,7 @@ UniValue gobject(const JSONRPCRequest& request)
         }
 
         CGovernanceException exception;
-        if(governance.ProcessVoteAndRelay(vote, exception, &connman)) {
+        if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
             nSuccessful++;
             statusObj.push_back(Pair("result", "success"));
         }
@@ -466,7 +464,7 @@ UniValue gobject(const JSONRPCRequest& request)
             }
 
             CGovernanceException exception;
-            if(governance.ProcessVoteAndRelay(vote, exception, &connman)) {
+            if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
                 nSuccessful++;
                 statusObj.push_back(Pair("result", "success"));
             }
@@ -588,7 +586,7 @@ UniValue gobject(const JSONRPCRequest& request)
             // UPDATE LOCAL DATABASE WITH NEW OBJECT SETTINGS
 
             CGovernanceException exception;
-            if(governance.ProcessVoteAndRelay(vote, exception, &connman)) {
+            if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
                 nSuccessful++;
                 statusObj.push_back(Pair("result", "success"));
             }
@@ -848,8 +846,6 @@ UniValue gobject(const JSONRPCRequest& request)
 
 UniValue voteraw(const JSONRPCRequest& request)
 {
-    CConnman& connman = *g_connman;
-
     if (request.fHelp || request.params.size() != 7)
         throw std::runtime_error(
                 "voteraw <masternode-tx-hash> <masternode-tx-index> <governance-hash> <vote-signal> [yes|no|abstain] <time> <vote-sig>\n"
@@ -901,7 +897,7 @@ UniValue voteraw(const JSONRPCRequest& request)
     }
 
     CGovernanceException exception;
-    if(governance.ProcessVoteAndRelay(vote, exception, &connman)) {
+    if(governance.ProcessVoteAndRelay(vote, exception, *g_connman)) {
         return "Voted successfully";
     }
     else {

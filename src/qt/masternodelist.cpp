@@ -104,8 +104,6 @@ void MasternodeList::showContextMenu(const QPoint &point)
 
 void MasternodeList::StartAlias(std::string strAlias)
 {
-    CConnman& connman = *g_connman;
-
     std::string strStatusHtml;
     strStatusHtml += "<center>Alias: " + strAlias;
 
@@ -117,14 +115,14 @@ void MasternodeList::StartAlias(std::string strAlias)
             bool fSuccess = CMasternodeBroadcast::Create(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strError, mnb);
 
             int nDoS;
-            if (fSuccess && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, g_connman.release())) {
+            if (fSuccess && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, *g_connman)) {
                 strError = "Failed to verify MNB";
                 fSuccess = false;
             }
             
             if(fSuccess) {
                 strStatusHtml += "<br>Successfully started masternode.";
-                mnodeman.NotifyMasternodeUpdates(&connman);
+                mnodeman.NotifyMasternodeUpdates(*g_connman);
             } else {
                 strStatusHtml += "<br>Failed to start masternode.<br>Error: " + strError;
             }
@@ -142,8 +140,6 @@ void MasternodeList::StartAlias(std::string strAlias)
 
 void MasternodeList::StartAll(std::string strCommand)
 {
-    CConnman& connman = *g_connman;
-
     int nCountSuccessful = 0;
     int nCountFailed = 0;
     std::string strFailedHtml;
@@ -164,14 +160,14 @@ void MasternodeList::StartAll(std::string strCommand)
         bool fSuccess = CMasternodeBroadcast::Create(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strError, mnb);
 
         int nDoS;
-        if (fSuccess && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, g_connman.release())) {
+        if (fSuccess && !mnodeman.CheckMnbAndUpdateMasternodeList(NULL, mnb, nDoS, *g_connman)) {
             strError = "Failed to verify MNB";
             fSuccess = false;
         }
 
         if(fSuccess) {
             nCountSuccessful++;
-            mnodeman.NotifyMasternodeUpdates(&connman);
+            mnodeman.NotifyMasternodeUpdates(*g_connman);
         } else {
             nCountFailed++;
             strFailedHtml += "\nFailed to start " + mne.getAlias() + ". Error: " + strError;

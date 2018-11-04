@@ -1846,7 +1846,7 @@ bool AppInitMain()
   
     // ********************************************************* Step 11d: start mac-ps-<smth> threads
 
-    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, &connman));
+    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(*g_connman)));
 
     // ********************************************************* Step 11: start node
 
@@ -1937,7 +1937,7 @@ bool AppInitMain()
     return true;
 }
 
-void ThreadCheckMasternode(CConnman* connman)
+void ThreadCheckMasternode(CConnman& connman)
 {
     if(fLiteMode) return; // disable all Machinecoin specific functionality
 

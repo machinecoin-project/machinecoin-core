@@ -56,7 +56,7 @@ std::string CMasternodeSync::GetAssetName()
     }
 }
 
-void CMasternodeSync::SwitchToNextAsset(CConnman* connman)
+void CMasternodeSync::SwitchToNextAsset(CConnman& connman)
 {
     switch(nRequestedMasternodeAssets)
     {
@@ -89,7 +89,7 @@ void CMasternodeSync::SwitchToNextAsset(CConnman* connman)
             //try to activate our masternode if possible
             activeMasternode.ManageState(connman);
 
-            connman->ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
+            connman.ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
                 netfulfilledman.AddFulfilledRequest(pnode->addr, "full-sync");
             });
             LogPrint(MCLog::MN, "CMasternodeSync::SwitchToNextAsset -- Sync has finished\n");
@@ -130,7 +130,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, const std::string& strCommand
     }
 }
 
-void CMasternodeSync::ProcessTick(CConnman* connman)
+void CMasternodeSync::ProcessTick(CConnman& connman)
 {
     static int nTick = 0;
     if(nTick++ % MASTERNODE_SYNC_TICK_SECONDS != 0) return;
@@ -158,9 +158,9 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
 
     // gradually request the rest of the votes after sync finished
     if(IsSynced()) {
-        std::vector<CNode*> vNodesCopy = connman->CopyNodeVector(CConnman::FullyConnectedOnly);
+        std::vector<CNode*> vNodesCopy = connman.CopyNodeVector(CConnman::FullyConnectedOnly);
         governance.RequestGovernanceObjectVotes(vNodesCopy, connman);
-        connman->ReleaseNodeVector(vNodesCopy);
+        connman.ReleaseNodeVector(vNodesCopy);
         return;
     }
 
@@ -169,7 +169,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
     LogPrint(MCLog::MN, "CMasternodeSync::ProcessTick -- nTick %d nRequestedMasternodeAssets %d nRequestedMasternodeAttempt %d nSyncProgress %f\n", nTick, nRequestedMasternodeAssets, nRequestedMasternodeAttempt, nSyncProgress);
     uiInterface.NotifyAdditionalDataSyncProgressChanged(nSyncProgress);
 
-    std::vector<CNode*> vNodesCopy = connman->CopyNodeVector(CConnman::FullyConnectedOnly);
+    std::vector<CNode*> vNodesCopy = connman.CopyNodeVector(CConnman::FullyConnectedOnly);
 
     for (auto& pnode : vNodesCopy)
     {
@@ -188,7 +188,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                 mnodeman.DsegUpdate(pnode, connman);
             } else if(nRequestedMasternodeAttempt < 4) {
                 //sync payment votes
-                if(pnode->nVersion == 70021) {
+                if(pnode->nVersion == 70018) {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit())); //sync payment votes
                 } else {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC)); //sync payment votes
@@ -240,17 +240,17 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                         LogPrint(MCLog::MN, "CMasternodeSync::ProcessTick -- ERROR: failed to sync %s\n", GetAssetName());
                         // there is no way we can continue without masternode list, fail here and try later
                         Fail();
-                        connman->ReleaseNodeVector(vNodesCopy);
+                        connman.ReleaseNodeVector(vNodesCopy);
                         return;
                     }
                     SwitchToNextAsset(connman);
-                    connman->ReleaseNodeVector(vNodesCopy);
+                    connman.ReleaseNodeVector(vNodesCopy);
                     return;
                 }
                 
                 // request from three peers max
                 if (nRequestedMasternodeAttempt > 2) {
-                    connman->ReleaseNodeVector(vNodesCopy);
+                    connman.ReleaseNodeVector(vNodesCopy);
                     return;
                 }
 
@@ -263,7 +263,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
 
                 mnodeman.DsegUpdate(pnode, connman);
 
-                connman->ReleaseNodeVector(vNodesCopy);
+                connman.ReleaseNodeVector(vNodesCopy);
                 return; //this will cause each peer to get one request each six seconds for the various assets we need
             }
 
@@ -280,11 +280,11 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                         LogPrint(MCLog::MN, "CMasternodeSync::ProcessTick -- ERROR: failed to sync %s\n", GetAssetName());
                         // probably not a good idea to proceed without winner list
                         Fail();
-                        connman->ReleaseNodeVector(vNodesCopy);
+                        connman.ReleaseNodeVector(vNodesCopy);
                         return;
                     }
                     SwitchToNextAsset(connman);
-                    connman->ReleaseNodeVector(vNodesCopy);
+                    connman.ReleaseNodeVector(vNodesCopy);
                     return;
                 }
 
@@ -294,13 +294,13 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                 if(nRequestedMasternodeAttempt > 1 && mnpayments.IsEnoughData()) {
                     LogPrint(MCLog::MN, "CMasternodeSync::ProcessTick -- nTick %d nRequestedMasternodeAssets %d -- found enough data\n", nTick, nRequestedMasternodeAssets);
                     SwitchToNextAsset(connman);
-                    connman->ReleaseNodeVector(vNodesCopy);
+                    connman.ReleaseNodeVector(vNodesCopy);
                     return;
                 }
                 
                 // request from three peers max
                 if (nRequestedMasternodeAttempt > 2) {
-                    connman->ReleaseNodeVector(vNodesCopy);
+                    connman.ReleaseNodeVector(vNodesCopy);
                     return;
                 }
 
@@ -313,7 +313,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
 
                 // ask node for all payment votes it has (new nodes will only return votes for future payments)
                 //sync payment votes
-                if(pnode->nVersion == 70021) {
+                if(pnode->nVersion == 70018) {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC, mnpayments.GetStorageLimit()));
                 } else {
                     connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MASTERNODEPAYMENTSYNC));
@@ -339,7 +339,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                         // it's kind of ok to skip this for now, hopefully we'll catch up later?
                     }
                     SwitchToNextAsset(connman);
-                    connman->ReleaseNodeVector(vNodesCopy);
+                    connman.ReleaseNodeVector(vNodesCopy);
                     return;
                 }
 
@@ -368,7 +368,7 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
                             // reset nTimeNoObjectsLeft to be able to use the same condition on resync
                             nTimeNoObjectsLeft = 0;
                             SwitchToNextAsset(connman);
-                            connman->ReleaseNodeVector(vNodesCopy);
+                            connman.ReleaseNodeVector(vNodesCopy);
                             return;
                         }
                         nLastTick = nTick;
@@ -383,28 +383,28 @@ void CMasternodeSync::ProcessTick(CConnman* connman)
 
                 SendGovernanceSyncRequest(pnode, connman);
 
-                connman->ReleaseNodeVector(vNodesCopy);
+                connman.ReleaseNodeVector(vNodesCopy);
                 return; //this will cause each peer to get one request each six seconds for the various assets we need
             }
         }
     }
     // looped through all nodes, release them
-    connman->ReleaseNodeVector(vNodesCopy);
+    connman.ReleaseNodeVector(vNodesCopy);
 }
 
-void CMasternodeSync::SendGovernanceSyncRequest(CNode* pnode, CConnman* connman)
+void CMasternodeSync::SendGovernanceSyncRequest(CNode* pnode, CConnman& connman)
 {
     const CNetMsgMaker msgMaker(pnode->GetSendVersion());
     if(pnode->nVersion >= GOVERNANCE_FILTER_PROTO_VERSION) {
         CBloomFilter filter;
         filter.clear();
 
-        connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256(), filter));
-        // connman->PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256(), filter);
+        connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256(), filter));
+        // connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256(), filter);
     }
     else {
-        connman->PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256()));
-        // connman->PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256());
+        connman.PushMessage(pnode, msgMaker.Make(NetMsgType::MNGOVERNANCESYNC, uint256()));
+        // connman.PushMessage(pnode, NetMsgType::MNGOVERNANCESYNC, uint256());
     }
 }
 
@@ -418,7 +418,7 @@ void CMasternodeSync::AcceptedBlockHeader(const CBlockIndex *pindexNew)
     }
 }
 
-void CMasternodeSync::NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload, CConnman* connman)
+void CMasternodeSync::NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload, CConnman& connman)
 {
     LogPrint(MCLog::MN, "CMasternodeSync::NotifyHeaderTip -- pindexNew->nHeight: %d fInitialDownload=%d\n", pindexNew->nHeight, fInitialDownload);
 
@@ -431,7 +431,7 @@ void CMasternodeSync::NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitia
     }
 }
 
-void CMasternodeSync::UpdatedBlockTip(const CBlockIndex *pindexNew, bool fInitialDownload, CConnman* connman)
+void CMasternodeSync::UpdatedBlockTip(const CBlockIndex *pindexNew, bool fInitialDownload, CConnman& connman)
 {
     LogPrint(MCLog::MN, "CMasternodeSync::UpdatedBlockTip -- pindexNew->nHeight: %d fInitialDownload=%d\n", pindexNew->nHeight, fInitialDownload);
 

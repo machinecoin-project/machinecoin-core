@@ -169,8 +169,8 @@ public:
     bool Sign();
     bool CheckSignature(const CPubKey& pubKeyMasternode, int nValidationHeight, int &nDos) const;
 
-    bool IsValid(CNode* pnode, int nValidationHeight, std::string& strError, CConnman* connman) const;
-    void Relay(CConnman* connman) const;
+    bool IsValid(CNode* pnode, int nValidationHeight, std::string& strError, CConnman& connman) const;
+    void Relay(CConnman& connman) const;
 
     bool IsVerified() const { return !vchSig.empty(); }
     void MarkAsNotVerified() { vchSig.clear(); }
@@ -214,11 +214,11 @@ public:
 
     bool AddOrUpdatePaymentVote(const CMasternodePaymentVote& vote);
     bool HasVerifiedPaymentVote(const uint256& hashIn) const;
-    bool ProcessBlock(int nBlockHeight, CConnman* connman);
+    bool ProcessBlock(int nBlockHeight, CConnman& connman);
     void CheckBlockVotes(int nBlockHeight);
 
-    void Sync(CNode* node, CConnman* connman) const;
-    void RequestLowDataPaymentBlocks(CNode* pnode, CConnman* connman) const;
+    void Sync(CNode* node, CConnman& connman) const;
+    void RequestLowDataPaymentBlocks(CNode* pnode, CConnman& connman) const;
     void CheckAndRemove();
 
     bool GetBlockPayee(int nBlockHeight, CScript& payeeRet) const;
@@ -228,7 +228,7 @@ public:
     bool UpdateLastVote(const CMasternodePaymentVote& vote);
 
     int GetMinMasternodePaymentsProto() const;
-    void ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman* connman);
+    void ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman);
     std::string GetRequiredPaymentsString(int nBlockHeight) const;
     void FillBlockPayee(CMutableTransaction& txNew, int nBlockHeight, CAmount blockReward, CTxOut& txoutMasternodeRet) const;
     std::string ToString() const;
@@ -239,7 +239,7 @@ public:
     bool IsEnoughData() const;
     int GetStorageLimit() const;
 
-    void UpdatedBlockTip(const CBlockIndex *pindex, CConnman* connman);
+    void UpdatedBlockTip(const CBlockIndex *pindex, CConnman& connman);
 };
 
 #endif

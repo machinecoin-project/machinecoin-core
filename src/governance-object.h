@@ -275,7 +275,7 @@ public:
 
     UniValue GetJSONObject();
 
-    void Relay(CConnman* connman);
+    void Relay(CConnman& connman);
 
     uint256 GetHash() const;
 
@@ -310,7 +310,7 @@ public:
         READWRITE(nRevision);
         READWRITE(nTime);
         READWRITE(nCollateralHash);
-        if (nVersion == 70021 && (s.GetType() & SER_NETWORK)) {
+        if (nVersion == 70018 && (s.GetType() & SER_NETWORK)) {
             // converting from/to old format
             std::string strDataHex;
             if (ser_action.ForRead()) {
@@ -325,7 +325,7 @@ public:
             READWRITE(vchData);
         }
         READWRITE(nObjectType);
-        if (nVersion == 70021 && (s.GetType() & SER_NETWORK)) {
+        if (nVersion == 70018 && (s.GetType() & SER_NETWORK)) {
             // converting from/to old format
             CTxIn txin;
             if (ser_action.ForRead()) {
@@ -369,12 +369,12 @@ private:
     bool ProcessVote(CNode* pfrom,
                      const CGovernanceVote& vote,
                      CGovernanceException& exception,
-                     CConnman* connman);
+                     CConnman& connman);
 
     /// Called when MN's which have voted on this object have been removed
     void ClearMasternodeVotes();
 
-    void CheckOrphanVotes(CConnman* connman);
+    void CheckOrphanVotes(CConnman& connman);
 
 };
 

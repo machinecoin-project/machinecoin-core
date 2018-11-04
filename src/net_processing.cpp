@@ -899,7 +899,7 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
 void PeerLogicValidation::InitializeCurrentBlockTip(const CBlockIndex *pindexNew) {
     bool fInitialDownload = IsInitialBlockDownload();
 
-    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
+    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, *connman);
 
     if (fInitialDownload)
         return;
@@ -908,8 +908,8 @@ void PeerLogicValidation::InitializeCurrentBlockTip(const CBlockIndex *pindexNew
         return;
 
     mnodeman.UpdatedBlockTip(pindexNew, false);
-    mnpayments.UpdatedBlockTip(pindexNew, connman);
-    governance.UpdatedBlockTip(pindexNew, connman);
+    mnpayments.UpdatedBlockTip(pindexNew, *connman);
+    governance.UpdatedBlockTip(pindexNew, *connman);
 }
 
 void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload) {
@@ -942,12 +942,12 @@ void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CB
 
     nTimeBestReceived = GetTime();
   
-    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, connman);
+    masternodeSync.UpdatedBlockTip(pindexNew, fInitialDownload, *connman);
 
     if (!fInitialDownload && !fLiteMode) {
         mnodeman.UpdatedBlockTip(pindexNew);
-        mnpayments.UpdatedBlockTip(pindexNew, connman);
-        governance.UpdatedBlockTip(pindexNew, connman);
+        mnpayments.UpdatedBlockTip(pindexNew, *connman);
+        governance.UpdatedBlockTip(pindexNew, *connman);
     }
 }
 
@@ -3005,10 +3005,10 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
         if (found)
         {
-            mnodeman.ProcessMessage(pfrom, strCommand, vRecv, connman);
-            mnpayments.ProcessMessage(pfrom, strCommand, vRecv, connman);
+            mnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+            mnpayments.ProcessMessage(pfrom, strCommand, vRecv, *connman);
             masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
-            governance.ProcessMessage(pfrom, strCommand, vRecv, connman);
+            governance.ProcessMessage(pfrom, strCommand, vRecv, *connman);
         }
         else
         {
