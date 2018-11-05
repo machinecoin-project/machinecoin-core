@@ -313,34 +313,41 @@ void CMasternode::UpdateLastPaid(const CBlockIndex *pindex, int nMaxBlocksToScan
 {
     if(!pindex) return;
     
-    const CBlockIndex *BlockReading = pindex;
+    const CBlockIndex *pindexActive = chainActive.Tip();
+    assert(pindexActive);
+
+    CDiskBlockPos blockPos = pindexActive->GetBlockPos();
 
     CScript mnpayee = GetScriptForDestination(CScriptID(GetScriptForDestination(WitnessV0KeyHash(pubKeyCollateralAddress.GetID()))));
-    LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", outpoint.ToStringShort());
+    //LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s\n", outpoint.ToStringShort());
 
     LOCK(cs_mapMasternodeBlocks);
 
-    for (int i = 0; BlockReading && BlockReading->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
-        if(mnpayments.mapMasternodeBlocks.count(BlockReading->nHeight) &&
-            mnpayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2))
+    for (int i = 0; pindexActive->nHeight > nBlockLastPaid && i < nMaxBlocksToScanBack; i++) {
+        if(mnpayments.mapMasternodeBlocks.count(pindexActive->nHeight) &&
+            mnpayments.mapMasternodeBlocks[pindexActive->nHeight].HasPayeeWithVotes(mnpayee, 2))
         {
+            if (blockPos.IsNull() == true) {
+                return;
+            }
+
             CBlock block;
-            if(!ReadBlockFromDisk(block, BlockReading, Params().GetConsensus()))
+            if(!ReadBlockFromDisk(block, blockPos, Params().GetConsensus()))
                 continue;
 
-            CAmount nMasternodePayment = GetMasternodePayment(BlockReading->nHeight, block.vtx[0]->GetValueOut());
+                CAmount nMasternodePayment = GetMasternodePayment(pindexActive->nHeight, block.vtx[0]->GetValueOut());
 
             for (const auto& txout : block.vtx[0]->vout)
                 if(mnpayee == txout.scriptPubKey && nMasternodePayment == txout.nValue) {
-                    nBlockLastPaid = BlockReading->nHeight;
-                    nTimeLastPaid = BlockReading->nTime;
+                    nBlockLastPaid = pindexActive->nHeight;
+                    nTimeLastPaid = pindexActive->nTime;
                     LogPrint(MCLog::MN, "CMasternode::UpdateLastPaidBlock -- searching for block with payment to %s -- found new %d\n", outpoint.ToStringShort(), nBlockLastPaid);
                     return;
                 }
         }
 
-        if (BlockReading->pprev == nullptr) { assert(BlockReading); break; }
-        BlockReading = BlockReading->pprev;
+        if (pindexActive->pprev == nullptr) { assert(pindexActive); break; }
+        pindexActive = pindexActive->pprev;
     }
 
     // Last payment for this masternode wasn't found in latest mnpayments blocks
@@ -629,7 +636,7 @@ bool CMasternodeBroadcast::Sign(const CKey& keyCollateralAddress)
 
     sigTime = GetAdjustedTime();
 
-    if (chainActive.Height() > 598000) {
+    if (chainActive.Height() > 600000) {
         uint256 hash = GetSignatureHash();
         if (!CHashSigner::SignHash(hash, keyCollateralAddress, vchSig)) {
             LogPrintf("CMasternodeBroadcast::Sign -- SignHash() failed\n");
@@ -663,7 +670,7 @@ bool CMasternodeBroadcast::CheckSignature(int& nDos) const
     std::string strError = "";
     nDos = 0;
 
-    if (chainActive.Height() > 598000) {
+    if (chainActive.Height() > 600000) {
         uint256 hash = GetSignatureHash();
         if (!CHashSigner::VerifyHash(hash, pubKeyCollateralAddress, vchSig, strError)) {
             // maybe it's in old format
@@ -708,7 +715,7 @@ void CMasternodeBroadcast::Relay(CConnman& connman) const
 uint256 CMasternodePing::GetHash() const
 {
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    if (chainActive.Height() > 598000) {
+    if (chainActive.Height() > 600000) {
         ss << masternodeOutpoint;
         ss << blockHash;
         ss << sigTime;
@@ -746,7 +753,7 @@ bool CMasternodePing::Sign(const CKey& keyMasternode, const CPubKey& pubKeyMaste
 
     sigTime = GetAdjustedTime();
 
-    if (chainActive.Height() > 598000) {
+    if (chainActive.Height() > 600000) {
         uint256 hash = GetSignatureHash();
         if (!CHashSigner::SignHash(hash, keyMasternode, vchSig)) {
             LogPrintf("CMasternodePing::Sign -- SignHash() failed\n");
@@ -780,7 +787,7 @@ bool CMasternodePing::CheckSignature(const CPubKey& pubKeyMasternode, int &nDos)
     std::string strError = "";
     nDos = 0;
 
-    if (chainActive.Height() > 598000) {
+    if (chainActive.Height() > 600000) {
         uint256 hash = GetSignatureHash();
 
         if (!CHashSigner::VerifyHash(hash, pubKeyMasternode, vchSig, strError)) {
