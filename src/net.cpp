@@ -2372,13 +2372,14 @@ bool CConnman::Start(CScheduler& scheduler, const Options& connOptions)
         // initialize semaphore
         semOutbound = MakeUnique<CSemaphore>(std::min((nMaxOutbound + nMaxFeeler), nMaxConnections));
     }
-    if (semMasternodeOutbound == nullptr) {
-        // initialize semaphore
-        semMasternodeOutbound = MakeUnique<CSemaphore>(std::min((nMaxMasternodeOutbound + nMaxFeeler), nMaxConnections));
-    }
     if (semAddnode == nullptr) {
         // initialize semaphore
         semAddnode = MakeUnique<CSemaphore>(nMaxAddnode);
+    }
+
+    if (semMasternodeOutbound == nullptr) {
+        // initialize semaphore
+        semMasternodeOutbound = MakeUnique<CSemaphore>(MAX_OUTBOUND_MASTERNODE_CONNECTIONS);
     }
 
     //
@@ -2464,6 +2465,12 @@ void CConnman::Interrupt()
             semAddnode->post();
         }
     }
+
+    if (semMasternodeOutbound) {
+        for (int i=0; i<MAX_OUTBOUND_MASTERNODE_CONNECTIONS; i++) {
+            semMasternodeOutbound->post();
+        }
+    }
 }
 
 void CConnman::Stop()
@@ -2506,8 +2513,8 @@ void CConnman::Stop()
     vNodesDisconnected.clear();
     vhListenSocket.clear();
     semOutbound.reset();
-    semMasternodeOutbound.reset();
     semAddnode.reset();
+    semMasternodeOutbound.reset();
 }
 
 void CConnman::DeleteNode(CNode* pnode)
