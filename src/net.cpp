@@ -1998,7 +1998,7 @@ void CConnman::ThreadOpenMasternodeConnections(const std::vector<std::string> co
             continue;
         }
         
-        OpenMasternodeConnection(CAddress(addr, NODE_NETWORK));
+        OpenMasternodeConnection(CAddress(addr, NODE_NONE));
         // should be in the list now if connection was opened
 
         ForNode(addr, CConnman::AllNodes, [&](CNode* pnode) {
