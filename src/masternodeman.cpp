@@ -789,7 +789,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if (CheckMnbAndUpdateMasternodeList(pfrom, mnb, nDos, connman)) {
             // use announced Masternode as a peer
             std::vector<CAddress> vAddr;
-            CAddress mnbAddr = CAddress(mnb.addr, NODE_NETWORK);
+            CAddress mnbAddr = CAddress(mnb.addr, NODE_NONE);
             pfrom->AddAddressKnown(mnbAddr);
             bool fReachable = IsReachable(mnbAddr);
             if (fReachable)

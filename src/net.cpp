@@ -1994,7 +1994,7 @@ void CConnman::ThreadOpenMasternodeConnections()
             continue;
         }
 
-        OpenMasternodeConnection(CAddress(addr, NODE_WITNESS));
+        OpenMasternodeConnection(CAddress(addr, NODE_NONE));
         // should be in the list now if connection was opened
 
         ForNode(addr, CConnman::AllNodes, [&](CNode* pnode) {
