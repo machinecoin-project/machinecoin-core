@@ -1968,12 +1968,8 @@ void CConnman::ThreadOpenAddedConnections()
     }
 }
 
-void CConnman::ThreadOpenMasternodeConnections(const std::vector<std::string> connect)
+void CConnman::ThreadOpenMasternodeConnections()
 {
-    // Connecting to specific addresses, no masternode connections available
-    if (!connect.empty())
-        return;
-
     while (!interruptNet)
     {
         if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
@@ -1997,8 +1993,8 @@ void CConnman::ThreadOpenMasternodeConnections(const std::vector<std::string> co
             // nothing to do, try the next one
             continue;
         }
-        
-        OpenMasternodeConnection(CAddress(addr, NODE_NONE));
+
+        OpenMasternodeConnection(CAddress(addr, NODE_WITNESS));
         // should be in the list now if connection was opened
 
         ForNode(addr, CConnman::AllNodes, [&](CNode* pnode) {
@@ -2417,7 +2413,7 @@ bool CConnman::Start(CScheduler& scheduler, const Options& connOptions)
     if (connOptions.m_use_addrman_outgoing || !connOptions.m_specified_outgoing.empty())
         threadOpenConnections = std::thread(&TraceThread<std::function<void()> >, "opencon", std::function<void()>(std::bind(&CConnman::ThreadOpenConnections, this, connOptions.m_specified_outgoing)));
     
-    threadOpenMasternodeConnections = std::thread(&TraceThread<std::function<void()> >, "mncon", std::function<void()>(std::bind(&CConnman::ThreadOpenMasternodeConnections, this, connOptions.m_specified_outgoing)));
+    threadOpenMasternodeConnections = std::thread(&TraceThread<std::function<void()> >, "mncon", std::function<void()>(std::bind(&CConnman::ThreadOpenMasternodeConnections, this)));
 
     // Process messages
     threadMessageHandler = std::thread(&TraceThread<std::function<void()> >, "msghand", std::function<void()>(std::bind(&CConnman::ThreadMessageHandler, this)));

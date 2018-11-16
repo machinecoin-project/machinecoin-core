@@ -789,7 +789,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if (CheckMnbAndUpdateMasternodeList(pfrom, mnb, nDos, connman)) {
             // use announced Masternode as a peer
             std::vector<CAddress> vAddr;
-            vAddr.push_back(CAddress(mnb.addr, NODE_NONE));
+            vAddr.push_back(CAddress(mnb.addr, NODE_WITNESS));
             connman.AddNewAddresses(vAddr, pfrom->addr, 2*60*60);
         } else if(nDos > 0) {
             LOCK(cs_main);
