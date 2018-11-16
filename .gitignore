@@ -1,4 +1,4 @@
-﻿*.tar.gz
+*.tar.gz
 
 *.exe
 src/machinecoin
@@ -118,3 +118,5 @@ libmachinecoinconsensus.pc
 contrib/devtools/split-debug.sh
 
 !depends/patches/*
+.vscode/settings.json
+.vscode/c_cpp_properties.json

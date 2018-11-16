@@ -770,7 +770,7 @@ void CMasternodeMan::ProcessPendingMnbRequests(CConnman& connman)
 }
 
 void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
-{  
+{
     if(fLiteMode) return; // disable all Machinecoin specific functionality
 
     if (strCommand == NetMsgType::MNANNOUNCE) { //Masternode Broadcast
@@ -789,8 +789,13 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if (CheckMnbAndUpdateMasternodeList(pfrom, mnb, nDos, connman)) {
             // use announced Masternode as a peer
             std::vector<CAddress> vAddr;
-            vAddr.push_back(CAddress(mnb.addr, NODE_WITNESS));
-            connman.AddNewAddresses(vAddr, pfrom->addr, 2*60*60);
+
+            vAddr.push_back(CAddress(mnb.addr, NODE_NETWORK));
+            pfrom->AddAddressKnown(CAddress(mnb.addr, NODE_NETWORK));
+            bool fReachable = IsReachable(CAddress(mnb.addr, NODE_NETWORK));
+            if (fReachable) {
+                connman.AddNewAddresses(vAddr, pfrom->addr, 2*60*60);
+            }
         } else if(nDos > 0) {
             LOCK(cs_main);
             Misbehaving(pfrom->GetId(), nDos);
@@ -799,7 +804,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
         if(fMasternodesAdded) {
             NotifyMasternodeUpdates(connman);
         }
-    } else if (strCommand == NetMsgType::MNPING) { //Masternode Ping        
+    } else if (strCommand == NetMsgType::MNPING) { //Masternode Ping
         CMasternodePing mnp;
         vRecv >> mnp;
 
@@ -1248,7 +1253,7 @@ void CMasternodeMan::ProcessVerifyReply(CNode* pnode, CMasternodeVerification& m
 
         CMasternode* prealMasternode = NULL;
         std::vector<CMasternode*> vpMasternodesToBan;
-        
+
         uint256 hash1 = mnv.GetSignatureHash1(blockHash);
         std::string strMessage1 = strprintf("%s%d%s", pnode->addr.ToString(), mnv.nonce, blockHash.ToString());
         for (auto& mnpair : mapMasternodes) {
