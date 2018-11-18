@@ -2853,7 +2853,7 @@ CNode::~CNode()
     CloseSocket(hSocket);
 
     if (pfilter)
-        delete pfilter;
+        pfilter.reset();
 }
 
 void CNode::AskFor(const CInv& inv)
