@@ -467,7 +467,7 @@ CNode* CConnman::ConnectNode(CAddress addrConnect, const char *pszDest, bool fCo
     uint64_t nonce = GetDeterministicRandomizer(RANDOMIZER_ID_LOCALHOSTNONCE).Write(id).Finalize();
     CAddress addr_bind = GetBindAddress(hSocket);
     CNode* pnode = new CNode(id, nLocalServices, GetBestHeight(), hSocket, addrConnect, CalculateKeyedNetGroup(addrConnect), nonce, addr_bind, pszDest ? pszDest : "", false);
-    
+
     pnode->AddRef();
 
     return pnode;
@@ -1196,11 +1196,7 @@ void CConnman::ThreadSocketHandler()
                     pnode->CloseSocketDisconnect();
 
                     // hold in disconnected pool until all refs are released
-                    if (pnode->fInbound)
-                        pnode->Release();
-                    if (pnode->fMasternode)
-                        pnode->Release();
-
+                    pnode->Release();
                     vNodesDisconnected.push_back(pnode);
                 }
             }
@@ -1998,7 +1994,7 @@ void CConnman::ThreadOpenMasternodeConnections(const std::vector<std::string> co
             continue;
         }
 
-        OpenMasternodeConnection(CAddress(addr, NODE_NONE));
+        OpenMasternodeConnection(CAddress(addr, NODE_NETWORK));
         // should be in the list now if connection was opened
 
         ForNode(addr, CConnman::AllNodes, [&](CNode* pnode) {
@@ -2052,7 +2048,7 @@ bool CConnman::OpenNetworkConnection(const CAddress& addrConnect, bool fCountFai
         LOCK(cs_vNodes);
         vNodes.push_back(pnode);
     }
-    
+
     return true;
 }
 
@@ -2850,6 +2846,9 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
 CNode::~CNode()
 {
     CloseSocket(hSocket);
+
+    if (pfilter)
+        delete pfilter;
 }
 
 void CNode::AskFor(const CInv& inv)
@@ -2926,19 +2925,6 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
     }
     if (nBytesSent)
         RecordBytesSent(nBytesSent);
-}
-
-bool CConnman::ForNode(NodeId id, std::function<bool(CNode* pnode)> func)
-{
-    CNode* found = nullptr;
-    LOCK(cs_vNodes);
-    for (auto&& pnode : vNodes) {
-        if(pnode->GetId() == id) {
-            found = pnode;
-            break;
-        }
-    }
-    return found != nullptr && NodeFullyConnected(found) && func(found);
 }
 
 bool CConnman::ForNode(const CService& addr, std::function<bool(const CNode* pnode)> cond, std::function<bool(CNode* pnode)> func)

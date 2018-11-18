@@ -788,13 +788,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, const std::string& strCommand,
 
         if (CheckMnbAndUpdateMasternodeList(pfrom, mnb, nDos, connman)) {
             // use announced Masternode as a peer
-            std::vector<CAddress> vAddr;
-            CAddress mnbAddr = CAddress(mnb.addr, NODE_NONE);
-            pfrom->AddAddressKnown(mnbAddr);
-            bool fReachable = IsReachable(mnbAddr);
-            if (fReachable)
-                vAddr.push_back(mnbAddr);
-            connman.AddNewAddresses(vAddr, pfrom->addr, 2 * 60 * 60);
+            connman.AddNewAddress(CAddress(mnb.addr, NODE_NETWORK), pfrom->addr, 2*60*60);
         } else if(nDos > 0) {
             LOCK(cs_main);
             Misbehaving(pfrom->GetId(), nDos);
@@ -1029,7 +1023,7 @@ void CMasternodeMan::DoFullVerificationStep(CConnman& connman)
         }
         LogPrint(MCLog::MN, "CMasternodeMan::DoFullVerificationStep -- Verifying masternode %s rank %d/%d address %s\n",
                     it->second.outpoint.ToStringShort(), it->first, nRanksTotal, it->second.addr.ToString());
-        if(SendVerifyRequest(CAddress(it->second.addr, NODE_NONE), vSortedByAddr, connman)) {
+        if(SendVerifyRequest(CAddress(it->second.addr, NODE_NETWORK), vSortedByAddr, connman)) {
             nCount++;
             if(nCount >= MAX_POSE_CONNECTIONS) break;
         }
@@ -1256,7 +1250,7 @@ void CMasternodeMan::ProcessVerifyReply(CNode* pnode, CMasternodeVerification& m
         uint256 hash1 = mnv.GetSignatureHash1(blockHash);
         std::string strMessage1 = strprintf("%s%d%s", pnode->addr.ToString(), mnv.nonce, blockHash.ToString());
         for (auto& mnpair : mapMasternodes) {
-            if(CAddress(mnpair.second.addr, NODE_NONE) == pnode->addr) {
+            if(CAddress(mnpair.second.addr, NODE_NETWORK) == pnode->addr) {
                 bool fFound = false;
                 if (chainActive.Height() > 594000) {
                     fFound = CHashSigner::VerifyHash(hash1, mnpair.second.pubKeyMasternode, mnv.vchSig1, strError);
