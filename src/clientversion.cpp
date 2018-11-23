@@ -43,8 +43,8 @@ const std::string CLIENT_NAME("Octopus");
 //! git will put "#define GIT_ARCHIVE 1" on the next line inside archives. 
 #define GIT_ARCHIVE 1
 #ifdef GIT_ARCHIVE
-#define GIT_COMMIT_ID "814d134"
-#define GIT_COMMIT_DATE "Mon, 30 Jan 2017 23:44:31 +0100"
+#define GIT_COMMIT_ID "88b96ef"
+#define GIT_COMMIT_DATE "Sun, 18 Nov 2018 16:14:08 +0100"
 #endif
 
 #define BUILD_DESC_WITH_SUFFIX(maj, min, rev, build, suffix) \
@@ -81,7 +81,7 @@ std::string FormatFullVersion()
     return CLIENT_BUILD;
 }
 
-/** 
+/**
  * Format the subversion field according to BIP 14 spec (https://github.com/machinecoin/bips/blob/master/bip-0014.mediawiki) 
  */
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)

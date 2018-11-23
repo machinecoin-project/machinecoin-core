@@ -107,10 +107,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1550347200; // Feb 16, 2019 pm.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("00000000000000000000000000000000000000000000000001a9edf0c5499215");
+        consensus.nMinimumChainWork = uint256S("000000000000000000000000000000000000000000000000030bd561ce05e8df");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x854816f4b359a412045ef921a509f87cf6d3b1e611f9de3e055d621a293a56af"); // 525273
+        consensus.defaultAssumeValid = uint256S("0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3"); // 609672
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -144,7 +144,7 @@ public:
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,178); // Machinecoin 2
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
-        
+
         bech32_hrp = "mc";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
@@ -152,7 +152,7 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        
+
         checkpointData = {
             {
                 { 23021, uint256S("0x0268f4e816aac0874c911c83e263353289854c94a21cf97675652419893e7d8f")},  // Machinecoin: checkpoint at 23021
@@ -172,17 +172,18 @@ public:
                 {521234, uint256S("0x984955d6caeec86e92ba36dc6d35c2f4a0593f4b1415cd166f3f5ad7ebcff5b7")},  // Machinecoin: checkpoint at 521234
                 {525273, uint256S("0x854816f4b359a412045ef921a509f87cf6d3b1e611f9de3e055d621a293a56af")},  // Machinecoin: checkpoint at 525273
                 {590590, uint256S("0x99a5e123915a7c4b1ac303c0959150bac5cda54d4256a4ebc992e6d0e334a518")},  // Machinecoin: checkpoint at 590590
+                {609672, uint256S("0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3")},  // Machinecoin: checkpoint at 609672
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x99a5e123915a7c4b1ac303c0959150bac5cda54d4256a4ebc992e6d0e334a518 (height 590590).
-            1539827937, // * UNIX timestamp of last known number of transactions
-            678764,     // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3 (height 609672).
+            1542951371, // * UNIX timestamp of last known number of transactions
+            698813,     // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
             1.0       // * estimated number of transactions per second after that timestamp
         };
-      
+
         // Masternodes
         consensus.nMasternodePaymentsStartBlock = 513000;
         consensus.nSuperblockStartBlock = 513000;

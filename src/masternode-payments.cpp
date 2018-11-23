@@ -123,7 +123,7 @@ bool IsBlockPayeeValid(const CTransactionRef& txNew, int nBlockHeight, CAmount b
         LogPrint(MCLog::MN, "IsBlockPayeeValid -- Valid masternode payment at height %d: %s", nBlockHeight, txNew->ToString());
         return true;
     }
-    
+
     if (EnforceMasternodePayments(nBlockHeight)) {
         LogPrintf("IsBlockPayeeValid -- ERROR: Invalid masternode payment detected at height %d: %s", nBlockHeight, txNew->ToString());
         return false;
@@ -551,7 +551,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew, in
                     return true;
                 }
             }
-            
+
             CTxDestination address;
             ExtractDestination(payee.GetPayee(), address);
 

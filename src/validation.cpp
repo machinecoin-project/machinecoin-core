@@ -2060,7 +2060,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
         return state.DoS(20, error("ConnectBlock(MAC): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
-    
+
     if (pindex->nHeight > Params().GetConsensus().nMasternodePaymentsStartBlock) {
         if (!IsBlockPayeeValid(block.vtx[0], pindex->nHeight, blockReward)) {
             return state.DoS(20, error("ConnectBlock(MAC): couldn't find masternode or superblock payments"),
