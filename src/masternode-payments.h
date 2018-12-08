@@ -18,7 +18,7 @@ class CMasternodePaymentVote;
 class CMasternodeBlockPayees;
 class CChainParams;
 
-static const int MNPAYMENTS_SIGNATURES_REQUIRED         = 6;
+static const int MNPAYMENTS_SIGNATURES_REQUIRED         = 2;
 static const int MNPAYMENTS_SIGNATURES_TOTAL            = 10;
 static const int MN_PAYMENTS_UPDATE_THRESHOLD           = 4000;
 
@@ -108,7 +108,7 @@ public:
     bool GetBestPayee(CScript& payeeRet) const;
     bool HasPayeeWithVotes(const CScript& payeeIn, int nVotesReq) const;
 
-    bool IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward) const;
+    bool IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight) const;
 
     std::string GetRequiredPaymentsString() const;
 };
@@ -222,7 +222,7 @@ public:
     void CheckAndRemove();
 
     bool GetBlockPayee(int nBlockHeight, CScript& payeeRet) const;
-    bool IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward) const;
+    bool IsTransactionValid(const CTransactionRef& txNew, int nBlockHeight) const;
     bool IsScheduled(const masternode_info_t& mnInfo, int nNotBlockHeight) const;
 
     bool UpdateLastVote(const CMasternodePaymentVote& vote);
