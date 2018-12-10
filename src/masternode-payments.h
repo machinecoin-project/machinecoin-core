@@ -26,7 +26,7 @@ static const int MN_PAYMENTS_UPDATE_THRESHOLD           = 4000;
 //  vote for masternode and be elected as a payment winner
 // V1 - Last protocol version before update
 // V2 - Newest protocol version
-static const int MIN_MASTERNODE_PAYMENT_PROTO_VERSION = 70021;
+static const int MIN_MASTERNODE_PAYMENT_PROTO_VERSION = 70022;
 
 extern CCriticalSection cs_vecPayees;
 extern CCriticalSection cs_mapMasternodeBlocks;

@@ -107,10 +107,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1550347200; // Feb 16, 2019 pm.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("000000000000000000000000000000000000000000000000030bd561ce05e8df");
+        consensus.nMinimumChainWork = uint256S("000000000000000000000000000000000000000000000000030e850e3b4e9768");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3"); // 609672
+        consensus.defaultAssumeValid = uint256S("0x133ed771c8ed7f0871f62e6a6fcd00c104f7af8f0404bc778db367b178684317"); // 619239
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -173,13 +173,14 @@ public:
                 {525273, uint256S("0x854816f4b359a412045ef921a509f87cf6d3b1e611f9de3e055d621a293a56af")},  // Machinecoin: checkpoint at 525273
                 {590590, uint256S("0x99a5e123915a7c4b1ac303c0959150bac5cda54d4256a4ebc992e6d0e334a518")},  // Machinecoin: checkpoint at 590590
                 {609672, uint256S("0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3")},  // Machinecoin: checkpoint at 609672
+                {619239, uint256S("0x133ed771c8ed7f0871f62e6a6fcd00c104f7af8f0404bc778db367b178684317")},  // Machinecoin: checkpoint at 619239
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3 (height 609672).
-            1542951371, // * UNIX timestamp of last known number of transactions
-            698813,     // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x133ed771c8ed7f0871f62e6a6fcd00c104f7af8f0404bc778db367b178684317 (height 619239).
+            1544466913, // * UNIX timestamp of last known number of transactions
+            709176,     // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
             1.0       // * estimated number of transactions per second after that timestamp
         };
