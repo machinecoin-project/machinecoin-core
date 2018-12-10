@@ -530,7 +530,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew, in
     int nMaxSignatures = 0;
     std::string strPayeesPossible = "";
 
-    CAmount nMasternodePayment = GetMasternodePayment(nBlockHeight, txNew.GetValueOut());
+    CAmount nMasternodePayment = GetMasternodePayment(nBlockHeight, txNew->GetValueOut());
 
     //require at least MNPAYMENTS_SIGNATURES_REQUIRED signatures
 
@@ -541,7 +541,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransactionRef& txNew, in
     }
 
     LogPrintf("nBlockHeight=%u\n", nBlockHeight);
-    LogPrintf("txNew.GetValueOut()=%f\n", (float)txNew.GetValueOut()/COIN);
+    LogPrintf("txNew.GetValueOut()=%f\n", (float)txNew->GetValueOut()/COIN);
     LogPrintf("nMaxSignatures=%d\n", nMaxSignatures);
     LogPrintf("MNPAYMENTS_SIGNATURES_REQUIRED=%d\n", MNPAYMENTS_SIGNATURES_REQUIRED);
 
