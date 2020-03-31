@@ -16,6 +16,7 @@
 
 class CBlockIndex;
 class CChainParams;
+class CConnman;
 class CScript;
 
 namespace Consensus { struct Params; };
@@ -28,6 +29,8 @@ struct CBlockTemplate
     std::vector<CAmount> vTxFees;
     std::vector<int64_t> vTxSigOpsCost;
     std::vector<unsigned char> vchCoinbaseCommitment;
+    std::vector<CTxOut> voutMasternodePayments; // masternode payment
+    std::vector<CTxOut> voutSuperblockPayments; // superblock payment
 };
 
 // Container for tracking updates to ancestor feerate as we include (parent)
@@ -73,6 +76,21 @@ struct modifiedentry_iter {
     }
 };
 
+// This matches the calculation in CompareTxMemPoolEntryByAncestorFee,
+// except operating on CTxMemPoolModifiedEntry.
+// TODO: refactor to avoid duplication of this logic.
+struct CompareModifiedEntry {
+    bool operator()(const CTxMemPoolModifiedEntry &a, const CTxMemPoolModifiedEntry &b) const
+    {
+        double f1 = (double)a.nModFeesWithAncestors * b.nSizeWithAncestors;
+        double f2 = (double)b.nModFeesWithAncestors * a.nSizeWithAncestors;
+        if (f1 == f2) {
+            return CTxMemPool::CompareIteratorByHash()(a.iter, b.iter);
+        }
+        return f1 > f2;
+    }
+};
+
 // A comparator that sorts transactions based on number of ancestors.
 // This is sufficient to sort an ancestor package in an order that is valid
 // to appear in a block.
@@ -97,7 +115,7 @@ typedef boost::multi_index_container<
             // Reuse same tag from CTxMemPool's similar index
             boost::multi_index::tag<ancestor_score>,
             boost::multi_index::identity<CTxMemPoolModifiedEntry>,
-            CompareTxMemPoolEntryByAncestorFee
+            CompareModifiedEntry
         >
     >
 > indexed_modified_transaction_set;

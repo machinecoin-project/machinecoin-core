@@ -48,20 +48,28 @@
 #ifdef ENABLE_WALLET
 #include <wallet/init.h>
 #endif
-#include <warnings.h>
 
-#include <activemasternode.h>
-#include <flat-database.h>
-#include <governance.h>
-#include <masternode-payments.h>
-#include <masternode-sync.h>
-#include <masternodeman.h>
-#include <masternodeconfig.h>
-#include <messagesigner.h>
+#include "masternode/activemasternode.h"
+#include "flat-database.h"
+#include "governance/governance.h"
+#include "masternode/masternode-meta.h"
+#include "masternode/masternode-payments.h"
+#include "masternode/masternode-sync.h"
+#include "masternode/masternode-utils.h"
+#include "messagesigner.h"
+#include "netfulfilledman.h"
+#include "warnings.h"
+
+#include "evo/deterministicmns.h"
+#include "llmq/quorums_init.h"
+
+#include "llmq/quorums_init.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <memory>
+
+#include "bls/bls.h"
 
 #ifndef WIN32
 #include <signal.h>
@@ -181,6 +189,7 @@ void Interrupt()
     InterruptRPC();
     InterruptREST();
     InterruptTorControl();
+    llmq::InterruptLLMQSystem();
     if (g_connman)
         g_connman->Interrupt();
 }
@@ -204,6 +213,7 @@ void Shutdown()
     StopREST();
     StopRPC();
     StopHTTPServer();
+    llmq::StopLLMQSystem();
 #ifdef ENABLE_WALLET
     FlushWallets();
 #endif
@@ -218,10 +228,9 @@ void Shutdown()
   
     // STORE DATA CACHES INTO SERIALIZED DAT FILES
     if (!fLiteMode) {
-        CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
-        flatdb1.Dump(mnodeman);
-        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-        flatdb2.Dump(mnpayments);
+        // STORE DATA CACHES INTO SERIALIZED DAT FILES
+        CFlatDB<CMasternodeMetaMan> flatdb1("mncache.dat", "magicMasternodeCache");
+        flatdb1.Dump(mmetaman);
         CFlatDB<CGovernanceManager> flatdb3("governance.dat", "magicGovernanceCache");
         flatdb3.Dump(governance);
         CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
@@ -274,6 +283,11 @@ void Shutdown()
         pcoinscatcher.reset();
         pcoinsdbview.reset();
         pblocktree.reset();
+        llmq::DestroyLLMQSystem();
+        delete deterministicMNManager;
+        deterministicMNManager = nullptr;
+        delete evoDb;
+        evoDb = nullptr;
     }
 #ifdef ENABLE_WALLET
     StopWallets();
@@ -286,6 +300,14 @@ void Shutdown()
         pzmqNotificationInterface = nullptr;
     }
 #endif
+
+    if (fMasternodeMode) {
+        UnregisterValidationInterface(activeMasternodeManager);
+    }
+
+    // make sure to clean up BLS keys before global destructors are called (they have allocated from the secure memory pool)
+    activeMasternodeInfo.blsKeyOperator.reset();
+    activeMasternodeInfo.blsPubKeyOperator.reset();
 
 #ifndef WIN32
     try {
@@ -394,6 +416,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-minimumchainwork=<hex>", strprintf("Minimum work assumed to exist on a valid chain in hex (default: %s, testnet: %s)", defaultChainParams->GetConsensus().nMinimumChainWork.GetHex(), testnetChainParams->GetConsensus().nMinimumChainWork.GetHex()));
     }
     strUsage += HelpMessageOpt("-persistmempool", strprintf(_("Whether to save the mempool on shutdown and load on restart (default: %u)"), DEFAULT_PERSIST_MEMPOOL));
+    strUsage += HelpMessageOpt("-syncmempool", strprintf(_("Sync mempool from other nodes on start (default: %u)"), DEFAULT_SYNC_MEMPOOL));
     strUsage += HelpMessageOpt("-blockreconstructionextratxn=<n>", strprintf(_("Extra transactions to keep in memory for compact block reconstructions (default: %u)"), DEFAULT_BLOCK_RECONSTRUCTION_EXTRA_TXN));
     strUsage += HelpMessageOpt("-par=<n>", strprintf(_("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)"),
         -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS));
@@ -423,7 +446,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-forcednsseed", strprintf(_("Always query for peer addresses via DNS lookup (default: %u)"), DEFAULT_FORCEDNSSEED));
     strUsage += HelpMessageOpt("-listen", _("Accept connections from outside (default: 1 if no -proxy or -connect)"));
     strUsage += HelpMessageOpt("-listenonion", strprintf(_("Automatically create Tor hidden service (default: %d)"), DEFAULT_LISTEN_ONION));
-    strUsage += HelpMessageOpt("-maxconnections=<n>", strprintf(_("Maintain at most <n> connections to peers (default: %u)"), DEFAULT_MAX_PEER_CONNECTIONS));
+    strUsage += HelpMessageOpt("-maxconnections=<n>", strprintf(_("Maintain at most <n> connections to peers (temporary service connections excluded) (default: %u)"), DEFAULT_MAX_PEER_CONNECTIONS));
     strUsage += HelpMessageOpt("-maxreceivebuffer=<n>", strprintf(_("Maximum per-connection receive buffer, <n>*1000 bytes (default: %u)"), DEFAULT_MAXRECEIVEBUFFER));
     strUsage += HelpMessageOpt("-maxsendbuffer=<n>", strprintf(_("Maximum per-connection send buffer, <n>*1000 bytes (default: %u)"), DEFAULT_MAXSENDBUFFER));
     strUsage += HelpMessageOpt("-maxtimeadjustment", strprintf(_("Maximum allowed median peer time offset adjustment. Local perspective of time may be influenced by peers forward or backward by this amount. (default: %u seconds)"), DEFAULT_MAX_TIME_ADJUSTMENT));
@@ -458,6 +481,8 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageGroup(_("ZeroMQ notification options:"));
     strUsage += HelpMessageOpt("-zmqpubhashblock=<address>", _("Enable publish hash block in <address>"));
     strUsage += HelpMessageOpt("-zmqpubhashtx=<address>", _("Enable publish hash transaction in <address>"));
+    strUsage += HelpMessageOpt("-zmqpubhashgovernancevote=<address>", _("Enable publish hash of governance votes in <address>"));
+    strUsage += HelpMessageOpt("-zmqpubhashgovernanceobject=<address>", _("Enable publish hash of governance objects (like proposals) in <address>"));
     strUsage += HelpMessageOpt("-zmqpubrawblock=<address>", _("Enable publish raw block in <address>"));
     strUsage += HelpMessageOpt("-zmqpubrawtx=<address>", _("Enable publish raw transaction in <address>"));
 #endif
@@ -484,6 +509,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-limitdescendantcount=<n>", strprintf("Do not accept transactions if any ancestor would have <n> or more in-mempool descendants (default: %u)", DEFAULT_DESCENDANT_LIMIT));
         strUsage += HelpMessageOpt("-limitdescendantsize=<n>", strprintf("Do not accept transactions if any ancestor would have more than <n> kilobytes of in-mempool descendants (default: %u).", DEFAULT_DESCENDANT_SIZE_LIMIT));
         strUsage += HelpMessageOpt("-vbparams=deployment:start:end", "Use given start/end times for specified version bits deployment (regtest-only)");
+        strUsage += HelpMessageOpt("-watchquorums=<n>", strprintf("Watch and validate quorum communication (default: %u)", llmq::DEFAULT_WATCH_QUORUMS));
     }
     strUsage += HelpMessageOpt("-debug=<category>", strprintf(_("Output debugging information (default: %u, supplying <category> is optional)"), 0) + ". " +
         _("If <category> is not supplied or if <category> = 1, output all debugging information.") + " " + _("<category> can be:") + " " + ListLogCategories() + ".");
@@ -511,10 +537,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-litemode=<n>", strprintf(_("Disable all Machinecoin specific functionality (Masternodes, Governance) (0-1, default: %u)"), 0));
 
     strUsage += HelpMessageGroup(_("Masternode options:"));
-    strUsage += HelpMessageOpt("-masternode=<n>", strprintf(_("Enable the client to act as a masternode (0-1, default: %u)"), 0));
-    strUsage += HelpMessageOpt("-mnconf=<file>", strprintf(_("Specify masternode configuration file (default: %s)"), "masternode.conf"));
-    strUsage += HelpMessageOpt("-mnconflock=<n>", strprintf(_("Lock masternodes from masternode configuration file (default: %u)"), 1));
-    strUsage += HelpMessageOpt("-masternodeprivkey=<n>", _("Set the masternode private key"));
+    strUsage += HelpMessageOpt("-masternodeblsprivkey=<hex>", _("Set the masternode BLS private key and enable the client to act as a masternode"));
 
     strUsage += HelpMessageGroup(_("Node relay options:"));
     if (showDebug) {
@@ -732,6 +755,39 @@ void ThreadImport(std::vector<fs::path> vImportFiles)
         return;
     }
     } // End scope of CImportingNow
+
+    // force UpdatedBlockTip to initialize nCachedBlockHeight for DS, MN payments and budgets
+    // but don't call it directly to prevent triggering of other listeners like zmq etc.
+    // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
+    // pdsNotificationInterface->InitializeCurrentBlockTip();
+    peerLogic->InitializeCurrentBlockTip(chainActive.Tip());
+
+    {
+        // Get all UTXOs for each MN collateral in one go so that we can fill coin cache early
+        // and reduce further locking overhead for cs_main in other parts of code inclluding GUI
+        LogPrintf("Filling coin cache with masternode UTXOs...\n");
+        LOCK(cs_main);
+        int64_t nStart = GetTimeMillis();
+        auto mnList = deterministicMNManager->GetListAtChainTip();
+        mnList.ForEachMN(false, [&](const CDeterministicMNCPtr& dmn) {
+            Coin coin;
+            GetUTXOCoin(dmn->collateralOutpoint, coin);
+        });
+        LogPrintf("Filling coin cache with masternode UTXOs: done in %dms\n", GetTimeMillis() - nStart);
+    }
+
+    if (fMasternodeMode) {
+        assert(activeMasternodeManager);
+        activeMasternodeManager->Init();
+    }
+
+#ifdef ENABLE_WALLET
+    // we can't do this before DIP3 is fully initialized
+    for (CWalletRef pwallet : vpwallets) {
+        pwallet->AutoLockMasternodeCollaterals();
+    }
+#endif
+
     if (gArgs.GetArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
         LoadMempool();
         fDumpMempoolLater = !fRequestShutdown;
@@ -751,6 +807,10 @@ bool InitSanityCheck(void)
 
     if (!glibc_sanity_test() || !glibcxx_sanity_test())
         return false;
+
+    if (!BLSInit()) {
+        return false;
+    }
     
     if (!Random_SanityCheck()) {
         InitError("OS cryptographic RNG sanity check failure. Aborting.");
@@ -790,15 +850,21 @@ void InitParameterInteraction()
         if (gArgs.SoftSetBoolArg("-listen", true))
             LogPrintf("%s: parameter interaction: -whitebind set -> setting -listen=1\n", __func__);
     }
-  
-    if (gArgs.GetBoolArg("-masternode", false)) {
+
+    if (gArgs.IsArgSet("-masternodeblsprivkey")) {
         // masternodes MUST accept connections from outside
         gArgs.ForceSetArg("-listen", "1");
-        LogPrintf("%s: parameter interaction: -masternode=1 -> setting -listen=1\n", __func__);
+        LogPrintf("%s: parameter interaction: -masternodeblsprivkey=... -> setting -listen=1\n", __func__);
+#ifdef ENABLE_WALLET
+        // masternode should not have wallet enabled
+        gArgs.ForceSetArg("-disablewallet", "1");
+        LogPrintf("%s: parameter interaction: -masternodeblsprivkey=... -> setting -disablewallet=1\n", __func__);
+#endif // ENABLE_WALLET
         if (gArgs.GetArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS) < DEFAULT_MAX_PEER_CONNECTIONS) {
             // masternodes MUST be able to handle at least DEFAULT_MAX_PEER_CONNECTIONS connections
             gArgs.ForceSetArg("-maxconnections", itostr(DEFAULT_MAX_PEER_CONNECTIONS));
-            LogPrintf("%s: parameter interaction: -masternode=1 -> setting -maxconnections=%d\n", __func__, DEFAULT_MAX_PEER_CONNECTIONS);
+            LogPrintf("%s: parameter interaction: -masternodeblsprivkey=... -> setting -maxconnections=%d instead of specified -maxconnections=%d\n",
+                      __func__, DEFAULT_MAX_PEER_CONNECTIONS, gArgs.GetArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS));
         }
     }
 
@@ -1221,6 +1287,11 @@ bool AppInitParameterInteraction()
             }
         }
     }
+
+    if (gArgs.IsArgSet("-masternode")) {
+        InitWarning(_("-masternode option is deprecated and ignored, specifying -masternodeblsprivkey is enough to start this node as a masternode."));
+    }
+
     return true;
 }
 
@@ -1463,7 +1534,22 @@ bool AppInitMain()
         nMaxOutboundLimit = gArgs.GetArg("-maxuploadtarget", DEFAULT_MAX_UPLOAD_TARGET)*1024*1024;
     }
 
-    // ********************************************************* Step 7: load block chain
+    // ********************************************************* Step 7a: check lite mode and load sporks
+
+    // lite mode disables all Dash-specific functionality
+    fLiteMode = gArgs.GetBoolArg("-litemode", false);
+    LogPrintf("fLiteMode %d\n", fLiteMode);
+
+    if(fLiteMode) {
+        InitWarning(_("You are starting in lite mode, most Dash-specific functionality is disabled."));
+    }
+
+    if((!fLiteMode && fTxIndex == false)
+       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/dashpay/dash/pull/1817 and https://github.com/dashpay/dash/pull/1743
+        return InitError(_("Transaction index can't be disabled in full mode. Either start with -litemode command line switch or enable transaction index."));
+    }
+
+    // ********************************************************* Step 7b: load block chain
 
     fReindex = gArgs.GetBoolArg("-reindex", false);
     bool fReindexChainState = gArgs.GetBoolArg("-reindex-chainstate", false);
@@ -1480,12 +1566,15 @@ bool AppInitMain()
     nTotalCache -= nCoinDBCache;
     nCoinCacheUsage = nTotalCache; // the rest goes to in-memory cache
     int64_t nMempoolSizeMax = gArgs.GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000;
+    int64_t nEvoDbCache = 1024 * 1024 * 16; // TODO
     LogPrintf("Cache configuration:\n");
     LogPrintf("* Using %.1fMiB for block index database\n", nBlockTreeDBCache * (1.0 / 1024 / 1024));
     LogPrintf("* Using %.1fMiB for chain state database\n", nCoinDBCache * (1.0 / 1024 / 1024));
     LogPrintf("* Using %.1fMiB for in-memory UTXO set (plus up to %.1fMiB of unused mempool space)\n", nCoinCacheUsage * (1.0 / 1024 / 1024), nMempoolSizeMax * (1.0 / 1024 / 1024));
 
     bool fLoaded = false;
+    int64_t nStart = GetTimeMillis();
+
     while (!fLoaded && !fRequestShutdown) {
         bool fReset = fReindex;
         std::string strLoadError;
@@ -1503,6 +1592,14 @@ bool AppInitMain()
                 // fails if it's still open from the previous loop. Close it first:
                 pblocktree.reset();
                 pblocktree.reset(new CBlockTreeDB(nBlockTreeDBCache, false, fReset));
+                llmq::DestroyLLMQSystem();
+                delete deterministicMNManager;
+                delete evoDb;
+
+                evoDb = new CEvoDB(nEvoDbCache, false, fReset || fReindexChainState);
+                deterministicMNManager = new CDeterministicMNManager(*evoDb);
+                pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReset);
+                llmq::InitLLMQSystem(*evoDb, &scheduler, false, fReset || fReindexChainState);
 
                 if (fReset) {
                     pblocktree->WriteReindexing(true);
@@ -1582,6 +1679,8 @@ bool AppInitMain()
                     }
                     assert(chainActive.Tip() != nullptr);
                 }
+
+                deterministicMNManager->UpgradeDBIfNeeded();
 
                 if (!fReset) {
                     // Note that RewindBlockIndex MUST run even if we're about to -reindex-chainstate.
@@ -1697,7 +1796,117 @@ bool AppInitMain()
         nLocalServices = ServiceFlags(nLocalServices | NODE_WITNESS);
     }
 
-    // ********************************************************* Step 10: import blocks
+    // ********************************************************* Step 10a: Prepare Masternode related stuff
+    fMasternodeMode = false;
+    std::string strMasterNodeBLSPrivKey = gArgs.GetArg("-masternodeblsprivkey", "");
+    if (!strMasterNodeBLSPrivKey.empty()) {
+        auto binKey = ParseHex(strMasterNodeBLSPrivKey);
+        CBLSSecretKey keyOperator;
+        keyOperator.SetBuf(binKey);
+        if (!keyOperator.IsValid()) {
+            return InitError(_("Invalid masternodeblsprivkey. Please see documentation."));
+        }
+        fMasternodeMode = true;
+        activeMasternodeInfo.blsKeyOperator = std::make_unique<CBLSSecretKey>(keyOperator);
+        activeMasternodeInfo.blsPubKeyOperator = std::make_unique<CBLSPublicKey>(activeMasternodeInfo.blsKeyOperator->GetPublicKey());
+        LogPrintf("MASTERNODE:\n");
+        LogPrintf("  blsPubKeyOperator: %s\n", keyOperator.GetPublicKey().ToString());
+    }
+
+    if(fLiteMode && fMasternodeMode) {
+        return InitError(_("You can not start a masternode in lite mode."));
+    }
+
+    if(fMasternodeMode) {
+#ifdef ENABLE_WALLET
+        if (!vpwallets.empty()) {
+            return InitError(_("You can not start a masternode with wallet enabled."));
+        }
+#endif //ENABLE_WALLET
+        // Create and register activeMasternodeManager, will init later in ThreadImport
+        activeMasternodeManager = new CActiveMasternodeManager();
+        RegisterValidationInterface(activeMasternodeManager);
+    }
+
+    if (activeMasternodeInfo.blsKeyOperator == nullptr) {
+        activeMasternodeInfo.blsKeyOperator = std::make_unique<CBLSSecretKey>();
+    }
+    if (activeMasternodeInfo.blsPubKeyOperator == nullptr) {
+        activeMasternodeInfo.blsPubKeyOperator = std::make_unique<CBLSPublicKey>();
+    }
+
+    // ********************************************************* Step 10b: Load cache data
+
+    // LOAD SERIALIZED DAT FILES INTO DATA CACHES FOR INTERNAL USE
+
+    bool fLoadCacheFiles = !(fLiteMode || fReindex || fReindexChainState);
+    {
+        LOCK(cs_main);
+        // was blocks/chainstate deleted?
+        if (chainActive.Tip() == nullptr) {
+            fLoadCacheFiles = false;
+        }
+    }
+    fs::path pathDB = GetDataDir();
+    std::string strDBName;
+
+    strDBName = "mncache.dat";
+    uiInterface.InitMessage(_("Loading masternode cache..."));
+    CFlatDB<CMasternodeMetaMan> flatdb1(strDBName, "magicMasternodeCache");
+    if (fLoadCacheFiles) {
+        if(!flatdb1.Load(mmetaman)) {
+            return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
+        }
+    } else {
+        CMasternodeMetaMan mmetamanTmp;
+        if(!flatdb1.Dump(mmetamanTmp)) {
+            return InitError(_("Failed to clear masternode cache at") + "\n" + (pathDB / strDBName).string());
+        }
+    }
+
+    strDBName = "governance.dat";
+    uiInterface.InitMessage(_("Loading governance cache..."));
+    CFlatDB<CGovernanceManager> flatdb3(strDBName, "magicGovernanceCache");
+    if (fLoadCacheFiles) {
+        if(!flatdb3.Load(governance)) {
+            return InitError(_("Failed to load governance cache from") + "\n" + (pathDB / strDBName).string());
+        }
+        governance.InitOnLoad();
+    } else {
+        CGovernanceManager governanceTmp;
+        if(!flatdb3.Dump(governanceTmp)) {
+            return InitError(_("Failed to clear governance cache at") + "\n" + (pathDB / strDBName).string());
+        }
+    }
+
+    strDBName = "netfulfilled.dat";
+    uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
+    CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
+    if (fLoadCacheFiles) {
+        if(!flatdb4.Load(netfulfilledman)) {
+            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
+        }
+    } else {
+        CNetFulfilledRequestManager netfulfilledmanTmp;
+        if(!flatdb4.Dump(netfulfilledmanTmp)) {
+            return InitError(_("Failed to clear fulfilled requests cache at") + "\n" + (pathDB / strDBName).string());
+        }
+    }
+
+    // ********************************************************* Step 10c: schedule Dash-specific tasks
+
+    if (!fLiteMode) {
+        scheduler.scheduleEvery(boost::bind(&CNetFulfilledRequestManager::DoMaintenance, boost::ref(netfulfilledman)), 60 * 1000);
+        scheduler.scheduleEvery(boost::bind(&CMasternodeSync::DoMaintenance, boost::ref(masternodeSync), boost::ref(*g_connman)), 1 * 1000);
+
+        scheduler.scheduleEvery(boost::bind(&CGovernanceManager::DoMaintenance, boost::ref(governance), boost::ref(*g_connman)), 60 * 5 * 1000);
+    }
+
+    scheduler.scheduleEvery(boost::bind(&CMasternodeUtils::DoMaintenance, boost::ref(*g_connman)), 1 * 1000);
+
+    llmq::StartLLMQSystem();
+
+    // ********************************************************* Step 11a: import blocks
 
     if (!CheckDiskSpace())
         return false;
@@ -1709,65 +1918,6 @@ bool AppInitMain()
     } else {
         fHaveGenesis = true;
     }
-  
-    // ********************************************************* Step 11a: setup masternodes
-    fMasternodeMode = gArgs.GetBoolArg("-masternode", false);
-    // TODO: masternode should have no wallet
-
-    //lite mode disables all Dash-specific functionality
-    fLiteMode = gArgs.GetBoolArg("-litemode", false);
-
-    if(fLiteMode) {
-        InitWarning(_("You are starting in lite mode, all Dash-specific functionality is disabled."));
-    }
-
-    if((!fLiteMode && fTxIndex == false)
-       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/dashpay/dash/pull/1817 and https://github.com/dashpay/dash/pull/1743
-        return InitError(_("Transaction index can't be disabled in full mode. Either start with -litemode command line switch or enable transaction index."));
-    }
-
-    if(fLiteMode && fMasternodeMode) {
-        return InitError(_("You can not start a masternode in lite mode."));
-     }
-
-    if(fMasternodeMode) {
-        LogPrintf("MASTERNODE:\n");
-
-        std::string strMasterNodePrivKey = gArgs.GetArg("-masternodeprivkey", "");
-        if(!strMasterNodePrivKey.empty()) {
-            if(!CMessageSigner::GetKeysFromSecret(strMasterNodePrivKey, activeMasternode.keyMasternode, activeMasternode.pubKeyMasternode))
-                return InitError(_("Invalid masternodeprivkey. Please see documenation."));
-
-            LogPrintf("  pubKeyMasternode: %s\n", EncodeDestination(GetScriptForDestination(WitnessV0KeyHash(activeMasternode.pubKeyMasternode.GetID()))));
-        } else {
-            return InitError(_("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
-        }
-    }
-
-#ifdef ENABLE_WALLET
-    LogPrintf("Using masternode config file %s\n", GetMasternodeConfigFile().string());
-  
-    if(gArgs.GetBoolArg("-mnconflock", true) && (masternodeConfig.getCount() > 0)) {
-        LogPrintf("Locking Masternodes:\n");
-        uint256 mnTxHash;
-        uint32_t outputIndex;
-        for (const auto& mne : masternodeConfig.getEntries()) {
-            mnTxHash.SetHex(mne.getTxHash());
-            outputIndex = (uint32_t)atoi(mne.getOutputIndex());
-            COutPoint outpoint = COutPoint(mnTxHash, outputIndex);
-            MasternodeLock(outpoint);
-            LogPrintf("  %s %s - locked successfully\n", mne.getTxHash(), mne.getOutputIndex());
-        }
-    }
-#endif // ENABLE_WALLET
-
-    //lite mode disables all Masternode related functionality
-    fLiteMode = gArgs.GetBoolArg("-litemode", false);
-    if(fMasternodeMode && fLiteMode){
-        return InitError("You can not start a masternode in litemode");
-    }
-
-    LogPrintf("fLiteMode %d\n", fLiteMode);
 
     if (gArgs.IsArgSet("-blocknotify"))
         uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
@@ -1791,64 +1941,11 @@ bool AppInitMain()
         uiInterface.NotifyBlockTip.disconnect(BlockNotifyGenesisWait);
     }
     
-    // ********************************************************* Step 11b: Load cache data
-
-    // LOAD SERIALIZED DAT FILES INTO DATA CACHES FOR INTERNAL USE
-
-    if (!fLiteMode) {
-        fs::path pathDB = GetDataDir();
-        std::string strDBName;
-
-        strDBName = "mncache.dat";
-        uiInterface.InitMessage(_("Loading masternode cache..."));
-        CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
-        if(!flatdb1.Load(mnodeman)) {
-            return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
-        }
-        
-        if(mnodeman.size()) {
-            strDBName = "mnpayments.dat";
-            uiInterface.InitMessage(_("Loading masternode payment cache..."));
-            CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-            if(!flatdb2.Load(mnpayments)) {
-                return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
-            }
-
-            strDBName = "governance.dat";
-            uiInterface.InitMessage(_("Loading governance cache..."));
-            CFlatDB<CGovernanceManager> flatdb3(strDBName, "magicGovernanceCache");
-            if(!flatdb3.Load(governance)) {
-                return InitError(_("Failed to load governance cache from") + "\n" + (pathDB / strDBName).string());
-            }
-            governance.InitOnLoad();
-        } else {
-            uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
-        }
-
-        strDBName = "netfulfilled.dat";
-        uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
-        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-        if(!flatdb4.Load(netfulfilledman)) {
-            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
-        }
-    }
-    
     if (ShutdownRequested()) {
         return false;
     }
-  
-    // ********************************************************* Step 11c: update block tip in Machinecoin modules
 
-    // force UpdatedBlockTip to initialize nCachedBlockHeight for MN payments and budgets
-    // but don't call it directly to prevent triggering of other listeners like zmq etc.
-    // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
-    peerLogic->InitializeCurrentBlockTip(chainActive.Tip());
-  
-    // ********************************************************* Step 11d: start mac-ps-<smth> threads
-
-    threadGroup.create_thread(boost::bind(&ThreadCheckMasternode, boost::ref(*g_connman)));
-
-    // ********************************************************* Step 11: start node
+    // ********************************************************* Step 11d: start node
 
     int chain_active_height;
         
@@ -1872,7 +1969,6 @@ bool AppInitMain()
     connOptions.nLocalServices = nLocalServices;
     connOptions.nMaxConnections = nMaxConnections;
     connOptions.nMaxOutbound = std::min(MAX_OUTBOUND_CONNECTIONS, connOptions.nMaxConnections);
-    connOptions.nMaxMasternodeOutbound = std::min(MAX_OUTBOUND_MASTERNODE_CONNECTIONS, connOptions.nMaxConnections);
     connOptions.nMaxAddnode = MAX_ADDNODE_CONNECTIONS;
     connOptions.nMaxFeeler = 1;
     connOptions.nBestHeight = chain_active_height;
@@ -1935,57 +2031,4 @@ bool AppInitMain()
 #endif
 
     return true;
-}
-
-void ThreadCheckMasternode(CConnman& connman)
-{
-    if(fLiteMode) return; // disable all Machinecoin specific functionality
-
-    static bool fOneThread;
-    if(fOneThread) return;
-    fOneThread = true;
-
-    // Make this thread recognisable as the PrivateSend thread
-    RenameThread("mac-mn");
-
-    unsigned int nTick = 0;
-
-    while (true)
-    {
-        MilliSleep(1000);
-
-        // try to sync from all available nodes, one step at a time
-        masternodeSync.ProcessTick(connman);
-
-        if(masternodeSync.IsBlockchainSynced() && !ShutdownRequested()) {
-
-            nTick++;
-
-            // make sure to check all masternodes first
-            mnodeman.Check();
-            
-            mnodeman.ProcessPendingMnbRequests(connman);
-            mnodeman.ProcessPendingMnvRequests(connman);
-
-            // check if we should activate or ping every few minutes,
-            // slightly postpone first run to give net thread a chance to connect to some peers
-            if(nTick % MASTERNODE_MIN_MNP_SECONDS == 15)
-                activeMasternode.ManageState(connman);
-
-            if(nTick % 60 == 0) {
-                netfulfilledman.CheckAndRemove();
-                mnodeman.ProcessMasternodeConnections(connman);
-                mnodeman.CheckAndRemove(connman);
-                mnodeman.WarnMasternodeDaemonUpdates();
-                mnpayments.CheckAndRemove();
-            }
-            if(fMasternodeMode && (nTick % (60 * 5) == 0)) {
-                mnodeman.DoFullVerificationStep(connman);
-            }
-
-            if(nTick % (60 * 5) == 0) {
-                governance.DoMaintenance(connman);
-            }
-        }
-    }
 }

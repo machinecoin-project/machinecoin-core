@@ -9,14 +9,27 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
     {
         /*.name =*/ "testdummy",
         /*.gbt_force =*/ true,
+        /*.check_mn_protocol =*/ false,
     },
     {
         /*.name =*/ "csv",
         /*.gbt_force =*/ true,
+        /*.check_mn_protocol =*/ false,
     },
     {
         /*.name =*/ "segwit",
         /*.gbt_force =*/ true,
+        /*.check_mn_protocol =*/ false,
+    },
+    {
+        /*.name =*/ "dip0003",
+        /*.gbt_force =*/ true,
+        /*.check_mn_protocol =*/ false,
+    },
+    {
+        /*.name =*/ "dip0008",
+        /*.gbt_force =*/ true,
+        /*.check_mn_protocol =*/ false,
     }
 };
 

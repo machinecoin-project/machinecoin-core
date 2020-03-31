@@ -241,16 +241,27 @@ extern const char *BLOCKTXN;
 // Machinecoin message types
 // NOTE: do NOT declare non-implmented here, we don't want them to be exposed to the outside
 // TODO: add description
-extern const char *MASTERNODEPAYMENTVOTE;
-extern const char *MASTERNODEPAYMENTSYNC;
-extern const char *MNANNOUNCE;
-extern const char *MNPING;
-extern const char *DSEG;
 extern const char *SYNCSTATUSCOUNT;
 extern const char *MNGOVERNANCESYNC;
 extern const char *MNGOVERNANCEOBJECT;
 extern const char *MNGOVERNANCEOBJECTVOTE;
-extern const char *MNVERIFY;
+extern const char *GETMNLISTDIFF;
+extern const char *MNLISTDIFF;
+extern const char *QSENDRECSIGS;
+extern const char *QFCOMMITMENT;
+extern const char *QCONTRIB;
+extern const char *QCOMPLAINT;
+extern const char *QJUSTIFICATION;
+extern const char *QPCOMMITMENT;
+extern const char *QWATCH;
+extern const char *QSIGSESANN;
+extern const char *QSIGSHARESINV;
+extern const char *QGETSIGSHARES;
+extern const char *QBSIGSHARES;
+extern const char *QSIGREC;
+extern const char *CLSIG;
+extern const char *ISLOCK;
+extern const char *MNAUTH;
 };
 
 /* Get a vector of all valid message types (see above) */
@@ -393,14 +404,19 @@ enum GetDataMsg
     MSG_FILTERED_WITNESS_BLOCK = MSG_FILTERED_BLOCK | MSG_WITNESS_FLAG,
     // Machinecoin message types
     // NOTE: declare non-implmented here, we must keep this enum consistent and backwards compatible
-    MSG_MASTERNODE_PAYMENT_VOTE = 5,
-    MSG_MASTERNODE_PAYMENT_BLOCK = 6, // reusing, was MSG_MASTERNODE_SCANNING_ERROR previousely, was NOT used in 12.0
-    MSG_MASTERNODE_QUORUM = 7, // not implemented
-    MSG_MASTERNODE_ANNOUNCE = 8,
-    MSG_MASTERNODE_PING = 9,
-    MSG_GOVERNANCE_OBJECT = 10,
-    MSG_GOVERNANCE_OBJECT_VOTE = 11,
-    MSG_MASTERNODE_VERIFY = 12,
+    MSG_GOVERNANCE_OBJECT = 17,
+    MSG_GOVERNANCE_OBJECT_VOTE = 18,
+    /* 19 was used for MSG_MASTERNODE_VERIFY and is not supported anymore */
+    MSG_QUORUM_FINAL_COMMITMENT = 21,
+    /* MSG_QUORUM_DUMMY_COMMITMENT = 22, */ // was shortly used on testnet/devnet/regtest
+    MSG_QUORUM_CONTRIB = 23,
+    MSG_QUORUM_COMPLAINT = 24,
+    MSG_QUORUM_JUSTIFICATION = 25,
+    MSG_QUORUM_PREMATURE_COMMITMENT = 26,
+    /* MSG_QUORUM_DEBUG_STATUS = 27, */ // was shortly used on testnet/devnet/regtest
+    MSG_QUORUM_RECOVERED_SIG = 28,
+    MSG_CLSIG = 29,
+    MSG_ISLOCK = 30,
 };
 
 /** inv message data */
@@ -421,8 +437,12 @@ public:
 
     friend bool operator<(const CInv& a, const CInv& b);
 
+    bool IsKnownType() const;
     std::string GetCommand() const;
     std::string ToString() const;
+
+private:
+    const char* GetCommandInternal() const;
 
     // TODO: make private (improves encapsulation)
 public:
@@ -430,6 +450,5 @@ public:
     uint256 hash;
 };
 
-bool IsKnownType(int typeIn);
 
 #endif // MACHINECOIN_PROTOCOL_H

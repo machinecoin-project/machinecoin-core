@@ -106,7 +106,7 @@ std::atomic<bool> fReopenDebugLog(false);
 CTranslationInterface translationInterface;
 
 /** Log categories bitfield. */
-std::atomic<uint32_t> logCategories(0);
+std::atomic<uint64_t> logCategories(0);
 
 /** Init OpenSSL library multithreading support */
 static std::unique_ptr<CCriticalSection[]> ppmutexOpenSSL;
@@ -232,7 +232,7 @@ bool OpenDebugLog()
 
 struct CLogCategoryDesc
 {
-    uint32_t flag;
+    uint64_t flag;
     std::string category;
 };
 
@@ -244,7 +244,7 @@ const CLogCategoryDesc LogCategories[] =
     {MCLog::TOR, "tor"},
     {MCLog::MEMPOOL, "mempool"},
     {MCLog::HTTP, "http"},
-    {MCLog::BENCH, "bench"},
+    {MCLog::BENCHMARK, "bench"},
     {MCLog::ZMQ, "zmq"},
     {MCLog::DB, "db"},
     {MCLog::RPC, "rpc"},
@@ -253,7 +253,7 @@ const CLogCategoryDesc LogCategories[] =
     {MCLog::SELECTCOINS, "selectcoins"},
     {MCLog::REINDEX, "reindex"},
     {MCLog::CMPCTBLOCK, "cmpctblock"},
-    {MCLog::RAND, "rand"},
+    {MCLog::RANDOM, "rand"},
     {MCLog::PRUNE, "prune"},
     {MCLog::PROXY, "proxy"},
     {MCLog::MEMPOOLREJ, "mempoolrej"},
@@ -261,17 +261,35 @@ const CLogCategoryDesc LogCategories[] =
     {MCLog::COINDB, "coindb"},
     {MCLog::QT, "qt"},
     {MCLog::LEVELDB, "leveldb"},
-    {MCLog::MN, "masternode"},
-    {MCLog::GOV, "governance"},
     {MCLog::ALL, "1"},
     {MCLog::ALL, "all"},
+
+    //Start Machinecoin
+    {MCLog::CHAINLOCKS, "chainlocks"},
+    {MCLog::GOBJECT, "gobject"},
+    {MCLog::LLMQ, "llmq"},
+    {MCLog::LLMQ_DKG, "llmq-dkg"},
+    {MCLog::LLMQ_SIGS, "llmq-sigs"},
+    {MCLog::MNPAYMENTS, "mnpayments"},
+    {MCLog::MNSYNC, "mnsync"},
+    //End Machinecoin
 };
 
-bool GetLogCategory(uint32_t *f, const std::string *str)
+bool GetLogCategory(uint64_t *f, const std::string *str)
 {
     if (f && str) {
         if (*str == "") {
             *f = MCLog::ALL;
+            return true;
+        }
+        if (*str == "machinecoin") {
+            *f = MCLog::CHAINLOCKS
+                 | MCLog::GOBJECT
+                 | MCLog::LLMQ
+                 | MCLog::LLMQ_DKG
+                 | MCLog::LLMQ_SIGS
+                 | MCLog::MNPAYMENTS
+                 | MCLog::MNSYNC;
             return true;
         }
         for (unsigned int i = 0; i < ARRAYLEN(LogCategories); i++) {

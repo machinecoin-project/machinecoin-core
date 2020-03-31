@@ -368,10 +368,12 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             "  \"curtime\" : ttt,                  (numeric) current timestamp in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"bits\" : \"xxxxxxxx\",              (string) compressed target of next block\n"
             "  \"height\" : n                      (numeric) The height of the next block\n"
-            "  \"masternode\" : {                  (json object) required masternode payee that must be included in the next block\n"
-            "      \"payee\" : \"xxxx\",             (string) payee address\n"
-            "      \"script\" : \"xxxx\",            (string) payee scriptPubKey\n"
-            "      \"amount\": n                   (numeric) required amount to pay\n"
+            "  \"masternode\" : [                  (array) required masternode payments that must be included in the next block\n"
+            "      {\n"
+            "         \"payee\" : \"xxxx\",          (string) payee address\n"
+            "         \"script\" : \"xxxx\",         (string) payee scriptPubKey\n"
+            "         \"amount\": n                (numeric) required amount to pay\n"
+            "      }\n"
             "  },\n"
             "  \"masternode_payments_started\" :  true|false, (boolean) true, if masternode payments started\n"
             "  \"masternode_payments_enforced\" : true|false, (boolean) true, if masternode payments are enforced\n"
@@ -384,7 +386,8 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             "      ,...\n"
             "  ],\n"
             "  \"superblocks_started\" : true|false, (boolean) true, if superblock payments started\n"
-            "  \"superblocks_enabled\" : true|false  (boolean) true, if superblock payments are enabled\n"
+            "  \"superblocks_enabled\" : true|false, (boolean) true, if superblock payments are enabled\n"
+            "  \"coinbase_payload\" : \"xxxxxxxx\"    (string) coinbase transaction payload data encoded in hexadecimal\n"
             "}\n"
 
             "\nExamples:\n"
@@ -468,13 +471,11 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin is downloading blocks...");
-  
-    // when enforcement is on we need information about a masternode payee or otherwise our block is going to be orphaned by the network
-    CScript payee;
-    if (EnforceMasternodePayments(chainActive.Tip()->nHeight)
-        && !masternodeSync.IsWinnersListSynced()
-        && !mnpayments.GetBlockPayee(chainActive.Height() + 1, payee))
-            throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin is downloading masternode winners...");
+
+    // Get expected MN/superblock payees. The call to GetBlockTxOuts might fail on regtest/devnet or when
+    // testnet is reset. This is fine and we ignore failure (blocks will be accepted)
+    std::vector<CTxOut> voutMasternodePayments;
+    mnpayments.GetBlockTxOuts(chainActive.Height() + 1, 0, voutMasternodePayments);
 
     // next bock is a superblock and we need governance info to correctly construct it
     if (!masternodeSync.IsSynced()
@@ -711,26 +712,30 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
-  
-    UniValue masternodeObj(UniValue::VOBJ);
-    if(pblock->txoutMasternode != CTxOut()) {
-        CTxDestination dest;
-        ExtractDestination(pblock->txoutMasternode.scriptPubKey, dest);
-        masternodeObj.push_back(Pair("payee", EncodeDestination(dest).c_str()));
-        masternodeObj.push_back(Pair("script", HexStr(pblock->txoutMasternode.scriptPubKey)));
-        masternodeObj.push_back(Pair("amount", pblock->txoutMasternode.nValue));
+
+    UniValue masternodeObj(UniValue::VARR);
+    for (const auto& txout : pblocktemplate->voutMasternodePayments) {
+        CTxDestination address1;
+        ExtractDestination(txout.scriptPubKey, address1);
+
+        UniValue obj(UniValue::VOBJ);
+        obj.push_back(Pair("payee", EncodeDestination(address1).c_str()));
+        obj.push_back(Pair("script", HexStr(txout.scriptPubKey)));
+        obj.push_back(Pair("amount", txout.nValue));
+        masternodeObj.push_back(obj);
     }
+
     result.push_back(Pair("masternode", masternodeObj));
     result.push_back(Pair("masternode_payments_started", pindexPrev->nHeight + 1 > consensusParams.nMasternodePaymentsStartBlock));
-    result.push_back(Pair("masternode_payments_enforced", EnforceMasternodePayments(pindexPrev->nHeight + 1)));
+    result.push_back(Pair("masternode_payments_enforced", true));
 
     UniValue superblockObjArray(UniValue::VARR);
-    if(pblock->voutSuperblock.size()) {
-        for (const auto& txout : pblock->voutSuperblock) {
+    if(pblocktemplate->voutSuperblockPayments.size()) {
+        for (const auto& txout : pblocktemplate->voutSuperblockPayments) {
             UniValue entry(UniValue::VOBJ);
-            CTxDestination dest;
-            ExtractDestination(txout.scriptPubKey, dest);
-            entry.push_back(Pair("payee", EncodeDestination(dest).c_str()));
+            CTxDestination address1;
+            ExtractDestination(txout.scriptPubKey, address1);
+            entry.push_back(Pair("payee", EncodeDestination(address1).c_str()));
             entry.push_back(Pair("script", HexStr(txout.scriptPubKey)));
             entry.push_back(Pair("amount", txout.nValue));
             superblockObjArray.push_back(entry);
@@ -743,6 +748,8 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     if (!pblocktemplate->vchCoinbaseCommitment.empty() && fSupportsSegwit) {
         result.push_back(Pair("default_witness_commitment", HexStr(pblocktemplate->vchCoinbaseCommitment.begin(), pblocktemplate->vchCoinbaseCommitment.end())));
     }
+
+    result.push_back(Pair("coinbase_payload", HexStr(pblock->vtx[0]->vExtraPayload)));
 
     return result;
 }

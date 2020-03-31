@@ -27,6 +27,12 @@
 #include <validationinterface.h>
 #include <warnings.h>
 
+#include <evo/specialtx.h>
+#include <evo/cbtx.h>
+
+#include <llmq/quorums_chainlocks.h>
+#include <llmq/quorums_instantsend.h>
+
 #include <stdint.h>
 
 #include <univalue.h>
@@ -112,6 +118,9 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
     CBlockIndex *pnext = chainActive.Next(blockindex);
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
+
+    result.push_back(Pair("chainlock", llmq::chainLocksHandler->HasChainLock(blockindex->nHeight, blockindex->GetBlockHash())));
+
     return result;
 }
 
@@ -132,6 +141,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     result.push_back(Pair("version", block.nVersion));
     result.push_back(Pair("versionHex", strprintf("%08x", block.nVersion)));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
+    bool chainLock = llmq::chainLocksHandler->HasChainLock(blockindex->nHeight, blockindex->GetBlockHash());
     UniValue txs(UniValue::VARR);
     for(const auto& tx : block.vtx)
     {
@@ -145,6 +155,14 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
             txs.push_back(tx->GetHash().GetHex());
     }
     result.push_back(Pair("tx", txs));
+    if (!block.vtx[0]->vExtraPayload.empty()) {
+        CCbTx cbTx;
+        if (GetTxPayload(block.vtx[0]->vExtraPayload, cbTx)) {
+            UniValue cbTxObj;
+            cbTx.ToJson(cbTxObj);
+            result.push_back(Pair("cbTx", cbTxObj));
+        }
+    }
     result.push_back(Pair("time", block.GetBlockTime()));
     result.push_back(Pair("mediantime", (int64_t)blockindex->GetMedianTimePast()));
     result.push_back(Pair("nonce", (uint64_t)block.nNonce));
@@ -158,6 +176,9 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     CBlockIndex *pnext = chainActive.Next(blockindex);
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
+
+    result.push_back(Pair("chainlock", chainLock));
+
     return result;
 }
 
@@ -193,6 +214,34 @@ UniValue getbestblockhash(const JSONRPCRequest& request)
 
     LOCK(cs_main);
     return chainActive.Tip()->GetBlockHash().GetHex();
+}
+
+UniValue getbestchainlock(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 0)
+        throw std::runtime_error(
+                "getbestchainlock\n"
+                "\nReturns the block hash of the best chainlock. Throws an error if there is no known chainlock yet.\n"
+                "\nResult:\n"
+                "{\n"
+                "  \"blockhash\" : \"hash\",      (string) The block hash hex encoded\n"
+                "  \"height\" : n,              (numeric) The block height or index\n"
+                "  \"known_block\" : true|false (boolean) True if the block is known by our node\n"
+                "}\n"
+                "\nExamples:\n"
+                + HelpExampleCli("getbestchainlock", "")
+                + HelpExampleRpc("getbestchainlock", "")
+        );
+    UniValue result(UniValue::VOBJ);
+    llmq::CChainLockSig clsig = llmq::chainLocksHandler->GetBestChainLock();
+    if (clsig.IsNull()) {
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Unable to find any chainlock");
+    }
+    result.push_back(Pair("blockhash", clsig.blockHash.GetHex()));
+    result.push_back(Pair("height", clsig.nHeight));
+    LOCK(cs_main);
+    result.push_back(Pair("known_block", mapBlockIndex.count(clsig.blockHash) > 0));
+    return result;
 }
 
 void RPCNotifyBlockChange(bool ibd, const CBlockIndex * pindex)
@@ -745,6 +794,12 @@ UniValue getblock(const JSONRPCRequest& request)
             "     \"transactionid\"     (string) The transaction id\n"
             "     ,...\n"
             "  ],\n"
+            "  \"cbTx\" : {             (json object) The coinbase special transaction \n"
+            "     \"version\"           (numeric) The coinbase special transaction version\n"
+            "     \"height\"            (numeric) The block height\n"
+            "     \"merkleRootMNList\" : \"xxxx\", (string) The merkle root of the masternode list\n"
+            "     \"merkleRootQuorums\" : \"xxxx\", (string) The merkle root of the quorum list\n"
+            "  },\n"
             "  \"time\" : ttt,          (numeric) The block time in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"mediantime\" : ttt,    (numeric) The median block time in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"nonce\" : n,           (numeric) The nonce\n"
@@ -1618,6 +1673,118 @@ UniValue savemempool(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+UniValue getspecialtxes(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 5)
+        throw std::runtime_error(
+                "getspecialtxes \"blockhash\" ( type count skip verbosity ) \n"
+                "Returns an array of special transactions found in the specified block\n"
+                "\nIf verbosity is 0, returns tx hash for each transaction.\n"
+                "If verbosity is 1, returns hex-encoded data for each transaction.\n"
+                "If verbosity is 2, returns an Object with information for each transaction.\n"
+                "\nArguments:\n"
+                "1. \"blockhash\"          (string, required) The block hash\n"
+                "2. type                 (numeric, optional, default=-1) Filter special txes by type, -1 means all types\n"
+                "3. count                (numeric, optional, default=10) The number of transactions to return\n"
+                "4. skip                 (numeric, optional, default=0) The number of transactions to skip\n"
+                "5. verbosity            (numeric, optional, default=0) 0 for hashes, 1 for hex-encoded data, and 2 for json object\n"
+                "\nResult (for verbosity = 0):\n"
+                "[\n"
+                "  \"txid\" : \"xxxx\",    (string) The transaction id\n"
+                "]\n"
+                "\nResult (for verbosity = 1):\n"
+                "[\n"
+                "  \"data\",               (string) A string that is serialized, hex-encoded data for the transaction\n"
+                "]\n"
+                "\nResult (for verbosity = 2):\n"
+                "[                       (array of Objects) The transactions in the format of the getrawtransaction RPC.\n"
+                "  ...,\n"
+                "]\n"
+                "\nExamples:\n"
+                + HelpExampleCli("getspecialtxes", "\"00000000000fd08c2fb661d2fcb0d49abb3a91e5f27082ce64feed3b4dede2e2\"")
+                + HelpExampleRpc("getspecialtxes", "\"00000000000fd08c2fb661d2fcb0d49abb3a91e5f27082ce64feed3b4dede2e2\"")
+        );
+
+    LOCK(cs_main);
+
+    std::string strHash = request.params[0].get_str();
+    uint256 hash(uint256S(strHash));
+
+    int nTxType = -1;
+    if (request.params.size() > 1) {
+        nTxType = request.params[1].get_int();
+    }
+
+    int nCount = 10;
+    if (request.params.size() > 2) {
+        nCount = request.params[2].get_int();
+        if (nCount < 0)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Negative count");
+    }
+
+    int nSkip = 0;
+    if (request.params.size() > 3) {
+        nSkip = request.params[3].get_int();
+        if (nSkip < 0)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Negative skip");
+    }
+
+    int nVerbosity = 0;
+    if (request.params.size() > 4) {
+        nVerbosity = request.params[4].get_int();
+        if (nVerbosity < 0 || nVerbosity > 2) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Verbosity must be in range 0..2");
+        }
+    }
+
+    if (mapBlockIndex.count(hash) == 0)
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+
+    CBlock block;
+    CBlockIndex* pblockindex = mapBlockIndex[hash];
+
+    if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
+        throw JSONRPCError(RPC_MISC_ERROR, "Block not available (pruned data)");
+
+    if (!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
+        // Block not found on disk. This could be because we have the block
+        // header in our index but don't have the block (for example if a
+        // non-whitelisted node sends us an unrequested long chain of valid
+        // blocks, we add the headers to our index, but don't accept the
+        // block).
+        throw JSONRPCError(RPC_MISC_ERROR, "Block not found on disk");
+
+    int nTxNum = 0;
+    UniValue result(UniValue::VARR);
+    for(const auto& tx : block.vtx)
+    {
+        if (tx->nVersion != 3 || tx->nType == TRANSACTION_NORMAL // ensure it's in fact a special tx
+            || (nTxType != -1 && tx->nType != nTxType)) { // ensure special tx type matches filter, if given
+            continue;
+        }
+
+        nTxNum++;
+        if (nTxNum <= nSkip) continue;
+        if (nTxNum > nSkip + nCount) break;
+
+        switch (nVerbosity)
+        {
+            case 0 : result.push_back(tx->GetHash().GetHex()); break;
+            case 1 : result.push_back(EncodeHexTx(*tx)); break;
+            case 2 :
+            {
+                UniValue objTx(UniValue::VOBJ);
+                TxToJSON(*tx, uint256(), objTx);
+                result.push_back(objTx);
+                break;
+            }
+            default : throw JSONRPCError(RPC_INTERNAL_ERROR, "Unsupported verbosity");
+        }
+    }
+
+    return result;
+}
+
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
@@ -1635,6 +1802,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getmempoolentry",        &getmempoolentry,        {"txid"} },
     { "blockchain",         "getmempoolinfo",         &getmempoolinfo,         {} },
     { "blockchain",         "getrawmempool",          &getrawmempool,          {"verbose"} },
+    { "blockchain",         "getspecialtxes",         &getspecialtxes,         {"blockhash", "type", "count", "skip", "verbosity"} },
     { "blockchain",         "gettxout",               &gettxout,               {"txid","n","include_mempool"} },
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        {} },
     { "blockchain",         "pruneblockchain",        &pruneblockchain,        {"height"} },

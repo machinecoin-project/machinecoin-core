@@ -40,34 +40,28 @@ const char *CMPCTBLOCK="cmpctblock";
 const char *GETBLOCKTXN="getblocktxn";
 const char *BLOCKTXN="blocktxn";
 // Machinecoin message types
-const char *MASTERNODEPAYMENTVOTE="mnw";
-const char *MASTERNODEPAYMENTBLOCK="mnwb";
-const char *MASTERNODEPAYMENTSYNC="mnget";
-const char *MNQUORUM="mn quorum"; // not implemented
-const char *MNANNOUNCE="mnb";
-const char *MNPING="mnp";
-const char *DSEG="dseg";
 const char *SYNCSTATUSCOUNT="ssc";
 const char *MNGOVERNANCESYNC="govsync";
 const char *MNGOVERNANCEOBJECT="govobj";
 const char *MNGOVERNANCEOBJECTVOTE="govobjvote";
-const char *MNVERIFY="mnv";
-} // namespace NetMsgType
-
-const static std::string ppszTypeName[] =
-{
-    "ERROR", // Should never occur
-    // Machinecoin message types
-    // NOTE: include non-implmented here, we must keep this list in sync with enum in protocol.h
-    NetMsgType::MASTERNODEPAYMENTVOTE,
-    NetMsgType::MASTERNODEPAYMENTBLOCK, // reusing, was MNSCANERROR previousely, was NOT used in 12.0, we need this for inv
-    NetMsgType::MNQUORUM, // not implemented
-    NetMsgType::MNANNOUNCE,
-    NetMsgType::MNPING,
-    NetMsgType::MNGOVERNANCEOBJECT,
-    NetMsgType::MNGOVERNANCEOBJECTVOTE,
-    NetMsgType::MNVERIFY,
-};
+const char *GETMNLISTDIFF="getmnlistd";
+const char *MNLISTDIFF="mnlistdiff";
+const char *QSENDRECSIGS="qsendrecsigs";
+const char *QFCOMMITMENT="qfcommit";
+const char *QCONTRIB="qcontrib";
+const char *QCOMPLAINT="qcomplaint";
+const char *QJUSTIFICATION="qjustify";
+const char *QPCOMMITMENT="qpcommit";
+const char *QWATCH="qwatch";
+const char *QSIGSESANN="qsigsesann";
+const char *QSIGSHARESINV="qsigsinv";
+const char *QGETSIGSHARES="qgetsigs";
+const char *QBSIGSHARES="qbsigs";
+const char *QSIGREC="qsigrec";
+const char *CLSIG="clsig";
+const char *ISLOCK="islock";
+const char *MNAUTH="mnauth";
+}; // namespace NetMsgType
 
 /** All known message types. Keep this in the same order as the list of
  * messages above and in protocol.h.
@@ -101,17 +95,27 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::BLOCKTXN,
     // Machinecoin message types
     // NOTE: do NOT include non-implmented here, we want them to be "Unknown command" in ProcessMessage()
-    NetMsgType::MASTERNODEPAYMENTVOTE,
-    // NetMsgType::MASTERNODEPAYMENTBLOCK, // there is no message for this, only inventory
-    NetMsgType::MASTERNODEPAYMENTSYNC,
-    NetMsgType::MNANNOUNCE,
-    NetMsgType::MNPING,
-    NetMsgType::DSEG,
     NetMsgType::SYNCSTATUSCOUNT,
     NetMsgType::MNGOVERNANCESYNC,
     NetMsgType::MNGOVERNANCEOBJECT,
     NetMsgType::MNGOVERNANCEOBJECTVOTE,
-    NetMsgType::MNVERIFY,
+    NetMsgType::GETMNLISTDIFF,
+    NetMsgType::MNLISTDIFF,
+    NetMsgType::QSENDRECSIGS,
+    NetMsgType::QFCOMMITMENT,
+    NetMsgType::QCONTRIB,
+    NetMsgType::QCOMPLAINT,
+    NetMsgType::QJUSTIFICATION,
+    NetMsgType::QPCOMMITMENT,
+    NetMsgType::QWATCH,
+    NetMsgType::QSIGSESANN,
+    NetMsgType::QSIGSHARESINV,
+    NetMsgType::QGETSIGSHARES,
+    NetMsgType::QBSIGSHARES,
+    NetMsgType::QSIGREC,
+    NetMsgType::CLSIG,
+    NetMsgType::ISLOCK,
+    NetMsgType::MNAUTH,
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 
@@ -199,12 +203,12 @@ bool operator<(const CInv& a, const CInv& b)
     return (a.type < b.type || (a.type == b.type && a.hash < b.hash));
 }
 
-bool IsKnownType(int typeIn)
+bool CInv::IsKnownType() const
 {
-    return (typeIn >= 1 && typeIn < (int)ARRAYLEN(ppszTypeName));
+    return GetCommandInternal() != nullptr;
 }
 
-std::string CInv::GetCommand() const
+const char* CInv::GetCommandInternal() const
 {
     std::string cmd;
     if (type & MSG_WITNESS_FLAG)
@@ -212,24 +216,41 @@ std::string CInv::GetCommand() const
     int masked = type & MSG_TYPE_MASK;
     switch (masked)
     {
-    case MSG_TX:             return cmd.append(NetMsgType::TX);
-    case MSG_BLOCK:          return cmd.append(NetMsgType::BLOCK);
-    case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
-    case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
-    default:
-        if (!IsKnownType(type))
-            throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
-        else
-            return ppszTypeName[type];
+        case MSG_TX:                            return NetMsgType::TX;
+        case MSG_BLOCK:                         return NetMsgType::BLOCK;
+        case MSG_FILTERED_BLOCK:                return NetMsgType::MERKLEBLOCK;
+        case MSG_CMPCT_BLOCK:                   return NetMsgType::CMPCTBLOCK;
+        case MSG_GOVERNANCE_OBJECT:             return NetMsgType::MNGOVERNANCEOBJECT;
+        case MSG_GOVERNANCE_OBJECT_VOTE:        return NetMsgType::MNGOVERNANCEOBJECTVOTE;
+        case MSG_QUORUM_FINAL_COMMITMENT:       return NetMsgType::QFCOMMITMENT;
+        case MSG_QUORUM_CONTRIB:                return NetMsgType::QCONTRIB;
+        case MSG_QUORUM_COMPLAINT:              return NetMsgType::QCOMPLAINT;
+        case MSG_QUORUM_JUSTIFICATION:          return NetMsgType::QJUSTIFICATION;
+        case MSG_QUORUM_PREMATURE_COMMITMENT:   return NetMsgType::QPCOMMITMENT;
+        case MSG_QUORUM_RECOVERED_SIG:          return NetMsgType::QSIGREC;
+        case MSG_CLSIG:                         return NetMsgType::CLSIG;
+        case MSG_ISLOCK:                        return NetMsgType::ISLOCK;
+        default:
+            return nullptr;
     }
+}
+
+std::string CInv::GetCommand() const
+{
+    auto cmd = GetCommandInternal();
+    if (cmd == nullptr) {
+        throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
+    }
+    return cmd;
 }
 
 std::string CInv::ToString() const
 {
-    try {
-        return strprintf("%s %s", GetCommand(), hash.ToString());
-    } catch(const std::out_of_range &) {
+    auto cmd = GetCommandInternal();
+    if (!cmd) {
         return strprintf("0x%08x %s", type, hash.ToString());
+    } else {
+        return strprintf("%s %s", cmd, hash.ToString());
     }
 }
 

@@ -9,7 +9,7 @@
  * network protocol versioning
  */
 
-static const int PROTOCOL_VERSION = 70023;
+static const int PROTOCOL_VERSION = 70024;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
@@ -47,5 +47,7 @@ static const int UPDATED_DIFF_ADJUST_ALGO = 70016;
 
 //! implemented masternodes to machinecoin
 static const int IMPLEMENTED_MASTERNODES = 70017;
+
+static const int LLMQS_PROTO_VERSION = 70024;
 
 #endif // MACHINECOIN_VERSION_H

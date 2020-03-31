@@ -55,18 +55,21 @@ public:
     const Consensus::Params& GetConsensus() const { return consensus; }
     const CMessageHeader::MessageStartChars& MessageStart() const { return pchMessageStart; }
     int GetDefaultPort() const { return nDefaultPort; }
-    
-    // Masternodes
-    int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 
     const CBlock& GenesisBlock() const { return genesis; }
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
     /** Policy: Filter transactions that do not match well-defined patterns */
     bool RequireStandard() const { return fRequireStandard; }
+    /** Require addresses specified with "-externalip" parameter to be routable */
+    bool RequireRoutableExternalIP() const { return fRequireRoutableExternalIP; }
     uint64_t PruneAfterHeight() const { return nPruneAfterHeight; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
+    /** Allow multiple addresses to be selected from the same network group (e.g. 192.168.x.x) */
+    bool AllowMultipleAddressesFromGroup() const { return fAllowMultipleAddressesFromGroup; }
+    /** Allow nodes with the same address and multiple ports */
+    bool AllowMultiplePorts() const { return fAllowMultiplePorts; }
     /** Return the BIP70 network string (main, test or regtest) */
     std::string NetworkIDString() const { return strNetworkID; }
     /** Return the list of hostnames to look up for DNS seeds */
@@ -77,6 +80,13 @@ public:
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
     void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout);
+
+    void UpdateDIP3Parameters(int nActivationHeight, int nEnforcementHeight);
+    void UpdateBudgetParameters(int nMasternodePaymentsStartBlock, int nBudgetPaymentsStartBlock, int nSuperblockStartBlock);
+    void UpdateLLMQChainLocks(Consensus::LLMQType llmqType);
+    int PoolMinParticipants() const { return nPoolMinParticipants; }
+    int PoolMaxParticipants() const { return nPoolMaxParticipants; }
+    int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 protected:
     CChainParams() {}
 
@@ -85,7 +95,6 @@ protected:
     
     // Masternodes
     //! Raw pub key bytes for the broadcast alert signing key.
-    int nFulfilledRequestExpireTime;
     std::string strMasternodePaymentsPubKey;
     
     int nDefaultPort;
@@ -98,9 +107,15 @@ protected:
     std::vector<SeedSpec6> vFixedSeeds;
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
+    bool fRequireRoutableExternalIP;
     bool fMineBlocksOnDemand;
+    bool fAllowMultipleAddressesFromGroup;
+    bool fAllowMultiplePorts;
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
+    int nPoolMinParticipants;
+    int nPoolMaxParticipants;
+    int nFulfilledRequestExpireTime;
 };
 
 /**
@@ -126,5 +141,15 @@ void SelectParams(const std::string& chain);
  * Allows modifying the Version Bits regtest parameters.
  */
 void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout);
+
+/**
+ * Allows modifying the DIP3 activation and enforcement height
+ */
+void UpdateDIP3Parameters(int nActivationHeight, int nEnforcementHeight);
+
+/**
+ * Allows modifying the budget regtest parameters.
+ */
+void UpdateBudgetParameters(int nMasternodePaymentsStartBlock, int nBudgetPaymentsStartBlock, int nSuperblockStartBlock);
 
 #endif // MACHINECOIN_CHAINPARAMS_H

@@ -63,7 +63,7 @@ extern CTranslationInterface translationInterface;
 extern const char * const MACHINECOIN_CONF_FILENAME;
 extern const char * const MACHINECOIN_PID_FILENAME;
 
-extern std::atomic<uint32_t> logCategories;
+extern std::atomic<uint64_t> logCategories;
 
 /**
  * Translation function: Call Translate signal on UI interface, which returns a boost::optional result.
@@ -85,13 +85,13 @@ struct CLogCategoryActive
 };
 
 namespace MCLog {
-    enum LogFlags : uint32_t {
+    enum LogFlags : uint64_t {
         NONE        = 0,
         NET         = (1 <<  0),
         TOR         = (1 <<  1),
         MEMPOOL     = (1 <<  2),
         HTTP        = (1 <<  3),
-        BENCH       = (1 <<  4),
+        BENCHMARK   = (1 <<  4),
         ZMQ         = (1 <<  5),
         DB          = (1 <<  6),
         RPC         = (1 <<  7),
@@ -100,7 +100,7 @@ namespace MCLog {
         SELECTCOINS = (1 << 10),
         REINDEX     = (1 << 11),
         CMPCTBLOCK  = (1 << 12),
-        RAND        = (1 << 13),
+        RANDOM      = (1 << 13),
         PRUNE       = (1 << 14),
         PROXY       = (1 << 15),
         MEMPOOLREJ  = (1 << 16),
@@ -108,14 +108,23 @@ namespace MCLog {
         COINDB      = (1 << 18),
         QT          = (1 << 19),
         LEVELDB     = (1 << 20),
-        MN          = (1 << 21),
-        GOV         = (1 << 22),
-        ALL         = ~(uint32_t)0,
+
+        //Start Machinecoin
+        CHAINLOCKS  = ((uint64_t)1 << 32),
+        GOBJECT     = ((uint64_t)1 << 33),
+        LLMQ        = ((uint64_t)1 << 36),
+        LLMQ_DKG    = ((uint64_t)1 << 37),
+        LLMQ_SIGS   = ((uint64_t)1 << 38),
+        MNPAYMENTS  = ((uint64_t)1 << 39),
+        MNSYNC      = ((uint64_t)1 << 40),
+        //End Machinecoin
+
+        ALL         = ~(uint64_t)0,
     };
 }
 
 /** Return true if log accepts specified category */
-static inline bool LogAcceptCategory(uint32_t category)
+static inline bool LogAcceptCategory(uint64_t category)
 {
     return (logCategories.load(std::memory_order_relaxed) & category) != 0;
 }
@@ -127,7 +136,7 @@ std::string ListLogCategories();
 std::vector<CLogCategoryActive> ListActiveLogCategories();
 
 /** Return true if str parses as a log category and set the flags in f */
-bool GetLogCategory(uint32_t *f, const std::string *str);
+bool GetLogCategory(uint64_t *f, const std::string *str);
 
 /** Send a string to the log output */
 int LogPrintStr(const std::string &str);

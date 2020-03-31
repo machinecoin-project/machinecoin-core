@@ -24,7 +24,7 @@ private:
     //keep track of what node has/was asked for and when
     fulfilledreqmap_t mapFulfilledRequests;
     CCriticalSection cs_mapFulfilledRequests;
-    
+
     void RemoveFulfilledRequest(const CService& addr, const std::string& strRequest);
 
 public:
@@ -41,10 +41,14 @@ public:
     void AddFulfilledRequest(const CService& addr, const std::string& strRequest);
     bool HasFulfilledRequest(const CService& addr, const std::string& strRequest);
 
+    void RemoveAllFulfilledRequests(const CService& addr);
+
     void CheckAndRemove();
     void Clear();
 
     std::string ToString() const;
+
+    void DoMaintenance();
 };
 
 #endif

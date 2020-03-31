@@ -120,3 +120,5 @@ contrib/devtools/split-debug.sh
 !depends/patches/*
 .vscode/settings.json
 .vscode/c_cpp_properties.json
+git client 
+.idea

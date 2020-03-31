@@ -15,24 +15,30 @@ void RegisterBlockchainRPCCommands(CRPCTable &tableRPC);
 void RegisterNetRPCCommands(CRPCTable &tableRPC);
 /** Register miscellaneous RPC commands */
 void RegisterMiscRPCCommands(CRPCTable &tableRPC);
-/** Register Governance RPC commands */
-void RegisterGovRPCCommands(CRPCTable &tableRPC);
-/** Register Masternode RPC commands */
-void RegisterMNRPCCommands(CRPCTable &tableRPC);
 /** Register mining RPC commands */
 void RegisterMiningRPCCommands(CRPCTable &tableRPC);
 /** Register raw transaction RPC commands */
 void RegisterRawTransactionRPCCommands(CRPCTable &tableRPC);
+/** Register masternode RPC commands */
+void RegisterMasternodeRPCCommands(CRPCTable &tableRPC);
+/** Register governance RPC commands */
+void RegisterGovernanceRPCCommands(CRPCTable &tableRPC);
+/** Register Evo RPC commands */
+void RegisterEvoRPCCommands(CRPCTable &tableRPC);
+/** Register Quorums RPC commands */
+void RegisterQuorumsRPCCommands(CRPCTable &tableRPC);
 
 static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
 {
     RegisterBlockchainRPCCommands(t);
     RegisterNetRPCCommands(t);
     RegisterMiscRPCCommands(t);
-    RegisterGovRPCCommands(t);
-    RegisterMNRPCCommands(t);
     RegisterMiningRPCCommands(t);
     RegisterRawTransactionRPCCommands(t);
+    RegisterMasternodeRPCCommands(t);
+    RegisterGovernanceRPCCommands(t);
+    RegisterEvoRPCCommands(t);
+    RegisterQuorumsRPCCommands(t);
 }
 
 #endif

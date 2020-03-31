@@ -10,6 +10,9 @@
 
 #include <functional>
 #include <memory>
+#include <governance/governance-vote.h>
+#include <governance/governance-object.h>
+#include <evo/deterministicmns.h>
 
 class CBlock;
 class CBlockIndex;
@@ -114,6 +117,11 @@ protected:
      * Notifies listeners that a block which builds directly on our current tip
      * has been received and connected to the headers tree, though not validated yet */
     virtual void NewPoWValidBlock(const CBlockIndex *pindex, const std::shared_ptr<const CBlock>& block) {};
+
+    virtual void NotifyGovernanceVote(const CGovernanceVote &vote) {}
+    virtual void NotifyGovernanceObject(const CGovernanceObject &object) {}
+    virtual void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff) {}
+
     friend void ::RegisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterAllValidationInterfaces();
@@ -154,6 +162,9 @@ public:
     void Broadcast(int64_t nBestBlockTime, CConnman* connman);
     void BlockChecked(const CBlock&, const CValidationState&);
     void NewPoWValidBlock(const CBlockIndex *, const std::shared_ptr<const CBlock>&);
+    void NotifyGovernanceVote(const CGovernanceVote &vote);
+    void NotifyGovernanceObject(const CGovernanceObject &object);
+    void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff);
 };
 
 CMainSignals& GetMainSignals();

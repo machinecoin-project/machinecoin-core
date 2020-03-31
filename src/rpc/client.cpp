@@ -145,8 +145,12 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "rescanblockchain", 1, "stop_height"},
     // Masternodes
     { "getsuperblockbudget", 0, "height" },
-    { "voteraw", 1, "arg1" },
-    { "voteraw", 5, "arg2" },
+    { "getspecialtxes", 1, "type" },
+    { "getspecialtxes", 2, "count" },
+    { "getspecialtxes", 3, "skip" },
+    { "getspecialtxes", 4, "verbosity" },
+    { "voteraw", 1, "tx_index" },
+    { "voteraw", 5, "time" },
 };
 
 class CRPCConvertTable

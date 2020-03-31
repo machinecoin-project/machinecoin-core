@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MACHINECOIN_CUCKOOCACHE_H
-#define MACHINECOIN_CUCKOOCACHE_H
+#ifndef _MACHINECOIN_CUCKOOCACHE_H_
+#define _MACHINECOIN_CUCKOOCACHE_H_
 
 #include <array>
 #include <algorithm>
@@ -58,7 +58,7 @@ public:
      * @post All calls to bit_is_set (without subsequent bit_unset) will return
      * true.
      */
-    explicit bit_packed_atomic_flags(uint32_t size)
+    bit_packed_atomic_flags(uint32_t size)
     {
         // pad out the size if needed
         size = (size + 7) / 8;
@@ -478,4 +478,4 @@ public:
 };
 } // namespace CuckooCache
 
-#endif // MACHINECOIN_CUCKOOCACHE_H
+#endif
