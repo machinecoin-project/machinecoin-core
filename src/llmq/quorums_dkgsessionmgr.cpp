@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Dash Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,6 @@
 
 #include "chainparams.h"
 #include "net_processing.h"
-#include "spork.h"
 #include "validation.h"
 
 namespace llmq
@@ -40,7 +39,7 @@ void CDKGSessionManager::StartMessageHandlerPool()
     }
 
     messageHandlerPool.resize(2);
-    RenameThreadPool(messageHandlerPool, "dash-q-msg");
+    RenameThreadPool(messageHandlerPool, "MACHINECOIN-q-msg");
 }
 
 void CDKGSessionManager::StopMessageHandlerPool()
@@ -58,8 +57,6 @@ void CDKGSessionManager::UpdatedBlockTip(const CBlockIndex* pindexNew, bool fIni
         return;
     if (!deterministicMNManager->IsDIP3Enforced(pindexNew->nHeight))
         return;
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return;
 
     for (auto& qt : dkgSessionHandlers) {
         qt.second.UpdatedBlockTip(pindexNew);
@@ -68,9 +65,6 @@ void CDKGSessionManager::UpdatedBlockTip(const CBlockIndex* pindexNew, bool fIni
 
 void CDKGSessionManager::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return;
-
     if (strCommand != NetMsgType::QCONTRIB
         && strCommand != NetMsgType::QCOMPLAINT
         && strCommand != NetMsgType::QJUSTIFICATION
@@ -103,9 +97,6 @@ void CDKGSessionManager::ProcessMessage(CNode* pfrom, const std::string& strComm
 
 bool CDKGSessionManager::AlreadyHave(const CInv& inv) const
 {
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return false;
-
     for (const auto& p : dkgSessionHandlers) {
         auto& dkgType = p.second;
         if (dkgType.pendingContributions.HasSeen(inv.hash)
@@ -120,9 +111,6 @@ bool CDKGSessionManager::AlreadyHave(const CInv& inv) const
 
 bool CDKGSessionManager::GetContribution(const uint256& hash, CDKGContribution& ret) const
 {
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return false;
-
     for (const auto& p : dkgSessionHandlers) {
         auto& dkgType = p.second;
         LOCK2(dkgType.cs, dkgType.curSession->invCs);
@@ -140,9 +128,6 @@ bool CDKGSessionManager::GetContribution(const uint256& hash, CDKGContribution& 
 
 bool CDKGSessionManager::GetComplaint(const uint256& hash, CDKGComplaint& ret) const
 {
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return false;
-
     for (const auto& p : dkgSessionHandlers) {
         auto& dkgType = p.second;
         LOCK2(dkgType.cs, dkgType.curSession->invCs);
@@ -160,9 +145,6 @@ bool CDKGSessionManager::GetComplaint(const uint256& hash, CDKGComplaint& ret) c
 
 bool CDKGSessionManager::GetJustification(const uint256& hash, CDKGJustification& ret) const
 {
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return false;
-
     for (const auto& p : dkgSessionHandlers) {
         auto& dkgType = p.second;
         LOCK2(dkgType.cs, dkgType.curSession->invCs);
@@ -180,9 +162,6 @@ bool CDKGSessionManager::GetJustification(const uint256& hash, CDKGJustification
 
 bool CDKGSessionManager::GetPrematureCommitment(const uint256& hash, CDKGPrematureCommitment& ret) const
 {
-    if (!sporkManager.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED))
-        return false;
-
     for (const auto& p : dkgSessionHandlers) {
         auto& dkgType = p.second;
         LOCK2(dkgType.cs, dkgType.curSession->invCs);

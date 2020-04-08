@@ -130,7 +130,6 @@ static const int64_t MAX_FEE_ESTIMATION_TIP_AGE = 3 * 60 * 60;
 
 /** Default for -permitbaremultisig */
 static const bool DEFAULT_PERMIT_BAREMULTISIG = true;
-static const unsigned int DEFAULT_BYTES_PER_SIGOP = 20;
 static const bool DEFAULT_CHECKPOINTS_ENABLED = true;
 static const bool DEFAULT_TXINDEX = true;
 static const unsigned int DEFAULT_BANSCORE_THRESHOLD = 100;
@@ -164,7 +163,9 @@ extern CCriticalSection cs_main;
 extern CBlockPolicyEstimator feeEstimator;
 extern CTxMemPool mempool;
 typedef std::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
+typedef std::unordered_multimap<uint256, CBlockIndex*, BlockHasher> PrevBlockMap;
 extern BlockMap& mapBlockIndex;
+extern PrevBlockMap mapPrevBlockIndex;
 extern uint64_t nLastBlockTx;
 extern uint64_t nLastBlockWeight;
 extern const std::string strMessageMagic;
@@ -188,6 +189,8 @@ extern CAmount maxTxFee;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 extern int64_t nMaxTipAge;
 extern bool fEnableReplacement;
+
+extern std::atomic<bool> fDIP0001ActiveAtTip;
 
 /** Block hash whose ancestors we will assume to have valid scripts without checking them. */
 extern uint256 hashAssumeValid;
@@ -477,7 +480,7 @@ extern VersionBitsCache versionbitscache;
 /**
  * Determine what nVersion a new block should use.
  */
-int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params, bool fCheckMasternodesUpgraded = false);
 
 /**
  * Return true if hash can be found in chainActive at nBlockHeight height.

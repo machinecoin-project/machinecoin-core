@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Dash Core developers
+// Copyright (c) 2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,6 @@
 #include "masternode/masternode-sync.h"
 #include "net_processing.h"
 #include "scheduler.h"
-#include "spork.h"
 #include "txmempool.h"
 #include "validation.h"
 
@@ -85,10 +84,6 @@ CChainLockSig CChainLocksHandler::GetBestChainLock()
 
 void CChainLocksHandler::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
 {
-    if (!sporkManager.IsSporkActive(SPORK_19_CHAINLOCKS_ENABLED)) {
-        return;
-    }
-
     if (strCommand == NetMsgType::CLSIG) {
         CChainLockSig clsig;
         vRecv >> clsig;
@@ -225,10 +220,8 @@ void CChainLocksHandler::CheckActiveState()
 
     LOCK(cs);
     bool oldIsEnforced = isEnforced;
-    isSporkActive = sporkManager.IsSporkActive(SPORK_19_CHAINLOCKS_ENABLED);
     // TODO remove this after DIP8 is active
-    bool fEnforcedBySpork = (Params().NetworkIDString() == CBaseChainParams::TESTNET) && (sporkManager.GetSporkValue(SPORK_19_CHAINLOCKS_ENABLED) == 1);
-    isEnforced = (fDIP0008Active && isSporkActive) || fEnforcedBySpork;
+    isEnforced = fDIP0008Active;
 
     if (!oldIsEnforced && isEnforced) {
         // ChainLocks got activated just recently, but it's possible that it was already running before, leaving
@@ -270,10 +263,6 @@ void CChainLocksHandler::TrySignChainTip()
     {
         LOCK(cs);
 
-        if (!isSporkActive) {
-            return;
-        }
-
         if (pindex->nHeight == lastSignedHeight) {
             // already signed this one
             return;
@@ -297,7 +286,7 @@ void CChainLocksHandler::TrySignChainTip()
     // considered safe when it is ixlocked or at least known since 10 minutes (from mempool or block). These checks are
     // performed for the tip (which we try to sign) and the previous 5 blocks. If a ChainLocked block is found on the
     // way down, we consider all TXs to be safe.
-    if (IsInstantSendEnabled() && sporkManager.IsSporkActive(SPORK_3_INSTANTSEND_BLOCK_FILTERING)) {
+    if (IsInstantSendEnabled()) {
         auto pindexWalk = pindex;
         while (pindexWalk) {
             if (pindex->nHeight - pindexWalk->nHeight > 5) {
@@ -456,9 +445,6 @@ CChainLocksHandler::BlockTxs::mapped_type CChainLocksHandler::GetBlockTxs(const 
 
 bool CChainLocksHandler::IsTxSafeForMining(const uint256& txid)
 {
-    if (!sporkManager.IsSporkActive(SPORK_3_INSTANTSEND_BLOCK_FILTERING)) {
-        return true;
-    }
     if (!IsInstantSendEnabled()) {
         return true;
     }
@@ -466,9 +452,6 @@ bool CChainLocksHandler::IsTxSafeForMining(const uint256& txid)
     int64_t txAge = 0;
     {
         LOCK(cs);
-        if (!isSporkActive) {
-            return true;
-        }
         auto it = txFirstSeenTime.find(txid);
         if (it != txFirstSeenTime.end()) {
             txAge = GetAdjustedTime() - it->second;
@@ -561,10 +544,6 @@ void CChainLocksHandler::HandleNewRecoveredSig(const llmq::CRecoveredSig& recove
     CChainLockSig clsig;
     {
         LOCK(cs);
-
-        if (!isSporkActive) {
-            return;
-        }
 
         if (recoveredSig.id != lastSignedRequestId || recoveredSig.msgHash != lastSignedMsgHash) {
             // this is not what we signed, so lets not create a CLSIG for it

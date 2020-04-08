@@ -168,15 +168,6 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "The genesis block coinbase is not considered an ordinary transaction and cannot be retrieved");
     }
 
-    CTransactionRef tx;
-    uint256 hashBlock;
-    if (!GetTransaction(hash, tx, Params().GetConsensus(), hashBlock, true))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string(fTxIndex ? "No such mempool or blockchain transaction"
-            : "No such mempool transaction. Use -txindex to enable blockchain transaction queries") +
-            ". Use gettransaction for wallet transactions.");
-
-    std::string strHex = EncodeHexTx(*tx);
-
     // Accept either a bool (true) or a num (>=1) to indicate verbose output.
     bool fVerbose = false;
     if (!request.params[1].isNull()) {

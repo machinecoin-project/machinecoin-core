@@ -80,5 +80,6 @@ struct CNodeStateStats {
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats &stats);
 /** Increase a node's misbehavior score. */
 void Misbehaving(NodeId nodeid, int howmuch);
+bool IsBanned(NodeId nodeid);
 
 #endif // MACHINECOIN_NET_PROCESSING_H

@@ -203,6 +203,8 @@ public:
     void unlockCoin(COutPoint& output);
     void listLockedCoins(std::vector<COutPoint>& vOutpts);
 
+    void listProTxCoins(std::vector<COutPoint>& vOutpts);
+
     void loadReceiveRequests(std::vector<std::string>& vReceiveRequests);
     bool saveReceiveRequest(const std::string &sAddress, const int64_t nId, const std::string &sRequest);
 
@@ -279,6 +281,8 @@ public Q_SLOTS:
     void updateStatus();
     /* New transaction, or transaction changed status */
     void updateTransaction();
+    /* ChainLock received */
+    void updateChainLockHeight(int chainLockHeight);
     /* New, updated or removed address book entry */
     void updateAddressBook(const QString &address, const QString &label, bool isMine, const QString &purpose, int status);
     /* Watch-only added */

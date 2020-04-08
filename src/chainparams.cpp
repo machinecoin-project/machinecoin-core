@@ -171,9 +171,9 @@ public:
         consensus.BIP34Hash = uint256S("5b77f70e30731bbf8c4b6c44cf62170cc559b6015aa9b7988d8d44a30c4a4614"); // Machinecoin BIP34 Hash
         consensus.BIP65Height = 416969; // c49bfa33dd4d76a6a05f93c1eb4310993ce00c7a8a9ee23c76164ddc2eecbdef
         consensus.BIP66Height = 415969; // 83703951207fcf9e22516f97603f8621299de483e85d85e8a86f7b0fd32717dc
-        consensus.DIP0003Height = 1028160; // TODO: use some valid value here :)
-        consensus.DIP0003EnforcementHeight = 1047200; // TODO: use some valid value here :)
-        consensus.DIP0003EnforcementHash = uint256S("000000000000002d1734087b4c5afc3133e4e1c3e1a89218f62bcd9bb3d17f81"); // TODO: use some valid value here :)
+        consensus.DIP0003Height = 900000;
+        consensus.DIP0003EnforcementHeight = 900000;
+        consensus.DIP0003EnforcementHash = uint256S("000000000000002d1734087b4c5afc3133e4e1c3e1a89218f62bcd9bb3d17f81");
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Machinecoin PoW Limit
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // Machinecoin 3.5 days
         consensus.nPowTargetSpacing = 2.5 * 60; // Machinecoin 2.5 minutes
@@ -200,16 +200,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1550347200; // Feb 16, 2019 pm.
 
         // Deployment of DIP0003
-        // TODO: use some valid value here :)
-        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0003].bit = 3;
-        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0003].nStartTime = 1546300800; // Jan 1st, 2019
-        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0003].nTimeout = 1577836800; // Jan 1st, 2020
+        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0003].bit = 2;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0003].nStartTime = 1586259798;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0003].nTimeout = 1617795798;
 
         // Deployment of DIP0008
-        // TODO: use some valid value here :)
-        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0008].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0008].nStartTime = 1557878400; // May 15th, 2019
-        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0008].nTimeout = 1589500800; // May 15th, 2020
+        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0008].bit = 3;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0008].nStartTime = 1586259798;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DIP0008].nTimeout = 1617795798;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("000000000000000000000000000000000000000000000000030e850e3b4e9768");
@@ -275,7 +273,7 @@ public:
         // Masternodes & Governance
         consensus.nMasternodePaymentsStartBlock = 513000;
         consensus.nSuperblockStartBlock = 513000;
-        consensus.nSuperblockStartHash = uint256S("0000000000020cb27c7ef164d21003d5d20cdca2f54dd9a9ca6d45f4d47f8aa3"); // TODO: use some valid value here :)
+        consensus.nSuperblockStartHash = uint256S("0xc2c08e93ba788a17c1c5a977043900a2cac37bd820aaac44b3b50e6e1c101a9a"); // TODO: use some valid value here :)
         consensus.nSuperblockCycle = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
         consensus.nGovernanceMinQuorum = 10;
         consensus.nGovernanceFilterElements = 20000;
@@ -302,6 +300,7 @@ public:
                 {590590, uint256S("0x99a5e123915a7c4b1ac303c0959150bac5cda54d4256a4ebc992e6d0e334a518")},  // Machinecoin: checkpoint at 590590
                 {609672, uint256S("0x89c63976349d04447f31775acb8c5c36adc4eac3e4c7ce4f5ebb72e7403967e3")},  // Machinecoin: checkpoint at 609672
                 {619239, uint256S("0x133ed771c8ed7f0871f62e6a6fcd00c104f7af8f0404bc778db367b178684317")},  // Machinecoin: checkpoint at 619239
+                {880000, uint256S("0x1a613c7f70172b1ab428ec988e983a9184ef29b9e6774d3c7916d68f4c7cfe7e")},  // Machinecoin: checkpoint at 880000
             }
         };
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020 The Dash Core developers
+// Copyright (c) 2014-2020 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,9 +6,6 @@
 
 #include <init.h>
 #include <masternode/masternode-sync.h>
-#ifdef ENABLE_WALLET
-#include "privatesend/privatesend-client.h"
-#endif
 #include <validation.h>
 
 struct CompareScoreMN
@@ -23,9 +20,6 @@ struct CompareScoreMN
 void CMasternodeUtils::ProcessMasternodeConnections(CConnman& connman)
 {
     std::vector<CDeterministicMNCPtr> vecDmns; // will be empty when no wallet
-#ifdef ENABLE_WALLET
-    privateSendClient.GetMixingMasternodesInfo(vecDmns);
-#endif // ENABLE_WALLET
 
     // Don't disconnect masternode connections when we have less then the desired amount of outbound nodes
     int nonMasternodeCount = 0;

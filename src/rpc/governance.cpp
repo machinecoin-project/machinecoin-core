@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020 The Dash Core developers
+// Copyright (c) 2014-2020 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -166,7 +166,7 @@ UniValue gobject_prepare(const JSONRPCRequest& request)
 
     CGovernanceObject govobj(hashParent, nRevision, nTime, uint256(), strDataHex);
 
-    // This command is dangerous because it consumes 5 DASH irreversibly.
+    // This command is dangerous because it consumes 5 MACHINECOIN irreversibly.
     // If params are lost, it's very hard to bruteforce them and yet
     // users ignore all instructions on dashcentral etc. and do not save them...
     // Let's log them here and hope users do not mess with debug.log
@@ -339,7 +339,7 @@ void gobject_vote_conf_help()
 {
     throw std::runtime_error(
                 "gobject vote-conf <governance-hash> <vote> <vote-outcome>\n"
-                "Vote on a governance object by masternode configured in dash.conf\n"
+                "Vote on a governance object by masternode configured in MACHINECOIN.conf\n"
                 "\nArguments:\n"
                 "1. governance-hash   (string, required) hash of the governance object\n"
                 "2. vote              (string, required) vote, possible values: [funding|valid|delete|endorsed]\n"
@@ -394,7 +394,7 @@ UniValue gobject_vote_conf(const JSONRPCRequest& request)
         nFailed++;
         statusObj.push_back(Pair("result", "failed"));
         statusObj.push_back(Pair("errorMessage", "Can't find masternode by collateral output"));
-        resultsObj.push_back(Pair("dash.conf", statusObj));
+        resultsObj.push_back(Pair("MACHINECOIN.conf", statusObj));
         returnObj.push_back(Pair("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", nSuccessful, nFailed)));
         returnObj.push_back(Pair("detail", resultsObj));
         return returnObj;
@@ -414,7 +414,7 @@ UniValue gobject_vote_conf(const JSONRPCRequest& request)
         nFailed++;
         statusObj.push_back(Pair("result", "failed"));
         statusObj.push_back(Pair("errorMessage", "Failure to sign."));
-        resultsObj.push_back(Pair("dash.conf", statusObj));
+        resultsObj.push_back(Pair("MACHINECOIN.conf", statusObj));
         returnObj.push_back(Pair("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", nSuccessful, nFailed)));
         returnObj.push_back(Pair("detail", resultsObj));
         return returnObj;
@@ -430,7 +430,7 @@ UniValue gobject_vote_conf(const JSONRPCRequest& request)
         statusObj.push_back(Pair("errorMessage", exception.GetMessage()));
     }
 
-    resultsObj.push_back(Pair("dash.conf", statusObj));
+    resultsObj.push_back(Pair("MACHINECOIN.conf", statusObj));
 
     returnObj.push_back(Pair("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", nSuccessful, nFailed)));
     returnObj.push_back(Pair("detail", resultsObj));
@@ -606,7 +606,7 @@ UniValue gobject_vote_alias(const JSONRPCRequest& request)
 
     CKey votingKey;
     if (!pwallet->GetKey(dmn->pdmnState->keyIDVoting, votingKey)) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Private key for voting address %s not known by wallet", CBitcoinAddress(dmn->pdmnState->keyIDVoting).ToString()));
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Private key for voting address %s not known by wallet", EncodeDestination(dmn->pdmnState->keyIDVoting)));
     }
 
     std::map<uint256, CKey> votingKeys;
@@ -887,7 +887,7 @@ UniValue gobject_getcurrentvotes(const JSONRPCRequest& request)
 #ifdef ENABLE_WALLET
             "  vote-alias         - Vote on a governance object by masternode proTxHash\n"
 #endif // ENABLE_WALLET
-            "  vote-conf          - Vote on a governance object by masternode configured in dash.conf\n"
+            "  vote-conf          - Vote on a governance object by masternode configured in MACHINECOIN.conf\n"
 #ifdef ENABLE_WALLET
             "  vote-many          - Vote on a governance object by all masternodes for which the voting key is in the wallet\n"
 #endif // ENABLE_WALLET
@@ -1084,7 +1084,7 @@ UniValue getsuperblockbudget(const JSONRPCRequest& request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)        argNames
   //  --------------------- ------------------------  ----------------------- ----------
-    /* Dash features */
+    /* Machinecoin features */
     { "machinecoin",               "getgovernanceinfo",      &getgovernanceinfo,      {} },
     { "machinecoin",               "getsuperblockbudget",    &getsuperblockbudget,    {"index"} },
     { "machinecoin",               "gobject",                &gobject,                {} },

@@ -50,4 +50,6 @@ static const int IMPLEMENTED_MASTERNODES = 70017;
 
 static const int LLMQS_PROTO_VERSION = 70024;
 
+static const int DMN_PROTO_VERSION = 70024;
+
 #endif // MACHINECOIN_VERSION_H

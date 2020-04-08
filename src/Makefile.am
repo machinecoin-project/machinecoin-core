@@ -80,6 +80,7 @@ MACHINECOIN_CORE_H = \
   addrdb.h \
   addrman.h \
   base58.h \
+  batchedlogger.h \
   bech32.h \
   blockencodings.h \
   bloom.h \
@@ -241,11 +242,13 @@ libmachinecoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmachinecoin_server_a_SOURCES = \
   addrdb.cpp \
   addrman.cpp \
+  batchedlogger.cpp \
   bloom.cpp \
   blockencodings.cpp \
   chain.cpp \
   checkpoints.cpp \
   consensus/tx_verify.cpp \
+  dsnotificationinterface.cpp \
   evo/cbtx.cpp \
   evo/deterministicmns.cpp \
   evo/evodb.cpp \

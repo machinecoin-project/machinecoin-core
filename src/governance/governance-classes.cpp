@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2019 The Dash Core developers
+// Copyright (c) 2014-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -510,20 +510,20 @@ void CSuperblock::ParsePaymentSchedule(const std::string& strPaymentAddresses, c
     */
 
     for (int i = 0; i < (int)vecParsed1.size(); i++) {
-        CBitcoinAddress address(vecParsed1[i]);
-        if (!address.IsValid()) {
+        if (!IsValidDestinationString(vecParsed1[i])) {
             std::ostringstream ostr;
-            ostr << "CSuperblock::ParsePaymentSchedule -- Invalid Dash Address : " << vecParsed1[i];
+            ostr << "CSuperblock::ParsePaymentSchedule -- Invalid Machinecoin Address : " << vecParsed1[i];
             LogPrintf("%s\n", ostr.str());
             throw std::runtime_error(ostr.str());
         }
-        /*
+        /*D
             TODO
 
             - There might be an issue with multisig in the coinbase on mainnet, we will add support for it in a future release.
             - Post 12.3+ (test multisig coinbase transaction)
         */
-        if (address.IsScript()) {
+        CTxDestination dest = DecodeDestination(vecParsed1[i]);
+        if (GetScriptForDestination(dest).IsPayToScriptHash()) {
             std::ostringstream ostr;
             ostr << "CSuperblock::ParsePaymentSchedule -- Script addresses are not supported yet : " << vecParsed1[i];
             LogPrintf("%s\n", ostr.str());
@@ -534,13 +534,13 @@ void CSuperblock::ParsePaymentSchedule(const std::string& strPaymentAddresses, c
 
         LogPrint(MCLog::GOBJECT, "CSuperblock::ParsePaymentSchedule -- i = %d, amount string = %s, nAmount = %lld\n", i, vecParsed2[i], nAmount);
 
-        CGovernancePayment payment(address, nAmount);
+        CGovernancePayment payment(vecParsed1[i], nAmount);
         if (payment.IsValid()) {
             vecPayments.push_back(payment);
         } else {
             vecPayments.clear();
             std::ostringstream ostr;
-            ostr << "CSuperblock::ParsePaymentSchedule -- Invalid payment found: address = " << address.ToString()
+            ostr << "CSuperblock::ParsePaymentSchedule -- Invalid payment found: address = " << vecParsed1[i]
                  << ", amount = " << nAmount;
             LogPrintf("%s\n", ostr.str());
             throw std::runtime_error(ostr.str());
@@ -652,8 +652,7 @@ bool CSuperblock::IsValid(const CTransaction& txNew, int nBlockHeight, CAmount b
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            CBitcoinAddress address2(address1);
-            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, address2.ToString());
+            LogPrintf("CSuperblock::IsValid -- ERROR: Block invalid: %d payment %d to %s not found\n", i, payment.nAmount, EncodeDestination(address1));
 
             return false;
         }
@@ -719,14 +718,13 @@ std::string CSuperblockManager::GetRequiredPaymentsString(int nBlockHeight)
 
             CTxDestination address1;
             ExtractDestination(payment.script, address1);
-            CBitcoinAddress address2(address1);
 
             // RETURN NICE OUTPUT FOR CONSOLE
 
             if (ret != "Unknown") {
-                ret += ", " + address2.ToString();
+                ret += ", " + EncodeDestination(address1);
             } else {
-                ret = address2.ToString();
+                ret = EncodeDestination(address1);
             }
         }
     }

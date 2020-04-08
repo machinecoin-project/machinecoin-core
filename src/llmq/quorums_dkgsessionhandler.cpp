@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Dash Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -95,7 +95,7 @@ CDKGSessionHandler::CDKGSessionHandler(const Consensus::LLMQParams& _params, ctp
     pendingPrematureCommitments((size_t)_params.size * 2)
 {
     phaseHandlerThread = std::thread([this] {
-        RenameThread(strprintf("dash-q-phase-%d", (uint8_t)params.type).c_str());
+        RenameThread(strprintf("MACHINECOIN-q-phase-%d", (uint8_t)params.type).c_str());
         PhaseHandlerThread();
     });
 }
@@ -519,7 +519,7 @@ void CDKGSessionHandler::HandleDKGRound()
                     if (!dmn) {
                         debugMsg += strprintf("  %s (not in valid MN set anymore)\n", c.ToString());
                     } else {
-                        debugMsg += strprintf("  %s (%s)\n", c.ToString(), dmn->pdmnState->addr.ToString(false));
+                        debugMsg += strprintf("  %s (%s)\n", c.ToString(), dmn->pdmnState->addr.ToString());
                     }
                 }
                 LogPrint(MCLog::LLMQ_DKG, debugMsg.c_str());

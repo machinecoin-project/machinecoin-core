@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 The Dash Core developers
+// Copyright (c) 2017-2019 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -37,7 +37,7 @@ uint256 CSimplifiedMNListEntry::CalcHash() const
 std::string CSimplifiedMNListEntry::ToString() const
 {
     return strprintf("CSimplifiedMNListEntry(proRegTxHash=%s, confirmedHash=%s, service=%s, pubKeyOperator=%s, votingAddress=%s, isValid=%d)",
-        proRegTxHash.ToString(), confirmedHash.ToString(), service.ToString(false), pubKeyOperator.Get().ToString(), CBitcoinAddress(keyIDVoting).ToString(), isValid);
+        proRegTxHash.ToString(), confirmedHash.ToString(), service.ToString(), pubKeyOperator.Get().ToString(), EncodeDestination(keyIDVoting), isValid);
 }
 
 void CSimplifiedMNListEntry::ToJson(UniValue& obj) const
@@ -46,9 +46,9 @@ void CSimplifiedMNListEntry::ToJson(UniValue& obj) const
     obj.setObject();
     obj.push_back(Pair("proRegTxHash", proRegTxHash.ToString()));
     obj.push_back(Pair("confirmedHash", confirmedHash.ToString()));
-    obj.push_back(Pair("service", service.ToString(false)));
+    obj.push_back(Pair("service", service.ToString()));
     obj.push_back(Pair("pubKeyOperator", pubKeyOperator.Get().ToString()));
-    obj.push_back(Pair("votingAddress", CBitcoinAddress(keyIDVoting).ToString()));
+    obj.push_back(Pair("votingAddress", EncodeDestination(keyIDVoting)));
     obj.push_back(Pair("isValid", isValid));
 }
 

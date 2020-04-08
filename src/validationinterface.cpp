@@ -18,18 +18,20 @@
 #include <future>
 
 #include <boost/signals2/signal.hpp>
-#include <governance/governance-object.h>
 
 struct MainSignalsInstance {
     boost::signals2::signal<void (const CBlockIndex *, const CBlockIndex *, bool fInitialDownload)> UpdatedBlockTip;
-    boost::signals2::signal<void (const CTransactionRef &)> TransactionAddedToMempool;
+    boost::signals2::signal<void (const CTransactionRef &, int64_t)> TransactionAddedToMempool;
     boost::signals2::signal<void (const std::shared_ptr<const CBlock> &, const CBlockIndex *pindex, const std::vector<CTransactionRef>&)> BlockConnected;
-    boost::signals2::signal<void (const std::shared_ptr<const CBlock> &)> BlockDisconnected;
+    boost::signals2::signal<void (const std::shared_ptr<const CBlock> &, const CBlockIndex* pindexDisconnected)> BlockDisconnected;
     boost::signals2::signal<void (const CTransactionRef &)> TransactionRemovedFromMempool;
     boost::signals2::signal<void (const CBlockLocator &)> SetBestChain;
     boost::signals2::signal<void (int64_t nBestBlockTime, CConnman* connman)> Broadcast;
     boost::signals2::signal<void (const CBlock&, const CValidationState&)> BlockChecked;
     boost::signals2::signal<void (const CBlockIndex *, const std::shared_ptr<const CBlock>&)> NewPoWValidBlock;
+    boost::signals2::signal<void (const CBlockIndex *)>AcceptedBlockHeader;
+    boost::signals2::signal<void (const CBlockIndex *, bool)>NotifyHeaderTip;
+    boost::signals2::signal<void (const CBlockIndex* pindex, const llmq::CChainLockSig& clsig)>NotifyChainLock;
     boost::signals2::signal<void (const CGovernanceVote &vote)>NotifyGovernanceVote;
     boost::signals2::signal<void (const CGovernanceObject &object)>NotifyGovernanceObject;
     boost::signals2::signal<void (bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff)>NotifyMasternodeListChanged;
@@ -78,10 +80,13 @@ CMainSignals& GetMainSignals()
 }
 
 void RegisterValidationInterface(CValidationInterface* pwalletIn) {
+    g_signals.m_internals->AcceptedBlockHeader.connect(boost::bind(&CValidationInterface::AcceptedBlockHeader, pwalletIn, _1));
+    g_signals.m_internals->NotifyHeaderTip.connect(boost::bind(&CValidationInterface::NotifyHeaderTip, pwalletIn, _1, _2));
     g_signals.m_internals->UpdatedBlockTip.connect(boost::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, _1, _2, _3));
-    g_signals.m_internals->TransactionAddedToMempool.connect(boost::bind(&CValidationInterface::TransactionAddedToMempool, pwalletIn, _1));
+    g_signals.m_internals->TransactionAddedToMempool.connect(boost::bind(&CValidationInterface::TransactionAddedToMempool, pwalletIn, _1, _2));
     g_signals.m_internals->BlockConnected.connect(boost::bind(&CValidationInterface::BlockConnected, pwalletIn, _1, _2, _3));
-    g_signals.m_internals->BlockDisconnected.connect(boost::bind(&CValidationInterface::BlockDisconnected, pwalletIn, _1));
+    g_signals.m_internals->BlockDisconnected.connect(boost::bind(&CValidationInterface::BlockDisconnected, pwalletIn, _1, _2));
+    g_signals.m_internals->NotifyChainLock.connect(boost::bind(&CValidationInterface::NotifyChainLock, pwalletIn, _1, _2));
     g_signals.m_internals->TransactionRemovedFromMempool.connect(boost::bind(&CValidationInterface::TransactionRemovedFromMempool, pwalletIn, _1));
     g_signals.m_internals->SetBestChain.connect(boost::bind(&CValidationInterface::SetBestChain, pwalletIn, _1));
     g_signals.m_internals->Broadcast.connect(boost::bind(&CValidationInterface::ResendWalletTransactions, pwalletIn, _1, _2));
@@ -96,12 +101,15 @@ void UnregisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.m_internals->BlockChecked.disconnect(boost::bind(&CValidationInterface::BlockChecked, pwalletIn, _1, _2));
     g_signals.m_internals->Broadcast.disconnect(boost::bind(&CValidationInterface::ResendWalletTransactions, pwalletIn, _1, _2));
     g_signals.m_internals->SetBestChain.disconnect(boost::bind(&CValidationInterface::SetBestChain, pwalletIn, _1));
-    g_signals.m_internals->TransactionAddedToMempool.disconnect(boost::bind(&CValidationInterface::TransactionAddedToMempool, pwalletIn, _1));
+    g_signals.m_internals->NotifyChainLock.disconnect(boost::bind(&CValidationInterface::NotifyChainLock, pwalletIn, _1, _2));
+    g_signals.m_internals->TransactionAddedToMempool.disconnect(boost::bind(&CValidationInterface::TransactionAddedToMempool, pwalletIn, _1, _2));
     g_signals.m_internals->BlockConnected.disconnect(boost::bind(&CValidationInterface::BlockConnected, pwalletIn, _1, _2, _3));
-    g_signals.m_internals->BlockDisconnected.disconnect(boost::bind(&CValidationInterface::BlockDisconnected, pwalletIn, _1));
+    g_signals.m_internals->BlockDisconnected.disconnect(boost::bind(&CValidationInterface::BlockDisconnected, pwalletIn, _1, _2));
     g_signals.m_internals->TransactionRemovedFromMempool.disconnect(boost::bind(&CValidationInterface::TransactionRemovedFromMempool, pwalletIn, _1));
     g_signals.m_internals->UpdatedBlockTip.disconnect(boost::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, _1, _2, _3));
     g_signals.m_internals->NewPoWValidBlock.disconnect(boost::bind(&CValidationInterface::NewPoWValidBlock, pwalletIn, _1, _2));
+    g_signals.m_internals->NotifyHeaderTip.disconnect(boost::bind(&CValidationInterface::NotifyHeaderTip, pwalletIn, _1, _2));
+    g_signals.m_internals->AcceptedBlockHeader.disconnect(boost::bind(&CValidationInterface::AcceptedBlockHeader, pwalletIn, _1));
     g_signals.m_internals->NotifyGovernanceObject.disconnect(boost::bind(&CValidationInterface::NotifyGovernanceObject, pwalletIn, _1));
     g_signals.m_internals->NotifyGovernanceVote.disconnect(boost::bind(&CValidationInterface::NotifyGovernanceVote, pwalletIn, _1));
     g_signals.m_internals->NotifyMasternodeListChanged.disconnect(boost::bind(&CValidationInterface::NotifyMasternodeListChanged, pwalletIn, _1, _2, _3));
@@ -114,12 +122,15 @@ void UnregisterAllValidationInterfaces() {
     g_signals.m_internals->BlockChecked.disconnect_all_slots();
     g_signals.m_internals->Broadcast.disconnect_all_slots();
     g_signals.m_internals->SetBestChain.disconnect_all_slots();
+    g_signals.m_internals->NotifyChainLock.disconnect_all_slots();
     g_signals.m_internals->TransactionAddedToMempool.disconnect_all_slots();
     g_signals.m_internals->BlockConnected.disconnect_all_slots();
     g_signals.m_internals->BlockDisconnected.disconnect_all_slots();
     g_signals.m_internals->TransactionRemovedFromMempool.disconnect_all_slots();
     g_signals.m_internals->UpdatedBlockTip.disconnect_all_slots();
     g_signals.m_internals->NewPoWValidBlock.disconnect_all_slots();
+    g_signals.m_internals->NotifyHeaderTip.disconnect_all_slots();
+    g_signals.m_internals->AcceptedBlockHeader.disconnect_all_slots();
     g_signals.m_internals->NotifyGovernanceObject.disconnect_all_slots();
     g_signals.m_internals->NotifyGovernanceVote.disconnect_all_slots();
     g_signals.m_internals->NotifyMasternodeListChanged.disconnect_all_slots();
@@ -153,9 +164,9 @@ void CMainSignals::UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockInd
     });
 }
 
-void CMainSignals::TransactionAddedToMempool(const CTransactionRef &ptx) {
-    m_internals->m_schedulerClient.AddToProcessQueue([ptx, this] {
-        m_internals->TransactionAddedToMempool(ptx);
+void CMainSignals::TransactionAddedToMempool(const CTransactionRef &ptx, int64_t nAcceptTime) {
+    m_internals->m_schedulerClient.AddToProcessQueue([ptx, nAcceptTime, this] {
+        m_internals->TransactionAddedToMempool(ptx, nAcceptTime);
     });
 }
 
@@ -165,9 +176,9 @@ void CMainSignals::BlockConnected(const std::shared_ptr<const CBlock> &pblock, c
     });
 }
 
-void CMainSignals::BlockDisconnected(const std::shared_ptr<const CBlock> &pblock) {
-    m_internals->m_schedulerClient.AddToProcessQueue([pblock, this] {
-        m_internals->BlockDisconnected(pblock);
+void CMainSignals::BlockDisconnected(const std::shared_ptr<const CBlock> &pblock, const CBlockIndex* pindexDisconnected) {
+    m_internals->m_schedulerClient.AddToProcessQueue([pblock, pindexDisconnected, this] {
+        m_internals->BlockDisconnected(pblock, pindexDisconnected);
     });
 }
 
@@ -187,6 +198,18 @@ void CMainSignals::BlockChecked(const CBlock& block, const CValidationState& sta
 
 void CMainSignals::NewPoWValidBlock(const CBlockIndex *pindex, const std::shared_ptr<const CBlock> &block) {
     m_internals->NewPoWValidBlock(pindex, block);
+}
+
+void CMainSignals::AcceptedBlockHeader(const CBlockIndex *pindexNew) {
+    m_internals->AcceptedBlockHeader(pindexNew);
+}
+
+void CMainSignals::NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload) {
+        m_internals->NotifyHeaderTip(pindexNew, fInitialDownload);
+}
+
+void CMainSignals::NotifyChainLock(const CBlockIndex* pindex, const llmq::CChainLockSig& clsig) {
+        m_internals->NotifyChainLock(pindex, clsig);
 }
 
 void CMainSignals::NotifyGovernanceVote(const CGovernanceVote &vote) {

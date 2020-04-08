@@ -20,8 +20,9 @@ class TransactionStatus
 {
 public:
     TransactionStatus():
-        countsForBalance(false), sortKey(""),
-        matures_in(0), status(Unconfirmed), depth(0), open_for(0), cur_num_blocks(-1)
+        countsForBalance(false), lockedByChainLocks(false), sortKey(""),
+        matures_in(0), status(Unconfirmed), depth(0), open_for(0), cur_num_blocks(-1),
+        cachedChainLockHeight(-1), needsUpdate(false)
     { }
 
     enum Status {
@@ -40,6 +41,8 @@ public:
 
     /// Transaction counts towards available balance
     bool countsForBalance;
+    /// Transaction was locked via ChainLocks
+    bool lockedByChainLocks;
     /// Sorting key based on status
     std::string sortKey;
 
@@ -59,6 +62,9 @@ public:
 
     /** Current number of blocks (to know whether cached status is still valid) */
     int cur_num_blocks;
+
+    //** Know when to update transaction for chainlocks **/
+    int cachedChainLockHeight;
 
     bool needsUpdate;
 };
@@ -134,11 +140,11 @@ public:
 
     /** Update status from core wallet tx.
      */
-    void updateStatus(const CWalletTx &wtx);
+    void updateStatus(const CWalletTx &wtx, int chainLockHeight);
 
     /** Return whether a status update is needed.
      */
-    bool statusUpdateNeeded() const;
+    bool statusUpdateNeeded(int chainLockHeight);
 };
 
 #endif // MACHINECOIN_QT_TRANSACTIONRECORD_H

@@ -8,7 +8,13 @@
 #include <zmq/zmqconfig.h>
 
 class CBlockIndex;
+class CGovernanceObject;
+class CGovernanceVote;
 class CZMQAbstractNotifier;
+
+namespace llmq {
+    class CChainLockSig;
+} // namespace llmq
 
 typedef CZMQAbstractNotifier* (*CZMQNotifierFactory)();
 
@@ -33,7 +39,11 @@ public:
     virtual void Shutdown() = 0;
 
     virtual bool NotifyBlock(const CBlockIndex *pindex);
+    virtual bool NotifyChainLock(const CBlockIndex *pindex, const llmq::CChainLockSig& clsig);
     virtual bool NotifyTransaction(const CTransaction &transaction);
+    virtual bool NotifyGovernanceVote(const CGovernanceVote &vote);
+    virtual bool NotifyGovernanceObject(const CGovernanceObject &object);
+
 
 protected:
     void *psocket;

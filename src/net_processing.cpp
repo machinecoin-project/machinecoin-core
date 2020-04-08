@@ -798,7 +798,17 @@ void Misbehaving(NodeId pnode, int howmuch)
         LogPrintf("%s: %s peer=%d (%d -> %d)\n", __func__, state->name, pnode, state->nMisbehavior-howmuch, state->nMisbehavior);
 }
 
-
+// Requires cs_main.
+bool IsBanned(NodeId pnode)
+{
+    CNodeState *state = State(pnode);
+    if (state == nullptr)
+        return false;
+    if (state->fShouldBan) {
+        return true;
+    }
+    return false;
+}
 
 
 
@@ -1243,7 +1253,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
     {
         LOCK(cs_main);
 
-        while (it != pfrom->vRecvGetData.end() && (it->type == MSG_TX || it->type == MSG_WITNESS_TX || it->type == MSG_MASTERNODE_PAYMENT_VOTE || it->type == MSG_MASTERNODE_PAYMENT_BLOCK || it->type == MSG_MASTERNODE_QUORUM || it->type == MSG_MASTERNODE_ANNOUNCE || it->type == MSG_MASTERNODE_PING || it->type == MSG_GOVERNANCE_OBJECT || it->type == MSG_GOVERNANCE_OBJECT_VOTE || it->type == MSG_MASTERNODE_VERIFY)) {
+        while (it != pfrom->vRecvGetData.end() && it->IsKnownType()) {
             if (interruptMsgProc)
                 return;
             // Don't bother if send buffer is too full to respond anyway
@@ -3668,7 +3678,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
         std::vector<CInv> vInv;
         {
             LOCK(pto->cs_inventory);
-            vInv.reserve(std::max<size_t>(pto->vInventoryBlockToSend.size(), INVENTORY_BROADCAST_MAX_PER_1MB_BLOCK * MaxBlockSize(true) / 1000000));
+            vInv.reserve(std::max<size_t>(pto->vInventoryBlockToSend.size(), INVENTORY_BROADCAST_MAX * MaxBlockSize(true) / 1000000));
 
             // Add blocks
             for (const uint256& hash : pto->vInventoryBlockToSend) {
@@ -3764,7 +3774,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
                 // especially since we have many peers and some will draw much shorter delays.
                 unsigned int nRelayedTransactions = 0;
                 LOCK(pto->cs_filter);
-                while (!vInvTx.empty() && nRelayedTransactions < INVENTORY_BROADCAST_MAX_PER_1MB_BLOCK * MaxBlockSize(true) / 1000000) {
+                while (!vInvTx.empty() && nRelayedTransactions < INVENTORY_BROADCAST_MAX * MaxBlockSize(true) / 1000000) {
                     // Fetch the top element from the heap
                     std::pop_heap(vInvTx.begin(), vInvTx.end(), compareInvMempoolOrder);
                     std::set<uint256>::iterator it = vInvTx.back();

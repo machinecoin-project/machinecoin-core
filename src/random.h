@@ -23,6 +23,8 @@ uint64_t GetRand(uint64_t nMax);
 int GetRandInt(int nMax);
 uint256 GetRandHash();
 
+bool GetRandBool(double rate);
+
 /**
  * Add a little bit of randomness to the output of GetStrongRangBytes.
  * This sleeps for a millisecond, so should only be called when there is
@@ -108,6 +110,14 @@ public:
             uint64_t ret = randbits(bits);
             if (ret <= range) return ret;
         }
+    }
+
+    uint32_t rand32(uint32_t nMax) {
+        return rand32() % nMax;
+    }
+
+    uint32_t operator()(uint32_t nMax) {
+        return rand32(nMax);
     }
 
     /** Generate random bytes. */

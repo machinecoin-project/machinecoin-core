@@ -1,15 +1,16 @@
-// Copyright (c) 2018-2019 The Dash Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_QUORUMS_DEBUG_H
-#define DASH_QUORUMS_DEBUG_H
+#ifndef MACHINECOIN_QUORUMS_DEBUG_H
+#define MACHINECOIN_QUORUMS_DEBUG_H
 
 #include "consensus/params.h"
 #include "sync.h"
 #include "univalue.h"
 
 #include <set>
+#include <boost/function.hpp>
 
 class CDataStream;
 class CInv;
@@ -107,4 +108,4 @@ extern CDKGDebugManager* quorumDKGDebugManager;
 
 } // namespace llmq
 
-#endif //DASH_QUORUMS_DEBUG_H
+#endif //MACHINECOIN_QUORUMS_DEBUG_H

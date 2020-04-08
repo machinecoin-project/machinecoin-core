@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020 The Dash Core developers
+// Copyright (c) 2014-2020 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -169,7 +169,6 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
         if(Params().NetworkIDString() == CBaseChainParams::REGTEST)
         {
             if (nCurrentAsset == MASTERNODE_SYNC_WAITING) {
-                connman.PushMessage(pnode, msgMaker.Make(NetMsgType::GETSPORKS)); //get current network sporks
                 SwitchToNextAsset(connman);
             } else if (nCurrentAsset == MASTERNODE_SYNC_GOVERNANCE) {
                 SendGovernanceSyncRequest(pnode, connman);

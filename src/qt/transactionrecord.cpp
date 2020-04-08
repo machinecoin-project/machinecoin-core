@@ -161,9 +161,10 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     return parts;
 }
 
-void TransactionRecord::updateStatus(const CWalletTx &wtx)
+void TransactionRecord::updateStatus(const CWalletTx &wtx, int chainLockHeight)
 {
     AssertLockHeld(cs_main);
+    AssertLockHeld(wtx.GetWallet()->cs_wallet);
     // Determine transaction status
 
     // Find the block the tx is in
@@ -181,6 +182,12 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
     status.countsForBalance = wtx.IsTrusted() && !(wtx.GetBlocksToMaturity() > 0);
     status.depth = wtx.GetDepthInMainChain();
     status.cur_num_blocks = chainActive.Height();
+    status.cachedChainLockHeight = chainLockHeight;
+
+    bool oldLockedByChainLocks = status.lockedByChainLocks;
+    if (!status.lockedByChainLocks) {
+        status.lockedByChainLocks = wtx.IsChainLocked();
+    }
 
     if (!CheckFinalTx(*wtx.tx))
     {
@@ -240,10 +247,11 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
     status.needsUpdate = false;
 }
 
-bool TransactionRecord::statusUpdateNeeded() const
+bool TransactionRecord::statusUpdateNeeded(int chainLockHeight)
 {
     AssertLockHeld(cs_main);
-    return status.cur_num_blocks != chainActive.Height() || status.needsUpdate;
+    return status.cur_num_blocks != chainActive.Height() || status.needsUpdate
+        || (!status.lockedByChainLocks && status.cachedChainLockHeight != chainLockHeight);
 }
 
 QString TransactionRecord::getTxID() const

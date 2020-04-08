@@ -1,9 +1,9 @@
-// Copyright (c) 2018-2019 The Dash Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_QUORUMS_SIGNING_SHARES_H
-#define DASH_QUORUMS_SIGNING_SHARES_H
+#ifndef MACHINECOIN_QUORUMS_SIGNING_SHARES_H
+#define MACHINECOIN_QUORUMS_SIGNING_SHARES_H
 
 #include "bls/bls.h"
 #include "chainparams.h"
@@ -426,4 +426,4 @@ extern CSigSharesManager* quorumSigSharesManager;
 
 } // namespace llmq
 
-#endif //DASH_QUORUMS_SIGNING_SHARES_H
+#endif //MACHINECOIN_QUORUMS_SIGNING_SHARES_H

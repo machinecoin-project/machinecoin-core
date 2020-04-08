@@ -20,7 +20,9 @@
 #include <primitives/transaction.h>
 #include <sync.h>
 #include <random.h>
+#include <netaddress.h>
 #include <bls/bls.h>
+#include <pubkey.h>
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>

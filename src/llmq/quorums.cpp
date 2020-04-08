@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Dash Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -145,7 +145,7 @@ void CQuorum::StartCachePopulatorThread(std::shared_ptr<CQuorum> _this)
     // this thread will exit after some time
     // when then later some other thread tries to get keys, it will be much faster
     _this->cachePopulatorThread = std::thread([_this, t]() {
-        RenameThread("dash-q-cachepop");
+        RenameThread("MACHINECOIN-q-cachepop");
         for (size_t i = 0; i < _this->members.size() && !_this->stopCachePopulatorThread && !ShutdownRequested(); i++) {
             if (_this->qc.validMembers[i]) {
                 _this->GetPubKeyShare(i);
@@ -211,7 +211,7 @@ void CQuorumManager::EnsureQuorumConnections(Consensus::LLMQType llmqType, const
                         if (!dmn) {
                             debugMsg += strprintf("  %s (not in valid MN set anymore)\n", c.ToString());
                         } else {
-                            debugMsg += strprintf("  %s (%s)\n", c.ToString(), dmn->pdmnState->addr.ToString(false));
+                            debugMsg += strprintf("  %s (%s)\n", c.ToString(), dmn->pdmnState->addr.ToString());
                         }
                     }
                     LogPrint(MCLog::LLMQ, debugMsg.c_str());

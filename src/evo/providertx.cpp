@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 The Dash Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -147,7 +147,7 @@ bool CheckProRegTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValid
 
         // Extract key from collateral. This only works for P2PK and P2PKH collaterals and will fail for P2SH.
         // Issuer of this ProRegTx must prove ownership with this key by signing the ProRegTx
-        if (!CBitcoinAddress(collateralTxDest).GetKeyID(keyForPayloadSig)) {
+        if (!boost::get<CKeyID>(&collateralTxDest)) {
             return state.DoS(10, false, REJECT_INVALID, "bad-protx-collateral-pkh");
         }
 
@@ -390,18 +390,17 @@ std::string CProRegTx::MakeSignString() const
     // We only include the important stuff in the string form...
 
     CTxDestination destPayout;
-    CBitcoinAddress addrPayout;
     std::string strPayout;
-    if (ExtractDestination(scriptPayout, destPayout) && addrPayout.Set(destPayout)) {
-        strPayout = addrPayout.ToString();
+    if (ExtractDestination(scriptPayout, destPayout)) {
+        strPayout = EncodeDestination(destPayout);
     } else {
         strPayout = HexStr(scriptPayout.begin(), scriptPayout.end());
     }
 
     s += strPayout + "|";
     s += strprintf("%d", nOperatorReward) + "|";
-    s += CBitcoinAddress(keyIDOwner).ToString() + "|";
-    s += CBitcoinAddress(keyIDVoting).ToString() + "|";
+    s += EncodeDestination(keyIDOwner) + "|";
+    s += EncodeDestination(keyIDVoting) + "|";
 
     // ... and also the full hash of the payload as a protection agains malleability and replays
     s += ::SerializeHash(*this).ToString();
@@ -414,11 +413,11 @@ std::string CProRegTx::ToString() const
     CTxDestination dest;
     std::string payee = "unknown";
     if (ExtractDestination(scriptPayout, dest)) {
-        payee = CBitcoinAddress(dest).ToString();
+        payee = EncodeDestination(dest);
     }
 
     return strprintf("CProRegTx(nVersion=%d, collateralOutpoint=%s, addr=%s, nOperatorReward=%f, ownerAddress=%s, pubKeyOperator=%s, votingAddress=%s, scriptPayout=%s)",
-        nVersion, collateralOutpoint.ToStringShort(), addr.ToString(), (double)nOperatorReward / 100, CBitcoinAddress(keyIDOwner).ToString(), pubKeyOperator.ToString(), CBitcoinAddress(keyIDVoting).ToString(), payee);
+        nVersion, collateralOutpoint.ToStringShort(), addr.ToString(), (double)nOperatorReward / 100, EncodeDestination(keyIDOwner), pubKeyOperator.ToString(), EncodeDestination(keyIDVoting), payee);
 }
 
 std::string CProUpServTx::ToString() const
@@ -426,7 +425,7 @@ std::string CProUpServTx::ToString() const
     CTxDestination dest;
     std::string payee = "unknown";
     if (ExtractDestination(scriptOperatorPayout, dest)) {
-        payee = CBitcoinAddress(dest).ToString();
+        payee = EncodeDestination(dest);
     }
 
     return strprintf("CProUpServTx(nVersion=%d, proTxHash=%s, addr=%s, operatorPayoutAddress=%s)",
@@ -438,11 +437,11 @@ std::string CProUpRegTx::ToString() const
     CTxDestination dest;
     std::string payee = "unknown";
     if (ExtractDestination(scriptPayout, dest)) {
-        payee = CBitcoinAddress(dest).ToString();
+        payee = EncodeDestination(dest);
     }
 
     return strprintf("CProUpRegTx(nVersion=%d, proTxHash=%s, pubKeyOperator=%s, votingAddress=%s, payoutAddress=%s)",
-        nVersion, proTxHash.ToString(), pubKeyOperator.ToString(), CBitcoinAddress(keyIDVoting).ToString(), payee);
+        nVersion, proTxHash.ToString(), pubKeyOperator.ToString(), EncodeDestination(keyIDVoting), payee);
 }
 
 std::string CProUpRevTx::ToString() const

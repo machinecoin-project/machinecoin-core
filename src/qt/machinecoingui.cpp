@@ -31,7 +31,7 @@
 #include <init.h>
 #include <ui_interface.h>
 #include <util.h>
-#include <masternode-sync.h>
+#include <masternode/masternode-sync.h>
 #include <qt/masternodelist.h>
 
 #include <iostream>

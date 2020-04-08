@@ -1,9 +1,9 @@
-// Copyright (c) 2019-2020 The Dash Core developers
+// Copyright (c) 2019-2020 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DASH_QUORUMS_CHAINLOCKS_H
-#define DASH_QUORUMS_CHAINLOCKS_H
+#ifndef MACHINECOIN_QUORUMS_CHAINLOCKS_H
+#define MACHINECOIN_QUORUMS_CHAINLOCKS_H
 
 #include "llmq/quorums.h"
 #include "llmq/quorums_signing.h"
@@ -54,7 +54,6 @@ private:
     CScheduler* scheduler;
     CCriticalSection cs;
     bool tryLockChainTipScheduled{false};
-    bool isSporkActive{false};
     bool isEnforced{false};
 
     uint256 bestChainLockHash;
@@ -122,4 +121,4 @@ extern CChainLocksHandler* chainLocksHandler;
 
 } // namespace llmq
 
-#endif //DASH_QUORUMS_CHAINLOCKS_H
+#endif //MACHINECOIN_QUORUMS_CHAINLOCKS_H

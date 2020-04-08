@@ -756,6 +756,8 @@ add_executable(machinecoin_core_0_16
         src/arith_uint256.h
         src/base58.cpp
         src/base58.h
+        src/batchedlogger.cpp
+        src/batchedlogger.h
         src/bech32.cpp
         src/bech32.h
         src/blockencodings.cpp
@@ -790,6 +792,8 @@ add_executable(machinecoin_core_0_16
         src/cxxtimer.hpp
         src/dbwrapper.cpp
         src/dbwrapper.h
+        src/dsnotificationinterface.cpp
+        src/dsnotificationinterface.h
         src/flat-database.h
         src/fs.cpp
         src/fs.h

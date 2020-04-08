@@ -78,8 +78,6 @@ public:
     std::vector<CTransactionRef> vtx;
 
     // memory only
-    mutable CTxOut txoutMasternode; // masternode payment
-    mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;
 
     CBlock()
@@ -105,8 +103,6 @@ public:
     {
         CBlockHeader::SetNull();
         vtx.clear();
-        txoutMasternode = CTxOut();
-        voutSuperblock.clear();
         fChecked = false;
     }
 
@@ -124,6 +120,7 @@ public:
 
     std::string ToString() const;
 };
+
 
 /** Describes a place in the block chain to another node such that if the
  * other node doesn't have the same branch, it can find a recent common trunk.

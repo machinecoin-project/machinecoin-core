@@ -261,6 +261,7 @@ public:
     int GetDepthInMainChain(const CBlockIndex* &pindexRet) const;
     int GetDepthInMainChain() const { const CBlockIndex *pindexRet; return GetDepthInMainChain(pindexRet); }
     bool IsInMainChain() const { const CBlockIndex *pindexRet; return GetDepthInMainChain(pindexRet) > 0; }
+	bool IsChainLocked() const;
     int GetBlocksToMaturity() const;
     bool hashUnset() const { return (hashBlock.IsNull() || hashBlock == ABANDON_HASH); }
     bool isAbandoned() const { return (hashBlock == ABANDON_HASH); }
@@ -453,6 +454,11 @@ public:
     {
         pwallet = pwalletIn;
         MarkDirty();
+    }
+
+    const CWallet* GetWallet() const
+    {
+        return pwallet;
     }
 
     //! filter decides which addresses will count towards the debit
@@ -704,6 +710,8 @@ private:
     void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
     void AddToSpends(const uint256& wtxid);
 
+    std::set<COutPoint> setWalletUTXO;
+
     /* Mark a transaction (and its in-wallet descendants) as conflicting with a particular block. */
     void MarkConflicted(const uint256& hashBlock, const uint256& hashTx);
 
@@ -848,15 +856,7 @@ public:
      * populate vCoins with vector of available COutputs.
      */
     void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlySafe=true, const CCoinControl *coinControl = nullptr, const CAmount& nMinimumAmount = 1, const CAmount& nMaximumAmount = MAX_MONEY, const CAmount& nMinimumSumAmount = MAX_MONEY, const uint64_t nMaximumCount = 0, const int nMinDepth = 0, const int nMaxDepth = 9999999) const;
-    
-    /**
-     * populate vCoins with vector of available COutputs eligible for Masternodes.
-     */
-    void AvailableMNCoins(std::vector<COutput>& vCoins, bool fOnlySafe=true, const CCoinControl *coinControl = nullptr, const CAmount& nMinimumAmount = 2500000000000, const CAmount& nMaximumAmount = MAX_MONEY, const CAmount& nMinimumSumAmount = MAX_MONEY, const uint64_t nMaximumCount = 0, const int nMinDepth = 0, const int nMaxDepth = 9999999) const;
-    
-    bool GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAmount amount);
-    bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount amount);
-    
+
     // Masternodes
     // Get 25000 MAC output and keys which can be used for the Masternode
     bool GetMasternodeOutpointAndKeys(COutPoint& outpointRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash = "", std::string strOutputIndex = "");
@@ -888,6 +888,7 @@ public:
     void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(std::vector<COutPoint>& vOutpts) const;
+    void ListProTxCoins(std::vector<COutPoint>& vOutpts);
 
     /*
      * Rescan abort properties
@@ -959,9 +960,9 @@ public:
     void MarkDirty();
     bool AddToWallet(const CWalletTx& wtxIn, bool fFlushOnClose=true);
     bool LoadToWallet(const CWalletTx& wtxIn);
-    void TransactionAddedToMempool(const CTransactionRef& tx) override;
+    void TransactionAddedToMempool(const CTransactionRef& tx, int64_t nAccpetTime) override;
     void BlockConnected(const std::shared_ptr<const CBlock>& pblock, const CBlockIndex *pindex, const std::vector<CTransactionRef>& vtxConflicted) override;
-    void BlockDisconnected(const std::shared_ptr<const CBlock>& pblock) override;
+    void BlockDisconnected(const std::shared_ptr<const CBlock>& pblock, const CBlockIndex* pindexDisconnected) override;
     bool AddToWalletIfInvolvingMe(const CTransactionRef& tx, const CBlockIndex* pIndex, int posInBlock, bool fUpdate);
     int64_t RescanFromTime(int64_t startTime, const WalletRescanReserver& reserver, bool update);
     CBlockIndex* ScanForWalletTransactions(CBlockIndex* pindexStart, CBlockIndex* pindexStop, const WalletRescanReserver& reserver, bool fUpdate = false);
@@ -977,6 +978,7 @@ public:
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
     CAmount GetLegacyBalance(const isminefilter& filter, int minDepth, const std::string* account) const;
+    bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, CAmount amount, const COutPoint& outpoint=COutPoint()/*defaults null*/);
     CAmount GetAvailableBalance(const CCoinControl* coinControl = nullptr) const;
 
     OutputType TransactionChangeType(OutputType change_type, const std::vector<CRecipient>& vecSend);
@@ -994,7 +996,7 @@ public:
      * @note passing nChangePosInOut as -1 will result in setting a random position
      */
     bool CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, int& nChangePosInOut,
-                           std::string& strFailReason, const CCoinControl& coin_control, bool sign = true);
+                           std::string& strFailReason, const CCoinControl& coin_control, bool sign = true, int nExtraPayloadSize = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state);
 
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& entries);
@@ -1047,6 +1049,7 @@ public:
     void SetBestChain(const CBlockLocator& loc) override;
 
     DBErrors LoadWallet(bool& fFirstRunRet);
+    void AutoLockMasternodeCollaterals();
     DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
     DBErrors ZapSelectTx(std::vector<uint256>& vHashIn, std::vector<uint256>& vHashOut);
 
@@ -1103,6 +1106,9 @@ public:
 
     /** Watch-only address added */
     boost::signals2::signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+
+    /** ChainLock received */
+    boost::signals2::signal<void (int height)> NotifyChainLockReceived;
 
     /** Inquire whether this wallet broadcasts transactions. */
     bool GetBroadcastTransactions() const { return fBroadcastTransactions; }
@@ -1172,6 +1178,8 @@ public:
      * This function will automatically add the necessary scripts to the wallet.
      */
     CTxDestination AddAndGetDestinationForScript(const CScript& script, OutputType);
+
+    void NotifyChainLock(const CBlockIndex* pindexChainLock, const llmq::CChainLockSig& clsig) override;
 };
 
 /** A key allocated from the key pool. */

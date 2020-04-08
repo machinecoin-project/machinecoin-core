@@ -22,10 +22,18 @@ class CConnman;
 class CReserveScript;
 class CValidationInterface;
 class CValidationState;
+class CGovernanceVote;
+class CGovernanceObject;
+class CDeterministicMNList;
+class CDeterministicMNListDiff;
 class uint256;
 class CScheduler;
 class CTxMemPool;
 enum class MemPoolRemovalReason;
+
+namespace llmq {
+    class CChainLockSig;
+} // namespace llmq
 
 // These functions dispatch to one or all registered wallets
 
@@ -58,6 +66,8 @@ void SyncWithValidationInterfaceQueue();
 
 class CValidationInterface {
 protected:
+    virtual void AcceptedBlockHeader(const CBlockIndex *pindexNew) {}
+    virtual void NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload) {}
     /**
      * Notifies listeners when the block chain tip advances.
      *
@@ -73,7 +83,7 @@ protected:
      *
      * Called on a background thread.
      */
-    virtual void TransactionAddedToMempool(const CTransactionRef &ptxn) {}
+    virtual void TransactionAddedToMempool(const CTransactionRef &ptxn, int64_t nAcceptTime) {}
     /**
      * Notifies listeners of a transaction leaving mempool.
      *
@@ -97,12 +107,16 @@ protected:
      *
      * Called on a background thread.
      */
-    virtual void BlockDisconnected(const std::shared_ptr<const CBlock> &block) {}
+    virtual void BlockDisconnected(const std::shared_ptr<const CBlock> &block, const CBlockIndex *pindexDisconnected) {}
     /**
      * Notifies listeners of the new active block chain on-disk.
      *
      * Called on a background thread.
      */
+    virtual void NotifyChainLock(const CBlockIndex* pindex, const llmq::CChainLockSig& clsig) {}
+    virtual void NotifyGovernanceVote(const CGovernanceVote &vote) {}
+    virtual void NotifyGovernanceObject(const CGovernanceObject &object) {}
+    virtual void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff) {}
     virtual void SetBestChain(const CBlockLocator &locator) {}
     /** Tells listeners to broadcast their data. */
     virtual void ResendWalletTransactions(int64_t nBestBlockTime, CConnman* connman) {}
@@ -117,11 +131,6 @@ protected:
      * Notifies listeners that a block which builds directly on our current tip
      * has been received and connected to the headers tree, though not validated yet */
     virtual void NewPoWValidBlock(const CBlockIndex *pindex, const std::shared_ptr<const CBlock>& block) {};
-
-    virtual void NotifyGovernanceVote(const CGovernanceVote &vote) {}
-    virtual void NotifyGovernanceObject(const CGovernanceObject &object) {}
-    virtual void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff) {}
-
     friend void ::RegisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterAllValidationInterfaces();
@@ -147,7 +156,10 @@ public:
     /** Call any remaining callbacks on the calling thread */
     void FlushBackgroundCallbacks();
 
-    size_t CallbacksPending();
+    void AcceptedBlockHeader(const CBlockIndex *pindexNew);
+    void NotifyHeaderTip(const CBlockIndex *pindexNew, bool fInitialDownload);
+	
+	size_t CallbacksPending();
 
     /** Register with mempool to call TransactionRemovedFromMempool callbacks */
     void RegisterWithMempoolSignals(CTxMemPool& pool);
@@ -155,16 +167,18 @@ public:
     void UnregisterWithMempoolSignals(CTxMemPool& pool);
 
     void UpdatedBlockTip(const CBlockIndex *, const CBlockIndex *, bool fInitialDownload);
-    void TransactionAddedToMempool(const CTransactionRef &);
+    void TransactionAddedToMempool(const CTransactionRef &, int64_t);
     void BlockConnected(const std::shared_ptr<const CBlock> &, const CBlockIndex *pindex, const std::shared_ptr<const std::vector<CTransactionRef>> &);
-    void BlockDisconnected(const std::shared_ptr<const CBlock> &);
+    void BlockDisconnected(const std::shared_ptr<const CBlock> &, const CBlockIndex *pindexDisconnected);
+    void NotifyChainLock(const CBlockIndex* pindex, const llmq::CChainLockSig& clsig);
+    void NotifyGovernanceVote(const CGovernanceVote &vote);
+    void NotifyGovernanceObject(const CGovernanceObject &object);
+    void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff);
+    
     void SetBestChain(const CBlockLocator &);
     void Broadcast(int64_t nBestBlockTime, CConnman* connman);
     void BlockChecked(const CBlock&, const CValidationState&);
     void NewPoWValidBlock(const CBlockIndex *, const std::shared_ptr<const CBlock>&);
-    void NotifyGovernanceVote(const CGovernanceVote &vote);
-    void NotifyGovernanceObject(const CGovernanceObject &object);
-    void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff);
 };
 
 CMainSignals& GetMainSignals();

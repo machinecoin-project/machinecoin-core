@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2020 The Dash Core developers
+// Copyright (c) 2017-2020 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <chainparams.h>
-#include <server.h>
+#include <rpc/server.h>
 #include <validation.h>
 
 #include <llmq/quorums.h>

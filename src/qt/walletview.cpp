@@ -9,7 +9,6 @@
 #include <qt/machinecoingui.h>
 #include <qt/clientmodel.h>
 #include <qt/guiutil.h>
-#include <masternodeconfig.h>
 #include <qt/optionsmodel.h>
 #include <qt/overviewpage.h>
 #include <qt/platformstyle.h>

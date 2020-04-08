@@ -25,7 +25,6 @@
 #include <miner.h>
 #include <netbase.h>
 #include <net.h>
-#include <netfulfilledman.h>
 #include <net_processing.h>
 #include <policy/feerate.h>
 #include <policy/fees.h>
@@ -47,9 +46,11 @@
 #include <validationinterface.h>
 #ifdef ENABLE_WALLET
 #include <wallet/init.h>
+#include <wallet/wallet.h>
 #endif
 
 #include "masternode/activemasternode.h"
+#include "dsnotificationinterface.h"
 #include "flat-database.h"
 #include "governance/governance.h"
 #include "masternode/masternode-meta.h"
@@ -102,6 +103,8 @@ std::unique_ptr<PeerLogicValidation> peerLogic;
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = nullptr;
 #endif
+
+static CDSNotificationInterface* pdsNotificationInterface = nullptr;
 
 #ifdef WIN32
 // Win32 LevelDB doesn't use filedescriptors, and the ones used for
@@ -301,6 +304,11 @@ void Shutdown()
     }
 #endif
 
+    if (pdsNotificationInterface) {
+        UnregisterValidationInterface(pdsNotificationInterface);
+        delete pdsNotificationInterface;
+        pdsNotificationInterface = nullptr;
+    }
     if (fMasternodeMode) {
         UnregisterValidationInterface(activeMasternodeManager);
     }
@@ -759,8 +767,7 @@ void ThreadImport(std::vector<fs::path> vImportFiles)
     // force UpdatedBlockTip to initialize nCachedBlockHeight for DS, MN payments and budgets
     // but don't call it directly to prevent triggering of other listeners like zmq etc.
     // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
-    // pdsNotificationInterface->InitializeCurrentBlockTip();
-    peerLogic->InitializeCurrentBlockTip(chainActive.Tip());
+    pdsNotificationInterface->InitializeCurrentBlockTip();
 
     {
         // Get all UTXOs for each MN collateral in one go so that we can fill coin cache early
@@ -1072,7 +1079,7 @@ bool AppInitParameterInteraction()
         if (std::none_of(categories.begin(), categories.end(),
             [](std::string cat){return cat == "0" || cat == "none";})) {
             for (const auto& cat : categories) {
-                uint32_t flag = 0;
+                uint64_t flag = 0;
                 if (!GetLogCategory(&flag, &cat)) {
                     InitWarning(strprintf(_("Unsupported logging category %s=%s."), "-debug", cat));
                     continue;
@@ -1084,7 +1091,7 @@ bool AppInitParameterInteraction()
 
     // Now remove the logging categories which were explicitly excluded
     for (const std::string& cat : gArgs.GetArgs("-debugexclude")) {
-        uint32_t flag = 0;
+        uint64_t flag = 0;
         if (!GetLogCategory(&flag, &cat)) {
             InitWarning(strprintf(_("Unsupported logging category %s=%s."), "-debugexclude", cat));
             continue;
@@ -1527,6 +1534,10 @@ bool AppInitMain()
         RegisterValidationInterface(pzmqNotificationInterface);
     }
 #endif
+
+    pdsNotificationInterface = new CDSNotificationInterface(connman);
+    RegisterValidationInterface(pdsNotificationInterface);
+
     uint64_t nMaxOutboundLimit = 0; //unlimited unless -maxuploadtarget is set
     uint64_t nMaxOutboundTimeframe = MAX_UPLOAD_TIMEFRAME;
   
@@ -1536,16 +1547,16 @@ bool AppInitMain()
 
     // ********************************************************* Step 7a: check lite mode and load sporks
 
-    // lite mode disables all Dash-specific functionality
+    // lite mode disables all Machinecoin-specific functionality
     fLiteMode = gArgs.GetBoolArg("-litemode", false);
     LogPrintf("fLiteMode %d\n", fLiteMode);
 
     if(fLiteMode) {
-        InitWarning(_("You are starting in lite mode, most Dash-specific functionality is disabled."));
+        InitWarning(_("You are starting in lite mode, most Machinecoin-specific functionality is disabled."));
     }
 
     if((!fLiteMode && fTxIndex == false)
-       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/dashpay/dash/pull/1817 and https://github.com/dashpay/dash/pull/1743
+       && chainparams.NetworkIDString() != CBaseChainParams::REGTEST) { // TODO remove this when pruning is fixed. See https://github.com/dashpay/MACHINECOIN/pull/1817 and https://github.com/dashpay/MACHINECOIN/pull/1743
         return InitError(_("Transaction index can't be disabled in full mode. Either start with -litemode command line switch or enable transaction index."));
     }
 
@@ -1573,7 +1584,6 @@ bool AppInitMain()
     LogPrintf("* Using %.1fMiB for in-memory UTXO set (plus up to %.1fMiB of unused mempool space)\n", nCoinCacheUsage * (1.0 / 1024 / 1024), nMempoolSizeMax * (1.0 / 1024 / 1024));
 
     bool fLoaded = false;
-    int64_t nStart = GetTimeMillis();
 
     while (!fLoaded && !fRequestShutdown) {
         bool fReset = fReindex;
@@ -1598,7 +1608,6 @@ bool AppInitMain()
 
                 evoDb = new CEvoDB(nEvoDbCache, false, fReset || fReindexChainState);
                 deterministicMNManager = new CDeterministicMNManager(*evoDb);
-                pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReset);
                 llmq::InitLLMQSystem(*evoDb, &scheduler, false, fReset || fReindexChainState);
 
                 if (fReset) {
@@ -1607,7 +1616,7 @@ bool AppInitMain()
                     if (fPruneMode)
                         CleanupBlockRevFiles();
                 }
-                
+
                 if (fRequestShutdown) break;
 
                 // LoadBlockIndex will load fTxIndex from the db, or set it if
@@ -1615,7 +1624,6 @@ bool AppInitMain()
                 // ever removed a block file from disk.
                 // Note that it also sets fReindex based on the disk flag!
                 // From here on out fReindex and fReset mean something different!
-
                 if (!LoadBlockIndex(chainparams)) {
                     strLoadError = _("Error loading block database");
                     break;
@@ -1893,7 +1901,7 @@ bool AppInitMain()
         }
     }
 
-    // ********************************************************* Step 10c: schedule Dash-specific tasks
+    // ********************************************************* Step 10c: schedule Machinecoin-specific tasks
 
     if (!fLiteMode) {
         scheduler.scheduleEvery(boost::bind(&CNetFulfilledRequestManager::DoMaintenance, boost::ref(netfulfilledman)), 60 * 1000);

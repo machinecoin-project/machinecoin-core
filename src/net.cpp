@@ -2024,10 +2024,6 @@ void CConnman::ThreadOpenAddedConnections()
 
 void CConnman::ThreadOpenMasternodeConnections()
 {
-    // Connecting to specific addresses, no masternode connections available
-    if (!connect.empty())
-        return;
-
     while (!interruptNet)
     {
         if (!interruptNet.sleep_for(std::chrono::milliseconds(1000)))
@@ -2350,9 +2346,7 @@ void CConnman::SetNetworkActive(bool active)
     uiInterface.NotifyNetworkActiveChanged(fNetworkActive);
 }
 
-CConnman::CConnman(uint64_t nSeed0In, uint64_t nSeed1In) :
-        addrman(Params().AllowMultiplePorts()),
-        nSeed0(nSeed0In), nSeed1(nSeed1In)
+CConnman::CConnman(uint64_t nSeed0In, uint64_t nSeed1In) : nSeed0(nSeed0In), nSeed1(nSeed1In)
 {
     fNetworkActive = true;
     setBannedIsDirty = false;
@@ -2893,7 +2887,7 @@ void CConnman::RemoveAskFor(const uint256& hash) {
 
     LOCK(cs_vNodes);
     for (const auto& pnode : vNodes) {
-        pnode->setAskFor.erase(hash);
+        pnode->RemoveAskFor(hash);
     }
 }
 
@@ -3105,7 +3099,7 @@ CNode::~CNode()
         pfilter.reset();
 }
 
-void CNode::AskFor(const CInv& inv)
+void CNode::AskFor(const CInv& inv, int64_t doubleRequestDelay)
 {
     if (mapAskFor.size() > MAPASKFOR_MAX_SZ || setAskFor.size() > SETASKFOR_MAX_SZ)
         return;
@@ -3131,12 +3125,17 @@ void CNode::AskFor(const CInv& inv)
     nLastTime = nNow;
 
     // Each retry is 2 minutes after the last
-    nRequestTime = std::max(nRequestTime + 2 * 60 * 1000000, nNow);
+    nRequestTime = std::max(nRequestTime + doubleRequestDelay, nNow);
     if (it != mapAlreadyAskedFor.end())
         mapAlreadyAskedFor.update(it, nRequestTime);
     else
         mapAlreadyAskedFor.insert(std::make_pair(inv.hash, nRequestTime));
     mapAskFor.insert(std::make_pair(nRequestTime, inv));
+}
+
+void CNode::RemoveAskFor(const uint256& hash)
+{
+    setAskFor.erase(hash);
 }
 
 bool CConnman::NodeFullyConnected(const CNode* pnode)

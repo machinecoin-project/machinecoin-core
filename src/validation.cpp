@@ -165,6 +165,7 @@ private:
 public:
     CChain chainActive;
     BlockMap mapBlockIndex;
+    PrevBlockMap mapPrevBlockIndex;
     std::multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
     CBlockIndex *pindexBestInvalid = nullptr;
 
@@ -200,7 +201,7 @@ private:
     bool ActivateBestChainStep(CValidationState& state, const CChainParams& chainparams, CBlockIndex* pindexMostWork, const std::shared_ptr<const CBlock>& pblock, bool& fInvalidFound, ConnectTrace& connectTrace);
     bool ConnectTip(CValidationState& state, const CChainParams& chainparams, CBlockIndex* pindexNew, const std::shared_ptr<const CBlock>& pblock, ConnectTrace& connectTrace, DisconnectedBlockTransactions &disconnectpool);
 
-    CBlockIndex* AddToBlockIndex(const CBlockHeader& block);
+    CBlockIndex* AddToBlockIndex(const CBlockHeader& block, enum BlockStatus nStatus);
     /** Create a new block index entry for a given block hash */
     CBlockIndex * InsertBlockIndex(const uint256& hash);
     void CheckBlockIndex(const Consensus::Params& consensusParams);
@@ -218,6 +219,7 @@ private:
 CCriticalSection cs_main;
 
 BlockMap& mapBlockIndex = g_chainstate.mapBlockIndex;
+PrevBlockMap mapPrevBlockIndex;
 CChain& chainActive = g_chainstate.chainActive;
 CBlockIndex *pindexBestHeader = nullptr;
 CWaitableCriticalSection csBestBlock;
@@ -226,7 +228,7 @@ uint256 hashBestBlock;
 int nScriptCheckThreads = 0;
 std::atomic_bool fImporting(false);
 std::atomic_bool fReindex(false);
-bool fTxIndex = false;
+bool fTxIndex = true;
 bool fHavePruned = false;
 bool fPruneMode = false;
 bool fIsBareMultisigStd = DEFAULT_PERMIT_BAREMULTISIG;
@@ -493,8 +495,8 @@ bool ContextualCheckTransaction(const CTransaction& tx, CValidationState &state,
     }
 
     // Size limits
-    if (::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > MAX_STANDARD_TX_SIZE)
-        return state.DoS(100, false, REJECT_INVALID, "bad-txns-oversize");
+    if (GetVirtualTransactionSize(tx) > MAX_STANDARD_TX_WEIGHT)
+        return state.DoS(100, false, REJECT_INVALID, "bad-txns-weight", false, strprintf("%s : weight limit failed", __func__));
 
     return true;
 }
@@ -1079,7 +1081,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         }
     }
 
-    GetMainSignals().TransactionAddedToMempool(ptx);
+    GetMainSignals().TransactionAddedToMempool(ptx, nAcceptTime);
 
     return true;
 }
@@ -2143,14 +2145,14 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(MCLog::BENCHMARK, "      - GetBlockSubsidy: %.2fms [%.2fs]\n", 0.001 * (nTime5_2 - nTime5_1), nTimeSubsidy * 0.000001);
 
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
-        return state.DoS(0, error("ConnectBlock(DASH): %s", strError), REJECT_INVALID, "bad-cb-amount");
+        return state.DoS(0, error("ConnectBlock(MACHINECOIN): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
 
     int64_t nTime5_3 = GetTimeMicros(); nTimeValueValid += nTime5_3 - nTime5_2;
     LogPrint(MCLog::BENCHMARK, "      - IsBlockValueValid: %.2fms [%.2fs]\n", 0.001 * (nTime5_3 - nTime5_2), nTimeValueValid * 0.000001);
 
     if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockReward)) {
-        return state.DoS(0, error("ConnectBlock(DASH): couldn't find masternode or superblock payments"),
+        return state.DoS(0, error("ConnectBlock(MACHINECOIN): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");
     }
 
@@ -2158,7 +2160,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(MCLog::BENCHMARK, "      - IsBlockPayeeValid: %.2fms [%.2fs]\n", 0.001 * (nTime5_4 - nTime5_3), nTimePayeeValid * 0.000001);
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
-        return error("ConnectBlock(DASH): ProcessSpecialTxsInBlock for block %s failed with %s",
+        return error("ConnectBlock(MACHINECOIN): ProcessSpecialTxsInBlock for block %s failed with %s",
                      pindex->GetBlockHash().ToString(), FormatStateMessage(state));
     }
 
@@ -2166,7 +2168,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(MCLog::BENCHMARK, "      - ProcessSpecialTxsInBlock: %.2fms [%.2fs]\n", 0.001 * (nTime5_5 - nTime5_4), nTimeProcessSpecial * 0.000001);
 
     int64_t nTime5 = GetTimeMicros(); nTimeMachinecoinSpecific += nTime5 - nTime4;
-    LogPrint(MCLog::BENCHMARK, "    - Dash specific: %.2fms [%.2fs]\n", 0.001 * (nTime5 - nTime4), nTimeMachinecoinSpecific * 0.000001);
+    LogPrint(MCLog::BENCHMARK, "    - Machinecoin specific: %.2fms [%.2fs]\n", 0.001 * (nTime5 - nTime4), nTimeMachinecoinSpecific * 0.000001);
 
     // END MACHINECOIN
 
@@ -2451,7 +2453,7 @@ bool CChainState::DisconnectTip(CValidationState& state, const CChainParams& cha
     UpdateTip(pindexDelete->pprev, chainparams);
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
-    GetMainSignals().BlockDisconnected(pblock);
+    GetMainSignals().BlockDisconnected(pblock, pindexDelete);
     return true;
 }
 
@@ -3005,7 +3007,7 @@ bool ResetBlockFailureFlags(CBlockIndex *pindex) {
     return g_chainstate.ResetBlockFailureFlags(pindex);
 }
 
-CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block)
+CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block, enum BlockStatus nStatus = BLOCK_VALID_TREE)
 {
     // Check for duplicate
     uint256 hash = block.GetHash();
@@ -3030,11 +3032,21 @@ CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block)
     }
     pindexNew->nTimeMax = (pindexNew->pprev ? std::max(pindexNew->pprev->nTimeMax, pindexNew->nTime) : pindexNew->nTime);
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
-    pindexNew->RaiseValidity(BLOCK_VALID_TREE);
-    if (pindexBestHeader == nullptr || pindexBestHeader->nChainWork < pindexNew->nChainWork)
-        pindexBestHeader = pindexNew;
+    if (nStatus & BLOCK_VALID_MASK) {
+        pindexNew->RaiseValidity(nStatus);
+        if (pindexBestHeader == nullptr || pindexBestHeader->nChainWork < pindexNew->nChainWork)
+            pindexBestHeader = pindexNew;
+    } else {
+        pindexNew->RaiseValidity(BLOCK_VALID_TREE); // required validity level
+        pindexNew->nStatus |= nStatus;
+    }
 
     setDirtyBlockIndex.insert(pindexNew);
+
+    // track prevBlockHash -> pindex (multimap)
+    if (pindexNew->pprev) {
+        mapPrevBlockIndex.emplace(pindexNew->pprev->GetBlockHash(), pindexNew);
+    }
 
     return pindexNew;
 }
@@ -3239,7 +3251,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     {
         nSigOps += GetLegacySigOpCount(*tx);
     }
-    if (nSigOps * WITNESS_SCALE_FACTOR > MAX_BLOCK_SIGOPS_COST)
+    if (nSigOps * WITNESS_SCALE_FACTOR > MaxBlockSigOps(true))
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
 
     if (fCheckPOW && fCheckMerkleRoot)
@@ -3960,6 +3972,11 @@ bool CChainState::LoadBlockIndex(const Consensus::Params& consensus_params, CBlo
     {
         CBlockIndex* pindex = item.second;
         vSortedByHeight.push_back(std::make_pair(pindex->nHeight, pindex));
+
+        // build mapPrevBlockIndex
+        if (pindex->pprev) {
+            mapPrevBlockIndex.emplace(pindex->pprev->GetBlockHash(), pindex);
+        }
     }
     sort(vSortedByHeight.begin(), vSortedByHeight.end());
     for (const std::pair<int, CBlockIndex*>& item : vSortedByHeight)

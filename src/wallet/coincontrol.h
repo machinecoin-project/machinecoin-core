@@ -12,6 +12,12 @@
 
 #include <boost/optional.hpp>
 
+enum class CoinType
+{
+    ALL_COINS,
+    ONLY_25000, // find masternode outputs including locked ones (use with caution)
+};
+
 /** Coin Control Features. */
 class CCoinControl
 {
@@ -22,6 +28,8 @@ public:
     OutputType change_type;
     //! If false, allows unselected inputs, but requires all selected inputs be used
     bool fAllowOtherInputs;
+    //! If false, only include as many inputs as necessary to fulfill a coin selection request. Only usable together with fAllowOtherInputs
+    bool fRequireAllInputs;
     //! Includes watch only addresses which match the ISMINE_WATCH_SOLVABLE criteria
     bool fAllowWatchOnly;
     //! Override automatic min/max checks on fee, m_feerate must be set if true
@@ -34,6 +42,8 @@ public:
     bool signalRbf;
     //! Fee estimation mode to control arguments to estimateSmartFee
     FeeEstimateMode m_fee_mode;
+    //! Controls which types of coins are allowed to be used (default: ALL_COINS)
+    CoinType nCoinType;
 
     CCoinControl()
     {
@@ -45,6 +55,7 @@ public:
         destChange = CNoDestination();
         change_type = g_change_type;
         fAllowOtherInputs = false;
+        fRequireAllInputs = true;
         fAllowWatchOnly = false;
         setSelected.clear();
         m_feerate.reset();
@@ -52,6 +63,7 @@ public:
         m_confirm_target.reset();
         signalRbf = fWalletRbf;
         m_fee_mode = FeeEstimateMode::UNSET;
+        nCoinType = CoinType::ALL_COINS;
     }
 
     bool HasSelected() const
