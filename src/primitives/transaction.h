@@ -213,8 +213,12 @@ struct CMutableTransaction;
 template<typename Stream, typename TxType>
 inline void UnserializeTransaction(TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
+    int32_t n32bitVersion;
 
-    s >> tx.nVersion;
+    s >> n32bitVersion;
+    tx.nVersion = (n32bitVersion & 0xffff);
+    tx.nType = (int16_t) ((n32bitVersion >> 16) & 0xffff);
+
     unsigned char flags = 0;
     tx.vin.clear();
     tx.vout.clear();
@@ -243,13 +247,18 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
         throw std::ios_base::failure("Unknown transaction optional data");
     }
     s >> tx.nLockTime;
+
+    if (tx.nVersion == 3 && tx.nType != TRANSACTION_NORMAL) {
+        s >> tx.vExtraPayload;
+    }
 }
 
 template<typename Stream, typename TxType>
 inline void SerializeTransaction(const TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
+    const int32_t n32bitVersion = tx.nVersion | (tx.nType << 16);
 
-    s << tx.nVersion;
+    s << n32bitVersion;
     unsigned char flags = 0;
     // Consistency check
     if (fAllowWitness) {
@@ -272,6 +281,10 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
         }
     }
     s << tx.nLockTime;
+
+    if (tx.nVersion == 3 && tx.nType != TRANSACTION_NORMAL) {
+        s << tx.vExtraPayload;
+    }
 }
 
 
@@ -295,10 +308,10 @@ public:
     // actually immutable; deserialization and assignment are implemented,
     // and bypass the constness. This is safe, as they update the entire
     // structure, including the hash.
-    const int16_t nVersion;
     const int16_t nType;
     const std::vector<CTxIn> vin;
     const std::vector<CTxOut> vout;
+    const int32_t nVersion;
     const uint32_t nLockTime;
     const std::vector<uint8_t> vExtraPayload; // only available for special transaction types
 
@@ -318,13 +331,7 @@ public:
 
     template <typename Stream>
     inline void Serialize(Stream& s) const {
-        int32_t n32bitVersion = this->nVersion | (this->nType << 16);
-        s << n32bitVersion;
-        s << vin;
-        s << vout;
-        s << nLockTime;
-        if (this->nVersion == 3 && this->nType != TRANSACTION_NORMAL)
-            s << vExtraPayload;
+        SerializeTransaction(*this, s);
     }
 
     /** This deserializing constructor is provided instead of an Unserialize method.
@@ -386,32 +393,25 @@ public:
 /** A mutable version of CTransaction. */
 struct CMutableTransaction
 {
-    int16_t nVersion;
     int16_t nType;
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
+    int32_t nVersion;
     uint32_t nLockTime;
     std::vector<uint8_t> vExtraPayload; // only available for special transaction types
 
     CMutableTransaction();
     CMutableTransaction(const CTransaction& tx);
 
-    ADD_SERIALIZE_METHODS;
+    template <typename Stream>
+    inline void Serialize(Stream& s) const {
+        SerializeTransaction(*this, s);
+    }
 
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
-        int32_t n32bitVersion = this->nVersion | (this->nType << 16);
-        READWRITE(n32bitVersion);
-        if (ser_action.ForRead()) {
-            this->nVersion = (int16_t) (n32bitVersion & 0xffff);
-            this->nType = (int16_t) ((n32bitVersion >> 16) & 0xffff);
-        }
-        READWRITE(vin);
-        READWRITE(vout);
-        READWRITE(nLockTime);
-        if (this->nVersion == 3 && this->nType != TRANSACTION_NORMAL) {
-            READWRITE(vExtraPayload);
-        }
+
+    template <typename Stream>
+    inline void Unserialize(Stream& s) {
+        UnserializeTransaction(*this, s);
     }
 
     template <typename Stream>

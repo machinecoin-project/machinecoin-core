@@ -174,7 +174,6 @@ public:
     void NotifyGovernanceVote(const CGovernanceVote &vote);
     void NotifyGovernanceObject(const CGovernanceObject &object);
     void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff);
-    
     void SetBestChain(const CBlockLocator &);
     void Broadcast(int64_t nBestBlockTime, CConnman* connman);
     void BlockChecked(const CBlock&, const CValidationState&);
