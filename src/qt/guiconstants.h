@@ -50,5 +50,6 @@ static const int MAX_URI_LENGTH = 255;
 #define QAPP_ORG_DOMAIN "machinecoin.io"
 #define QAPP_APP_NAME_DEFAULT "Machinecoin-Qt"
 #define QAPP_APP_NAME_TESTNET "Machinecoin-Qt-testnet"
+#define QAPP_APP_NAME_REGTEST "Machinecoin-Qt-regtest"
 
 #endif // MACHINECOIN_QT_GUICONSTANTS_H

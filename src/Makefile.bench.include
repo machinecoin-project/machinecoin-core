@@ -15,25 +15,30 @@ bench_bench_machinecoin_SOURCES = \
   bench/bench_machinecoin.cpp \
   bench/bench.cpp \
   bench/bench.h \
+  bench/block_assemble.cpp \
+  bench/bls.cpp \
+  bench/bls_dkg.cpp \
   bench/checkblock.cpp \
   bench/checkqueue.cpp \
-  bench/Examples.cpp \
+  bench/examples.cpp \
   bench/rollingbloom.cpp \
   bench/crypto_hash.cpp \
   bench/ccoins_caching.cpp \
-  bench/mempool_eviction.cpp \
+  bench/merkle_root.cpp \
   bench/verify_script.cpp \
   bench/base58.cpp \
+  bench/bech32.cpp \
   bench/lockedpool.cpp \
-  bench/perf.cpp \
-  bench/perf.h \
-  bench/prevector_destructor.cpp
+  bench/prevector.cpp
 
-nodist_bench_bench_machinecoin_SOURCES = $(GENERATED_TEST_FILES)
+# bench/mempool_eviction.cpp \ comment out because build was failing
+
+nodist_bench_bench_machinecoin_SOURCES = $(GENERATED_BENCH_FILES)
 
 bench_bench_machinecoin_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES) $(EVENT_CLFAGS) $(EVENT_PTHREADS_CFLAGS) -I$(builddir)/bench/
 bench_bench_machinecoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 bench_bench_machinecoin_LDADD = \
+  $(LIBMACHINECOIN_WALLET) \
   $(LIBMACHINECOIN_SERVER) \
   $(LIBMACHINECOIN_COMMON) \
   $(LIBMACHINECOIN_UTIL) \
@@ -54,7 +59,7 @@ bench_bench_machinecoin_SOURCES += bench/coin_selection.cpp
 bench_bench_machinecoin_LDADD += $(LIBMACHINECOIN_WALLET) $(LIBMACHINECOIN_CRYPTO)
 endif
 
-bench_bench_machinecoin_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
+bench_bench_machinecoin_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
 bench_bench_machinecoin_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 CLEAN_MACHINECOIN_BENCH = bench/*.gcda bench/*.gcno $(GENERATED_BENCH_FILES)

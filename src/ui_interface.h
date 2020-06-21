@@ -6,6 +6,7 @@
 #ifndef MACHINECOIN_UI_INTERFACE_H
 #define MACHINECOIN_UI_INTERFACE_H
 
+#include <memory>
 #include <stdint.h>
 #include <string>
 
@@ -86,13 +87,16 @@ public:
     /** Network activity state changed. */
     boost::signals2::signal<void (bool networkActive)> NotifyNetworkActiveChanged;
 
+    /** Number of masternodes changed. */
+    boost::signals2::signal<void (int newNumMasternodes)> NotifyStrMasternodeCountChanged;
+
     /**
      * Status bar alerts changed.
      */
     boost::signals2::signal<void ()> NotifyAlertChanged;
 
     /** A wallet has been loaded. */
-    boost::signals2::signal<void (CWallet* wallet)> LoadWallet;
+    boost::signals2::signal<void (std::shared_ptr<CWallet> wallet)> LoadWallet;
 
     /**
      * Show progress e.g. for verifychain.

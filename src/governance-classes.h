@@ -1,27 +1,22 @@
-﻿// Copyright (c) 2014-2018 The Dash Core developers
-// Copyright (c) 2014-2018 The Machinecoin Core developers
+// Copyright (c) 2014-2018 The Dash Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef GOVERNANCE_CLASSES_H
 #define GOVERNANCE_CLASSES_H
 
-#include <base58.h>
+//#define ENABLE_DASH_DEBUG
+
 #include <governance.h>
 #include <key.h>
+#include <key_io.h>
 #include <script/standard.h>
 #include <util.h>
 
-#include <boost/shared_ptr.hpp>
-
 class CSuperblock;
-class CGovernanceTrigger;
 class CGovernanceTriggerManager;
 class CSuperblockManager;
 
-static const int TRIGGER_UNKNOWN            = -1;
-static const int TRIGGER_SUPERBLOCK         = 1000;
-
-typedef boost::shared_ptr<CSuperblock> CSuperblock_sptr;
+typedef std::shared_ptr<CSuperblock> CSuperblock_sptr;
 
 // DECLARE GLOBAL VARIABLES FOR GOVERNANCE CLASSES
 extern CGovernanceTriggerManager triggerman;
@@ -41,7 +36,6 @@ class CGovernanceTriggerManager
 private:
     typedef std::map<uint256, CSuperblock_sptr> trigger_m_t;
     typedef trigger_m_t::iterator trigger_m_it;
-    typedef trigger_m_t::const_iterator trigger_m_cit;
 
     trigger_m_t mapTrigger;
 
@@ -50,7 +44,8 @@ private:
     void CleanAndRemove();
 
 public:
-    CGovernanceTriggerManager() : mapTrigger() {}
+    CGovernanceTriggerManager() :
+        mapTrigger() {}
 };
 
 /**
@@ -65,14 +60,13 @@ private:
     static bool GetBestSuperblock(CSuperblock_sptr& pSuperblockRet, int nBlockHeight);
 
 public:
-
     static bool IsSuperblockTriggered(int nBlockHeight);
 
-    static void CreateSuperblock(CMutableTransaction& txNewRet, int nBlockHeight, std::vector<CTxOut>& voutSuperblockRet);
+    static bool GetSuperblockPayments(int nBlockHeight, std::vector<CTxOut>& voutSuperblockRet);
     static void ExecuteBestSuperblock(int nBlockHeight);
 
     static std::string GetRequiredPaymentsString(int nBlockHeight);
-    static bool IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
+    static bool IsValid(const CTransaction& txNew, int nBlockHeight, CAmount blockReward);
 };
 
 /**
@@ -89,33 +83,29 @@ public:
     CScript script;
     CAmount nAmount;
 
-    CGovernancePayment()
-        :fValid(false),
-         script(),
-         nAmount(0)
-    {}
-
-    CGovernancePayment(std::string addrIn, CAmount nAmountIn)
-        :fValid(false),
-         script(),
-         nAmount(0)
+    CGovernancePayment() :
+        fValid(false),
+        script(),
+        nAmount(0)
     {
-        try
-        {
+    }
+
+    CGovernancePayment(std::string addrIn, CAmount nAmountIn) :
+        fValid(false),
+        script(),
+        nAmount(0)
+    {
+        try {
             CTxDestination dest = DecodeDestination(addrIn);
             script = GetScriptForDestination(dest);
             nAmount = nAmountIn;
             fValid = true;
-        }
-        catch(std::exception& e)
-        {
+        } catch (std::exception& e) {
             LogPrintf("CGovernancePayment Payment not valid: addrIn = %s, nAmountIn = %d, what = %s\n",
-                     addrIn, nAmountIn, e.what());
-        }
-        catch(...)
-        {
+                addrIn, nAmountIn, e.what());
+        } catch (...) {
             LogPrintf("CGovernancePayment Payment not valid: addrIn = %s, nAmountIn = %d\n",
-                      addrIn, nAmountIn);
+                addrIn, nAmountIn);
         }
     }
 
@@ -152,7 +142,6 @@ private:
     void ParsePaymentSchedule(const std::string& strPaymentAddresses, const std::string& strPaymentAmounts);
 
 public:
-
     CSuperblock();
     CSuperblock(uint256& nHash);
 
@@ -184,7 +173,7 @@ public:
     bool GetPayment(int nPaymentIndex, CGovernancePayment& paymentRet);
     CAmount GetPaymentsTotalAmount();
 
-    bool IsValid(const CTransactionRef& txNew, int nBlockHeight, CAmount blockReward);
+    bool IsValid(const CTransaction& txNew, int nBlockHeight, CAmount blockReward);
     bool IsExpired();
 };
 

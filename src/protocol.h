@@ -15,6 +15,7 @@
 #include <uint256.h>
 #include <version.h>
 
+#include <atomic>
 #include <stdint.h>
 #include <string>
 
@@ -47,10 +48,10 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action)
     {
-        READWRITE(FLATDATA(pchMessageStart));
-        READWRITE(FLATDATA(pchCommand));
+        READWRITE(pchMessageStart);
+        READWRITE(pchCommand);
         READWRITE(nMessageSize);
-        READWRITE(FLATDATA(pchChecksum));
+        READWRITE(pchChecksum);
     }
 
     char pchMessageStart[MESSAGE_START_SIZE];
@@ -251,6 +252,11 @@ extern const char *MNGOVERNANCESYNC;
 extern const char *MNGOVERNANCEOBJECT;
 extern const char *MNGOVERNANCEOBJECTVOTE;
 extern const char *MNVERIFY;
+extern const char *GETMNLISTDIFF;
+extern const char *MNLISTDIFF;
+extern const char *QFCOMMITMENT;
+extern const char *QDCOMMITMENT;
+extern const char *QCONTRIB;
 };
 
 /* Get a vector of all valid message types (see above) */
@@ -315,9 +321,10 @@ enum ServiceFlags : uint64_t {
  * If the NODE_NONE return value is changed, contrib/seeds/makeseeds.py
  * should be updated appropriately to filter for the same nodes.
  */
-static ServiceFlags GetDesirableServiceFlags(ServiceFlags services) {
-    return ServiceFlags(NODE_NETWORK | NODE_WITNESS);
-}
+ServiceFlags GetDesirableServiceFlags(ServiceFlags services);
+
+/** Set the current IBD status in order to figure out the desirable service flags */
+void SetServiceFlagsIBDCache(bool status);
 
 /**
  * A shortcut for (services & GetDesirableServiceFlags(services))
@@ -333,7 +340,7 @@ static inline bool HasAllDesirableServiceFlags(ServiceFlags services) {
  * robust address-storage DB. Currently an alias for checking NODE_NETWORK.
  */
 static inline bool MayHaveUsefulAddressDB(ServiceFlags services) {
-    return services & NODE_NETWORK;
+    return (services & NODE_NETWORK) || (services & NODE_NETWORK_LIMITED);
 }
 
 /** A CService with information about it as peer */
@@ -360,8 +367,8 @@ public:
             READWRITE(nTime);
         uint64_t nServicesInt = nServices;
         READWRITE(nServicesInt);
-        nServices = (ServiceFlags)nServicesInt;
-        READWRITE(*(CService*)this);
+        nServices = static_cast<ServiceFlags>(nServicesInt);
+        READWRITEAS(CService, *this);
     }
 
     // TODO: make private (improves encapsulation)
@@ -401,6 +408,10 @@ enum GetDataMsg
     MSG_GOVERNANCE_OBJECT = 10,
     MSG_GOVERNANCE_OBJECT_VOTE = 11,
     MSG_MASTERNODE_VERIFY = 12,
+    MSG_QUORUM_FINAL_COMMITMENT = 21,
+    MSG_QUORUM_DUMMY_COMMITMENT = 22, // only valid on testnet/devnet/regtest
+    MSG_QUORUM_DUMMY_CONTRIBUTION = 23, // not a valid contribution and only allowed on testnet/devnet/regtest. Will later be replaced with the real contribution
+
 };
 
 /** inv message data */
@@ -421,6 +432,7 @@ public:
 
     friend bool operator<(const CInv& a, const CInv& b);
 
+    bool IsKnownType() const;
     std::string GetCommand() const;
     std::string ToString() const;
 

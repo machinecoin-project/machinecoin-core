@@ -6,19 +6,21 @@
 #ifndef MACHINECOIN_INIT_H
 #define MACHINECOIN_INIT_H
 
+#include <memory>
 #include <string>
+#include <util.h>
 
 class CScheduler;
 class CWallet;
-class CConnman;
+
+class WalletInitInterface;
+extern const WalletInitInterface& g_wallet_init_interface;
 
 namespace boost
 {
 class thread_group;
 } // namespace boost
 
-void StartShutdown();
-bool ShutdownRequested();
 /** Interrupt threads */
 void Interrupt();
 void Shutdown();
@@ -57,17 +59,12 @@ bool AppInitLockDataDirectory();
  */
 bool AppInitMain();
 
-/** The help message mode determines what help message to show */
-enum HelpMessageMode {
-    HMM_MACHINECOIND,
-    HMM_MACHINECOIN_QT
-};
+/**
+ * Setup the arguments for gArgs
+ */
+void SetupServerArgs();
 
-/** Help for options shared between UI and daemon (for -help) */
-std::string HelpMessage(HelpMessageMode mode);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
-
-void ThreadCheckMasternode(CConnman& connman);
 
 #endif // MACHINECOIN_INIT_H

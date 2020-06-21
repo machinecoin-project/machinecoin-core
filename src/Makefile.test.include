@@ -2,24 +2,28 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-TESTS += test/test_machinecoin
 bin_PROGRAMS += test/test_machinecoin
 noinst_PROGRAMS += test/test_machinecoin_fuzzy
 TEST_SRCDIR = test
 TEST_BINARY=test/test_machinecoin$(EXEEXT)
 
 JSON_TEST_FILES = \
-  test/data/script_tests.json \
-  test/data/base58_keys_valid.json \
   test/data/base58_encode_decode.json \
-  test/data/base58_keys_invalid.json \
+  test/data/key_io_valid.json \
+  test/data/key_io_invalid.json \
+  test/data/script_tests.json \
+  test/data/sighash.json \
   test/data/tx_invalid.json \
-  test/data/tx_valid.json \
-  test/data/sighash.json
+  test/data/tx_valid.json
 
 RAW_TEST_FILES =
 
 GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
+
+MACHINECOIN_TEST_SUITE = \
+  test/test_machinecoin_main.cpp \
+  test/test_machinecoin.h \
+  test/test_machinecoin.cpp
 
 # test_machinecoin binary #
 MACHINECOIN_TESTS =\
@@ -39,12 +43,15 @@ MACHINECOIN_TESTS =\
   test/bswap_tests.cpp \
   test/checkqueue_tests.cpp \
   test/coins_tests.cpp \
+  test/compilerbug_tests.cpp \
   test/compress_tests.cpp \
   test/crypto_tests.cpp \
   test/cuckoocache_tests.cpp \
-  test/DoS_tests.cpp \
+  test/denialofservice_tests.cpp \
+  test/descriptor_tests.cpp \
   test/getarg_tests.cpp \
   test/hash_tests.cpp \
+  test/key_io_tests.cpp \
   test/key_tests.cpp \
   test/limitedmap_tests.cpp \
   test/dbwrapper_tests.cpp \
@@ -66,7 +73,7 @@ MACHINECOIN_TESTS =\
   test/rpc_tests.cpp \
   test/sanity_tests.cpp \
   test/scheduler_tests.cpp \
-  test/script_P2SH_tests.cpp \
+  test/script_p2sh_tests.cpp \
   test/script_tests.cpp \
   test/script_standard_tests.cpp \
   test/scriptnum_tests.cpp \
@@ -75,38 +82,43 @@ MACHINECOIN_TESTS =\
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
   test/streams_tests.cpp \
-  test/test_machinecoin.cpp \
-  test/test_machinecoin.h \
-  test/test_machinecoin_main.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \
   test/transaction_tests.cpp \
+  test/txindex_tests.cpp \
   test/txvalidation_tests.cpp \
   test/txvalidationcache_tests.cpp \
-  test/versionbits_tests.cpp \
   test/uint256_tests.cpp \
-  test/util_tests.cpp
+  test/util_tests.cpp \
+  test/validation_block_tests.cpp \
+  test/versionbits_tests.cpp
 
 if ENABLE_WALLET
 MACHINECOIN_TESTS += \
-  wallet/test/wallet_test_fixture.cpp \
-  wallet/test/wallet_test_fixture.h \
   wallet/test/accounting_tests.cpp \
+  wallet/test/db_tests.cpp \
+  wallet/test/psbt_wallet_tests.cpp \
   wallet/test/wallet_tests.cpp \
-  wallet/test/crypto_tests.cpp
+  wallet/test/wallet_crypto_tests.cpp \
+  wallet/test/coinselector_tests.cpp
+
+MACHINECOIN_TEST_SUITE += \
+  wallet/test/wallet_test_fixture.cpp \
+  wallet/test/wallet_test_fixture.h
 endif
 
-test_test_machinecoin_SOURCES = $(MACHINECOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
+test_test_machinecoin_SOURCES = $(MACHINECOIN_TEST_SUITE) $(MACHINECOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
 test_test_machinecoin_CPPFLAGS = $(AM_CPPFLAGS) $(MACHINECOIN_INCLUDES) $(TESTDEFS) $(EVENT_CFLAGS)
 test_test_machinecoin_LDADD =
 if ENABLE_WALLET
 test_test_machinecoin_LDADD += $(LIBMACHINECOIN_WALLET)
 endif
+
 test_test_machinecoin_LDADD += $(LIBMACHINECOIN_SERVER) $(LIBMACHINECOIN_CLI) $(LIBMACHINECOIN_COMMON) $(LIBMACHINECOIN_UTIL) $(LIBMACHINECOIN_CONSENSUS) $(LIBMACHINECOIN_CRYPTO) $(LIBUNIVALUE) \
   $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS)
 test_test_machinecoin_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
-test_test_machinecoin_LDADD += $(LIBMACHINECOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
+test_test_machinecoin_LDADD += $(LIBMACHINECOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(BLS_LIBS)
 test_test_machinecoin_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static
 
 if ENABLE_ZMQ
@@ -148,13 +160,19 @@ machinecoin_test_check: $(TEST_BINARY) FORCE
 machinecoin_test_clean : FORCE
 	rm -f $(CLEAN_MACHINECOIN_TEST) $(test_test_machinecoin_OBJECTS) $(TEST_BINARY)
 
-check-local:
+check-local: $(MACHINECOIN_TESTS:.cpp=.cpp.test)
 	@echo "Running test/util/machinecoin-util-test.py..."
 	$(PYTHON) $(top_builddir)/test/util/machinecoin-util-test.py
+	@echo "Running test/util/rpcauth-test.py..."
+	$(PYTHON) $(top_builddir)/test/util/rpcauth-test.py
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C secp256k1 check
 if EMBEDDED_UNIVALUE
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C univalue check
 endif
+
+%.cpp.test: %.cpp
+	@echo Running tests: `cat $< | grep -E "(BOOST_FIXTURE_TEST_SUITE\\(|BOOST_AUTO_TEST_SUITE\\()" | cut -d '(' -f 2 | cut -d ',' -f 1 | cut -d ')' -f 1` from $<
+	$(AM_V_at)$(TEST_BINARY) -l test_suite -t "`cat $< | grep -E "(BOOST_FIXTURE_TEST_SUITE\\(|BOOST_AUTO_TEST_SUITE\\()" | cut -d '(' -f 2 | cut -d ',' -f 1 | cut -d ')' -f 1`" > $<.log 2>&1 || (cat $<.log && false)
 
 %.json.h: %.json
 	@$(MKDIR_P) $(@D)

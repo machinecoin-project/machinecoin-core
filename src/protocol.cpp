@@ -12,6 +12,8 @@
 # include <arpa/inet.h>
 #endif
 
+static std::atomic<bool> g_initial_block_download_completed(false);
+
 namespace NetMsgType {
 const char *VERSION="version";
 const char *VERACK="verack";
@@ -52,6 +54,11 @@ const char *MNGOVERNANCESYNC="govsync";
 const char *MNGOVERNANCEOBJECT="govobj";
 const char *MNGOVERNANCEOBJECTVOTE="govobjvote";
 const char *MNVERIFY="mnv";
+const char *GETMNLISTDIFF="getmnlistd";
+const char *MNLISTDIFF="mnlistdiff";
+const char *QFCOMMITMENT="qfcommit";
+const char *QDCOMMITMENT="qdcommit";
+const char *QCONTRIB="qcontrib";
 } // namespace NetMsgType
 
 const static std::string ppszTypeName[] =
@@ -67,6 +74,9 @@ const static std::string ppszTypeName[] =
     NetMsgType::MNGOVERNANCEOBJECT,
     NetMsgType::MNGOVERNANCEOBJECTVOTE,
     NetMsgType::MNVERIFY,
+    NetMsgType::QFCOMMITMENT,
+    NetMsgType::QDCOMMITMENT,
+    NetMsgType::QCONTRIB,
 };
 
 /** All known message types. Keep this in the same order as the list of
@@ -112,6 +122,11 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::MNGOVERNANCEOBJECT,
     NetMsgType::MNGOVERNANCEOBJECTVOTE,
     NetMsgType::MNVERIFY,
+    NetMsgType::GETMNLISTDIFF,
+    NetMsgType::MNLISTDIFF,
+    NetMsgType::QFCOMMITMENT,
+    NetMsgType::QDCOMMITMENT,
+    NetMsgType::QCONTRIB,
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 
@@ -168,6 +183,17 @@ bool CMessageHeader::IsValid(const MessageStartChars& pchMessageStartIn) const
 }
 
 
+ServiceFlags GetDesirableServiceFlags(ServiceFlags services) {
+    if ((services & NODE_NETWORK_LIMITED) && g_initial_block_download_completed) {
+        return ServiceFlags(NODE_NETWORK_LIMITED | NODE_WITNESS);
+    }
+    return ServiceFlags(NODE_NETWORK | NODE_WITNESS);
+}
+
+void SetServiceFlagsIBDCache(bool state) {
+    g_initial_block_download_completed = state;
+}
+
 
 CAddress::CAddress() : CService()
 {
@@ -204,6 +230,11 @@ bool IsKnownType(int typeIn)
     return (typeIn >= 1 && typeIn < (int)ARRAYLEN(ppszTypeName));
 }
 
+bool CInv::IsKnownType() const
+{
+    return !GetCommand().empty();
+}
+
 std::string CInv::GetCommand() const
 {
     std::string cmd;
@@ -217,7 +248,7 @@ std::string CInv::GetCommand() const
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
     default:
-        if (!IsKnownType(type))
+        if (!::IsKnownType(type))
             throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
         else
             return ppszTypeName[type];

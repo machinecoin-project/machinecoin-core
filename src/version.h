@@ -9,7 +9,7 @@
  * network protocol versioning
  */
 
-static const int PROTOCOL_VERSION = 70023;
+static const int PROTOCOL_VERSION = 70025;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
@@ -19,6 +19,8 @@ static const int GETHEADERS_VERSION = 70002;
 
 //! disconnect from peers older than this proto version
 static const int MIN_PEER_PROTO_VERSION = 70022;
+//! disconnect from peers older than this proto version when DIP3 is activated via the BIP9 deployment
+static const int MIN_PEER_PROTO_VERSION_DIP3 = 70025;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this
@@ -47,5 +49,8 @@ static const int UPDATED_DIFF_ADJUST_ALGO = 70016;
 
 //! implemented masternodes to machinecoin
 static const int IMPLEMENTED_MASTERNODES = 70017;
+
+//! introduction of DIP3/deterministic masternodes
+static const int DMN_PROTO_VERSION = 70025;
 
 #endif // MACHINECOIN_VERSION_H

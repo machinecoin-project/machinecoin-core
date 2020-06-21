@@ -1,26 +1,25 @@
-﻿// Copyright (c) 2014-2018 The Dash Core developers
 // Copyright (c) 2014-2018 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <governance-validators.h>
 
-#include <base58.h>
+#include <key_io.h>
 #include <timedata.h>
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 
 #include <algorithm>
 
-const size_t MAX_DATA_SIZE  = 512;
-const size_t MAX_NAME_SIZE  = 40;
+const size_t MAX_DATA_SIZE = 512;
+const size_t MAX_NAME_SIZE = 40;
 
 CProposalValidator::CProposalValidator(const std::string& strHexData) :
     objJSON(UniValue::VOBJ),
     fJSONValid(false),
     strErrorMessages()
 {
-    if(!strHexData.empty()) {
+    if (!strHexData.empty()) {
         ParseStrHexData(strHexData);
     }
 }
@@ -37,27 +36,27 @@ void CProposalValidator::ParseStrHexData(const std::string& strHexData)
 
 bool CProposalValidator::Validate(bool fCheckExpiration)
 {
-    if(!fJSONValid) {
+    if (!fJSONValid) {
         strErrorMessages += "JSON parsing error;";
         return false;
     }
-    if(!ValidateName()) {
+    if (!ValidateName()) {
         strErrorMessages += "Invalid name;";
         return false;
     }
-    if(!ValidateStartEndEpoch(fCheckExpiration)) {
+    if (!ValidateStartEndEpoch(fCheckExpiration)) {
         strErrorMessages += "Invalid start:end range;";
         return false;
     }
-    if(!ValidatePaymentAmount()) {
+    if (!ValidatePaymentAmount()) {
         strErrorMessages += "Invalid payment amount;";
         return false;
     }
-    if(!ValidatePaymentAddress()) {
+    if (!ValidatePaymentAddress()) {
         strErrorMessages += "Invalid payment address;";
         return false;
     }
-    if(!ValidateURL()) {
+    if (!ValidateURL()) {
         strErrorMessages += "Invalid URL;";
         return false;
     }
@@ -67,12 +66,12 @@ bool CProposalValidator::Validate(bool fCheckExpiration)
 bool CProposalValidator::ValidateName()
 {
     std::string strName;
-    if(!GetDataValue("name", strName)) {
+    if (!GetDataValue("name", strName)) {
         strErrorMessages += "name field not found;";
         return false;
     }
 
-    if(strName.size() > MAX_NAME_SIZE) {
+    if (strName.size() > MAX_NAME_SIZE) {
         strErrorMessages += strprintf("name exceeds %lu characters;", MAX_NAME_SIZE);
         return false;
     }
@@ -81,7 +80,7 @@ bool CProposalValidator::ValidateName()
 
     std::transform(strName.begin(), strName.end(), strName.begin(), ::tolower);
 
-    if(strName.find_first_not_of(strAllowedChars) != std::string::npos) {
+    if (strName.find_first_not_of(strAllowedChars) != std::string::npos) {
         strErrorMessages += "name contains invalid characters;";
         return false;
     }
@@ -94,22 +93,22 @@ bool CProposalValidator::ValidateStartEndEpoch(bool fCheckExpiration)
     int64_t nStartEpoch = 0;
     int64_t nEndEpoch = 0;
 
-    if(!GetDataValue("start_epoch", nStartEpoch)) {
+    if (!GetDataValue("start_epoch", nStartEpoch)) {
         strErrorMessages += "start_epoch field not found;";
         return false;
     }
 
-    if(!GetDataValue("end_epoch", nEndEpoch)) {
+    if (!GetDataValue("end_epoch", nEndEpoch)) {
         strErrorMessages += "end_epoch field not found;";
         return false;
     }
 
-    if(nEndEpoch <= nStartEpoch) {
+    if (nEndEpoch <= nStartEpoch) {
         strErrorMessages += "end_epoch <= start_epoch;";
         return false;
     }
-    
-    if(fCheckExpiration && nEndEpoch <= GetAdjustedTime()) {
+
+    if (fCheckExpiration && nEndEpoch <= GetAdjustedTime()) {
         strErrorMessages += "expired;";
         return false;
     }
@@ -121,12 +120,12 @@ bool CProposalValidator::ValidatePaymentAmount()
 {
     double dValue = 0.0;
 
-    if(!GetDataValue("payment_amount", dValue)) {
+    if (!GetDataValue("payment_amount", dValue)) {
         strErrorMessages += "payment_amount field not found;";
         return false;
     }
 
-    if(dValue <= 0.0) {
+    if (dValue <= 0.0) {
         strErrorMessages += "payment_amount is negative;";
         return false;
     }
@@ -142,12 +141,12 @@ bool CProposalValidator::ValidatePaymentAddress()
 {
     std::string strPaymentAddress;
 
-    if(!GetDataValue("payment_address", strPaymentAddress)) {
+    if (!GetDataValue("payment_address", strPaymentAddress)) {
         strErrorMessages += "payment_address field not found;";
         return false;
     }
 
-    if(std::find_if(strPaymentAddress.begin(), strPaymentAddress.end(), ::isspace) != strPaymentAddress.end()) {
+    if (std::find_if(strPaymentAddress.begin(), strPaymentAddress.end(), ::isspace) != strPaymentAddress.end()) {
         strErrorMessages += "payment_address can't have whitespaces;";
         return false;
     }
@@ -164,22 +163,22 @@ bool CProposalValidator::ValidatePaymentAddress()
 bool CProposalValidator::ValidateURL()
 {
     std::string strURL;
-    if(!GetDataValue("url", strURL)) {
+    if (!GetDataValue("url", strURL)) {
         strErrorMessages += "url field not found;";
         return false;
     }
 
-    if(std::find_if(strURL.begin(), strURL.end(), ::isspace) != strURL.end()) {
+    if (std::find_if(strURL.begin(), strURL.end(), ::isspace) != strURL.end()) {
         strErrorMessages += "url can't have whitespaces;";
         return false;
     }
 
-    if(strURL.size() < 4U) {
+    if (strURL.size() < 4U) {
         strErrorMessages += "url too short;";
         return false;
     }
 
-    if(!CheckURL(strURL)) {
+    if (!CheckURL(strURL)) {
         strErrorMessages += "url invalid;";
         return false;
     }
@@ -191,12 +190,13 @@ void CProposalValidator::ParseJSONData(const std::string& strJSONData)
 {
     fJSONValid = false;
 
-    if(strJSONData.empty()) {
+    if (strJSONData.empty()) {
         return;
     }
 
     try {
         UniValue obj(UniValue::VOBJ);
+
         obj.read(strJSONData);
 
         if (obj.isObject()) {
@@ -208,11 +208,9 @@ void CProposalValidator::ParseJSONData(const std::string& strJSONData)
         }
 
         fJSONValid = true;
-    }
-    catch(std::exception& e) {
+    } catch (std::exception& e) {
         strErrorMessages += std::string(e.what()) + std::string(";");
-    }
-    catch(...) {
+    } catch (...) {
         strErrorMessages += "Unknown exception;";
     }
 }
@@ -220,14 +218,12 @@ void CProposalValidator::ParseJSONData(const std::string& strJSONData)
 bool CProposalValidator::GetDataValue(const std::string& strKey, std::string& strValueRet)
 {
     bool fOK = false;
-    try  {
+    try {
         strValueRet = objJSON[strKey].get_str();
         fOK = true;
-    }
-    catch(std::exception& e) {
+    } catch (std::exception& e) {
         strErrorMessages += std::string(e.what()) + std::string(";");
-    }
-    catch(...) {
+    } catch (...) {
         strErrorMessages += "Unknown exception;";
     }
     return fOK;
@@ -236,9 +232,9 @@ bool CProposalValidator::GetDataValue(const std::string& strKey, std::string& st
 bool CProposalValidator::GetDataValue(const std::string& strKey, int64_t& nValueRet)
 {
     bool fOK = false;
-    try  {
+    try {
         const UniValue uValue = objJSON[strKey];
-        switch(uValue.getType()) {
+        switch (uValue.getType()) {
         case UniValue::VNUM:
             nValueRet = uValue.get_int64();
             fOK = true;
@@ -246,11 +242,9 @@ bool CProposalValidator::GetDataValue(const std::string& strKey, int64_t& nValue
         default:
             break;
         }
-    }
-    catch(std::exception& e) {
+    } catch (std::exception& e) {
         strErrorMessages += std::string(e.what()) + std::string(";");
-    }
-    catch(...) {
+    } catch (...) {
         strErrorMessages += "Unknown exception;";
     }
     return fOK;
@@ -259,9 +253,9 @@ bool CProposalValidator::GetDataValue(const std::string& strKey, int64_t& nValue
 bool CProposalValidator::GetDataValue(const std::string& strKey, double& dValueRet)
 {
     bool fOK = false;
-    try  {
+    try {
         const UniValue uValue = objJSON[strKey];
-        switch(uValue.getType()) {
+        switch (uValue.getType()) {
         case UniValue::VNUM:
             dValueRet = uValue.get_real();
             fOK = true;
@@ -269,11 +263,9 @@ bool CProposalValidator::GetDataValue(const std::string& strKey, double& dValueR
         default:
             break;
         }
-    }
-    catch(std::exception& e) {
+    } catch (std::exception& e) {
         strErrorMessages += std::string(e.what()) + std::string(";");
-    }
-    catch(...) {
+    } catch (...) {
         strErrorMessages += "Unknown exception;";
     }
     return fOK;
@@ -290,32 +282,31 @@ bool CProposalValidator::CheckURL(const std::string& strURLIn)
     std::string strRest(strURLIn);
     std::string::size_type nPos = strRest.find(':');
 
-    if(nPos != std::string::npos) {
+    if (nPos != std::string::npos) {
         //std::string strSchema = strRest.substr(0,nPos);
 
-        if(nPos < strRest.size()) {
+        if (nPos < strRest.size()) {
             strRest = strRest.substr(nPos + 1);
-        }
-        else {
+        } else {
             strRest = "";
         }
     }
 
     // Process netloc
-    if((strRest.size() > 2) && (strRest.substr(0,2) == "//")) {
+    if ((strRest.size() > 2) && (strRest.substr(0, 2) == "//")) {
         static const std::string strNetlocDelimiters = "/?#";
 
         strRest = strRest.substr(2);
 
         std::string::size_type nPos2 = strRest.find_first_of(strNetlocDelimiters);
 
-        std::string strNetloc = strRest.substr(0,nPos2);
+        std::string strNetloc = strRest.substr(0, nPos2);
 
-        if((strNetloc.find('[') != std::string::npos) && (strNetloc.find(']') == std::string::npos)) {
+        if ((strNetloc.find('[') != std::string::npos) && (strNetloc.find(']') == std::string::npos)) {
             return false;
         }
 
-        if((strNetloc.find(']') != std::string::npos) && (strNetloc.find('[') == std::string::npos)) {
+        if ((strNetloc.find(']') != std::string::npos) && (strNetloc.find('[') == std::string::npos)) {
             return false;
         }
     }

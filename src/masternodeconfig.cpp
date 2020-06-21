@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2018 The Dash Core developers
+﻿// Copyright (c) 2014-2018 The Machinecoin Core developers
 // Copyright (c) 2014-2018 The Machinecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -26,7 +26,7 @@ bool CMasternodeConfig::read(std::string& strErrRet) {
 
     if (!streamConfig.good()) {
         FILE* configFile = fopen(pathMasternodeConfigFile.string().c_str(), "a");
-        if (configFile != NULL) {
+        if (configFile != nullptr) {
             std::string strHeader = "# Masternode config file\n"
                           "# Format: alias IP:port masternodeprivkey collateral_output_txid collateral_output_index\n"
                           "# Example: mn1 127.0.0.2:40333 6zUH728xDrgXR1qtNdAgrhiHNARRJoQZUuKgy1bur87QFpixLrn f589ff623c5db9687b059728ae3373a2a0ddffc2bb3249c367ed214cc1bc842e 0\n";

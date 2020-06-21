@@ -29,6 +29,15 @@ CZMQNotificationInterface::~CZMQNotificationInterface()
     }
 }
 
+std::list<const CZMQAbstractNotifier*> CZMQNotificationInterface::GetActiveNotifiers() const
+{
+    std::list<const CZMQAbstractNotifier*> result;
+    for (const auto* n : notifiers) {
+        result.push_back(n);
+    }
+    return result;
+}
+
 CZMQNotificationInterface* CZMQNotificationInterface::Create()
 {
     CZMQNotificationInterface* notificationInterface = nullptr;
@@ -180,3 +189,5 @@ void CZMQNotificationInterface::BlockDisconnected(const std::shared_ptr<const CB
         TransactionAddedToMempool(ptx);
     }
 }
+
+CZMQNotificationInterface* g_zmq_notification_interface = nullptr;
