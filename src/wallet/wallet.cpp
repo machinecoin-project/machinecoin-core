@@ -2473,7 +2473,7 @@ bool CWallet::GetOutpointAndKeysFromOutput(const COutput& out, COutPoint& outpoi
     return false;
 }
 
-bool CWallet::GetBudgetSystemCollateralTX(CTransactionRef tx, uint256 hash, CAmount amount, const COutPoint& outpoint)
+bool CWallet::GetBudgetSystemCollateralTX(CTransactionRef& tx, uint256 hash, CAmount amount, const COutPoint& outpoint)
 {
     // make our change address
     CReserveKey reservekey(this);
@@ -2749,13 +2749,17 @@ bool CWallet::FundTransaction(CMutableTransaction& tx, CAmount& nFeeRet, int& nC
         coinControl.Select(txin.prevout);
     }
 
+    int nExtraPayloadSize = 0;
+    if (tx.nVersion == 3 && tx.nType != TRANSACTION_NORMAL)
+        nExtraPayloadSize = (int)tx.vExtraPayload.size();
+
     // Acquire the locks to prevent races to the new locked unspents between the
     // CreateTransaction call and LockCoin calls (when lockUnspents is true).
     LOCK2(cs_main, cs_wallet);
 
     CReserveKey reservekey(this);
     CTransactionRef tx_new;
-    if (!CreateTransaction(vecSend, tx_new, reservekey, nFeeRet, nChangePosInOut, strFailReason, coinControl, false)) {
+    if (!CreateTransaction(vecSend, tx_new, reservekey, nFeeRet, nChangePosInOut, strFailReason, coinControl, false, nExtraPayloadSize)) {
         return false;
     }
 
