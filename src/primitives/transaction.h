@@ -216,7 +216,7 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     int32_t n32bitVersion;
 
     s >> n32bitVersion;
-    tx.nVersion = (int16_t) (n32bitVersion & 0xffff);
+    tx.nVersion = (n32bitVersion & 0xffff);
     tx.nType = (int16_t) ((n32bitVersion >> 16) & 0xffff);
 
     unsigned char flags = 0;
@@ -311,7 +311,7 @@ public:
 	const int16_t nType;
     const std::vector<CTxIn> vin;
     const std::vector<CTxOut> vout;
-    const int16_t nVersion;
+    const int32_t nVersion;
     const uint32_t nLockTime;
     const std::vector<uint8_t> vExtraPayload; // only available for special transaction types
 
@@ -394,7 +394,7 @@ struct CMutableTransaction
 	int16_t nType;
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
-    int16_t nVersion;
+    int32_t nVersion;
     uint32_t nLockTime;
     std::vector<uint8_t> vExtraPayload; // only available for special transaction types
 
