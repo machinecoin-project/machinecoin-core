@@ -112,12 +112,19 @@ static CKey ParsePrivKey(const std::string &strKeyOrAddress, bool allowAddresses
         if (GetWallets().empty()) {
             throw std::runtime_error("addresses not supported when wallet is disabled");
         }
+
         CWallet *primaryWallet = GetWallets()[0].get();
-        CKeyID keyId = *boost::get<CKeyID>(&dest);
-        CKey key;
-        if (keyId.size() == 0 || primaryWallet->GetKey(keyId, key))
+        CKeyID keyid = GetKeyForDestination(*primaryWallet, dest);
+        if (keyid.IsNull()) {
+            throw std::runtime_error("address does not refer to a key");
+        }
+
+        CKey vchSecret;
+        if (!primaryWallet->GetKey(keyid, vchSecret)) {
             throw std::runtime_error(strprintf("non-wallet or invalid address %s", strKeyOrAddress));
-        return key;
+        }
+
+        return vchSecret;
 #else//ENABLE_WALLET
         throw std::runtime_error("addresses not supported in no-wallet builds");
 #endif//ENABLE_WALLET-
