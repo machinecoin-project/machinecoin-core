@@ -26,9 +26,13 @@
 #include <validationinterface.h>
 #include <warnings.h>
 
-#include <governance-classes.h>
-#include <masternode-payments.h>
-#include <masternode-sync.h>
+#include <governance/governance-classes.h>
+#include <masternode/masternode-payments.h>
+#include <masternode/masternode-sync.h>
+
+#include <evo/deterministicmns.h>
+#include <evo/specialtx.h>
+#include <evo/cbtx.h>
 
 #include <memory>
 #include <stdint.h>
@@ -465,11 +469,10 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin is downloading blocks...");
   
-    // when enforcement is on we need information about a masternode payee or otherwise our block is going to be orphaned by the network
+    // Get expected MN/superblock payees. The call to GetBlockTxOuts might fail on regtest/devnet or when
+    // testnet is reset. This is fine and we ignore failure (blocks will be accepted)
     std::vector<CTxOut> voutMasternodePayments;
-    if (!masternodeSync.IsWinnersListSynced()
-        && !mnpayments.GetBlockTxOuts(chainActive.Height() + 1, 0, voutMasternodePayments))
-            throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Machinecoin Core is downloading masternode winners...");
+    mnpayments.GetBlockTxOuts(chainActive.Height() + 1, 0, voutMasternodePayments);
 
     // next bock is a superblock and we need governance info to correctly construct it
     if (!masternodeSync.IsSynced()
@@ -721,7 +724,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     }
     result.pushKV("masternode", masternodeObj);
     result.pushKV("masternode_payments_started", pindexPrev->nHeight + 1 > consensusParams.nMasternodePaymentsStartBlock);
-    result.pushKV("masternode_payments_enforced", deterministicMNManager->AreDeterministicMNsActive() || true);
+    result.pushKV("masternode_payments_enforced", true);
 
     UniValue superblockObjArray(UniValue::VARR);
     if(pblocktemplate->voutSuperblockPayments.size()) {
@@ -743,8 +746,6 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
         result.pushKV("default_witness_commitment", HexStr(pblocktemplate->vchCoinbaseCommitment.begin(), pblocktemplate->vchCoinbaseCommitment.end()));
     }
     
-    result.pushKV("coinbase_payload", HexStr(pblock->vtx[0]->vExtraPayload));
-
     return result;
 }
 

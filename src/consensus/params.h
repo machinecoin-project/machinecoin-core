@@ -53,7 +53,7 @@ enum LLMQType : uint8_t
     LLMQ_400_85 = 3, // 400 members, 340 (85%) threshold, one every 24 hours
 
     // for testing only
-    LLMQ_10_60 = 100, // 10 members, 6 (60%) threshold, one per hour
+    LLMQ_5_60 = 100, // 5 members, 3 (60%) threshold, one per hour
 };
 
 // Configures a LLMQ and its DKG
@@ -102,6 +102,19 @@ struct LLMQParams {
     // should at the same time not be too large so that not too much space is wasted with null commitments in case a DKG
     // session failed.
     int dkgMiningWindowEnd;
+
+    // In the complaint phase, members will vote on other members being bad (missing valid contribution). If at least
+    // dkgBadVotesThreshold have voted for another member to be bad, it will considered to be bad by all other members
+    // as well. This serves as a protection against late-comers who send their contribution on the bring of
+    // phase-transition, which would otherwise result in inconsistent views of the valid members set
+    int dkgBadVotesThreshold;
+
+    // Number of quorums to consider "active" for signing sessions
+    int signingActiveQuorumCount;
+
+    // Used for inter-quorum communication. This is the number of quorums for which we should keep old connections. This
+    // should be at least one more then the active quorums set.
+    int keepOldConnections;
 };
 
 /**
@@ -110,10 +123,6 @@ struct LLMQParams {
 struct Params {
     uint256 hashGenesisBlock;
     int nSubsidyHalvingInterval;
-    /** Block height at which BIP16 becomes active
-     *  Not needed by Machinecoin.
-     */
-    // int BIP16Height;
     
     // Masternodes
     int nMasternodePaymentsStartBlock;
@@ -133,6 +142,11 @@ struct Params {
     int BIP65Height;
     /** Block height at which BIP66 becomes active */
     int BIP66Height;
+	/** Block height at which DIP0003 becomes active */
+    int DIP0003Height;
+    /** Block height at which DIP0003 becomes enforced */
+    int DIP0003EnforcementHeight;
+    uint256 DIP0003EnforcementHash;
     /**
      * Minimum blocks including miner confirmation of the total of 2016 blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
@@ -159,8 +173,14 @@ struct Params {
     uint256 defaultAssumeValid;
     
     std::map<LLMQType, LLMQParams> llmqs;
-    bool fLLMQAllowDummyCommitments;
+    LLMQType llmqTypeChainLocks;
+    LLMQType llmqTypeInstantSend{LLMQ_NONE};
 };
 } // namespace Consensus
+
+// This must be outside of all namespaces. We must also duplicate the forward declaration of is_serializable_enum to
+// avoid inclusion of serialize.h here.
+template<typename T> struct is_serializable_enum;
+template<> struct is_serializable_enum<Consensus::LLMQType> : std::true_type {};
 
 #endif // MACHINECOIN_CONSENSUS_PARAMS_H

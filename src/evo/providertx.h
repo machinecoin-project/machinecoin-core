@@ -11,9 +11,9 @@
 
 #include <netaddress.h>
 #include <pubkey.h>
+#include <univalue.h>
 
 class CBlockIndex;
-class UniValue;
 
 class CProRegTx
 {
@@ -49,7 +49,7 @@ public:
         READWRITE(pubKeyOperator);
         READWRITE(keyIDVoting);
         READWRITE(nOperatorReward);
-        READWRITE(*(CScriptBase*)(&scriptPayout));
+        READWRITE(scriptPayout);
         READWRITE(inputsHash);
         if (!(s.GetType() & SER_GETHASH)) {
             READWRITE(vchSig);
@@ -61,7 +61,27 @@ public:
     std::string MakeSignString() const;
 
     std::string ToString() const;
-    void ToJson(UniValue& obj) const;
+
+    void ToJson(UniValue& obj) const
+    {
+        obj.clear();
+        obj.setObject();
+        obj.push_back(Pair("version", nVersion));
+        obj.push_back(Pair("collateralHash", collateralOutpoint.hash.ToString()));
+        obj.push_back(Pair("collateralIndex", (int)collateralOutpoint.n));
+        obj.push_back(Pair("service", addr.ToString(false)));
+        obj.push_back(Pair("ownerAddress", EncodeDestination(keyIDOwner)));
+        obj.push_back(Pair("votingAddress", EncodeDestination(keyIDVoting)));
+
+        CTxDestination dest;
+        if (ExtractDestination(scriptPayout, dest)) {
+            obj.push_back(Pair("payoutAddress", EncodeDestination(dest)));
+        }
+        obj.push_back(Pair("pubKeyOperator", pubKeyOperator.ToString()));
+        obj.push_back(Pair("operatorReward", (double)nOperatorReward / 100));
+
+        obj.push_back(Pair("inputsHash", inputsHash.ToString()));
+    }
 };
 
 class CProUpServTx
@@ -86,7 +106,7 @@ public:
         READWRITE(nVersion);
         READWRITE(proTxHash);
         READWRITE(addr);
-        READWRITE(*(CScriptBase*)(&scriptOperatorPayout));
+        READWRITE(scriptOperatorPayout);
         READWRITE(inputsHash);
         if (!(s.GetType() & SER_GETHASH)) {
             READWRITE(sig);
@@ -95,7 +115,20 @@ public:
 
 public:
     std::string ToString() const;
-    void ToJson(UniValue& obj) const;
+
+    void ToJson(UniValue& obj) const
+    {
+        obj.clear();
+        obj.setObject();
+        obj.push_back(Pair("version", nVersion));
+        obj.push_back(Pair("proTxHash", proTxHash.ToString()));
+        obj.push_back(Pair("service", addr.ToString(false)));
+        CTxDestination dest;
+        if (ExtractDestination(scriptOperatorPayout, dest)) {
+            obj.push_back(Pair("operatorPayoutAddress", EncodeDestination(dest)));
+        }
+        obj.push_back(Pair("inputsHash", inputsHash.ToString()));
+    }
 };
 
 class CProUpRegTx
@@ -124,7 +157,7 @@ public:
         READWRITE(nMode);
         READWRITE(pubKeyOperator);
         READWRITE(keyIDVoting);
-        READWRITE(*(CScriptBase*)(&scriptPayout));
+        READWRITE(scriptPayout);
         READWRITE(inputsHash);
         if (!(s.GetType() & SER_GETHASH)) {
             READWRITE(vchSig);
@@ -133,7 +166,21 @@ public:
 
 public:
     std::string ToString() const;
-    void ToJson(UniValue& obj) const;
+
+    void ToJson(UniValue& obj) const
+    {
+        obj.clear();
+        obj.setObject();
+        obj.push_back(Pair("version", nVersion));
+        obj.push_back(Pair("proTxHash", proTxHash.ToString()));
+        obj.push_back(Pair("votingAddress", EncodeDestination(keyIDVoting)));
+        CTxDestination dest;
+        if (ExtractDestination(scriptPayout, dest)) {
+            obj.push_back(Pair("payoutAddress", EncodeDestination(dest)));
+        }
+        obj.push_back(Pair("pubKeyOperator", pubKeyOperator.ToString()));
+        obj.push_back(Pair("inputsHash", inputsHash.ToString()));
+    }
 };
 
 class CProUpRevTx
@@ -174,7 +221,16 @@ public:
 
 public:
     std::string ToString() const;
-    void ToJson(UniValue& obj) const;
+
+    void ToJson(UniValue& obj) const
+    {
+        obj.clear();
+        obj.setObject();
+        obj.push_back(Pair("version", nVersion));
+        obj.push_back(Pair("proTxHash", proTxHash.ToString()));
+        obj.push_back(Pair("reason", (int)nReason));
+        obj.push_back(Pair("inputsHash", inputsHash.ToString()));
+    }
 };
 
 

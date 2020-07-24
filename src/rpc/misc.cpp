@@ -19,13 +19,14 @@
 #include <timedata.h>
 #include <util.h>
 #include <utilstrencodings.h>
-#include <masternode-sync.h>
 #ifdef ENABLE_WALLET
 #include <wallet/rpcwallet.h>
 #include <wallet/wallet.h>
 #include <wallet/walletdb.h>
 #endif
 #include <warnings.h>
+
+#include <masternode/masternode-sync.h>
 
 #include <stdint.h>
 #ifdef HAVE_MALLOC_INFO
@@ -38,8 +39,8 @@ UniValue mnsync(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw std::runtime_error(
-                "mnsync [status|next|reset]\n"
-                "Returns the sync status, updates to the next step or resets it entirely.\n"
+            "mnsync [status|next|reset]\n"
+            "Returns the sync status, updates to the next step or resets it entirely.\n"
         );
 
     std::string strMode = request.params[0].get_str();
@@ -51,8 +52,6 @@ UniValue mnsync(const JSONRPCRequest& request)
         objStatus.push_back(Pair("AssetStartTime", masternodeSync.GetAssetStartTime()));
         objStatus.push_back(Pair("Attempt", masternodeSync.GetAttempt()));
         objStatus.push_back(Pair("IsBlockchainSynced", masternodeSync.IsBlockchainSynced()));
-        objStatus.push_back(Pair("IsMasternodeListSynced", masternodeSync.IsMasternodeListSynced()));
-        objStatus.push_back(Pair("IsWinnersListSynced", masternodeSync.IsWinnersListSynced()));
         objStatus.push_back(Pair("IsSynced", masternodeSync.IsSynced()));
         objStatus.push_back(Pair("IsFailed", masternodeSync.IsFailed()));
         return objStatus;

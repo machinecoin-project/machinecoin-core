@@ -1,16 +1,14 @@
-// Copyright (c) 2018 The Machinecoin Core developers
+// Copyright (c) 2018-2019 The Machinecoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <llmq/quorums_commitment.h>
-#include <llmq/quorums_utils.h>
+#include "quorums_commitment.h"
+#include "quorums_utils.h"
 
-#include <chainparams.h>
-#include <validation.h>
+#include "chainparams.h"
+#include "validation.h"
 
 #include "evo/specialtx.h"
-
-#include <univalue.h>
 
 namespace llmq
 {
@@ -24,7 +22,7 @@ CFinalCommitment::CFinalCommitment(const Consensus::LLMQParams& params, const ui
 }
 
 #define LogPrintfFinalCommitment(...) do { \
-    LogPrintf("CFinalCommitment::%s -- %s", __func__, tinyformat::format(__VA_ARGS__)); \
+    LogPrintStr(strprintf("CFinalCommitment::%s -- %s", __func__, tinyformat::format(__VA_ARGS__))); \
 } while(0)
 
 bool CFinalCommitment::Verify(const std::vector<CDeterministicMNCPtr>& members, bool checkSigs) const
@@ -81,14 +79,14 @@ bool CFinalCommitment::Verify(const std::vector<CDeterministicMNCPtr>& members, 
 
     // sigs are only checked when the block is processed
     if (checkSigs) {
-        uint256 commitmentHash = CLLMQUtils::BuildCommitmentHash((uint8_t)params.type, quorumHash, validMembers, quorumPublicKey, quorumVvecHash);
+        uint256 commitmentHash = CLLMQUtils::BuildCommitmentHash(params.type, quorumHash, validMembers, quorumPublicKey, quorumVvecHash);
 
         std::vector<CBLSPublicKey> memberPubKeys;
         for (size_t i = 0; i < members.size(); i++) {
             if (!signers[i]) {
                 continue;
             }
-            memberPubKeys.emplace_back(members[i]->pdmnState->pubKeyOperator);
+            memberPubKeys.emplace_back(members[i]->pdmnState->pubKeyOperator.Get());
         }
 
         if (!membersSig.VerifySecureAggregated(memberPubKeys, commitmentHash)) {
@@ -133,28 +131,6 @@ bool CFinalCommitment::VerifySizes(const Consensus::LLMQParams& params) const
     return true;
 }
 
-void CFinalCommitment::ToJson(UniValue& obj) const
-{
-    obj.setObject();
-    obj.push_back(Pair("version", (int)nVersion));
-    obj.push_back(Pair("llmqType", (int)llmqType));
-    obj.push_back(Pair("quorumHash", quorumHash.ToString()));
-    obj.push_back(Pair("signersCount", CountSigners()));
-    obj.push_back(Pair("validMembersCount", CountValidMembers()));
-    obj.push_back(Pair("quorumPublicKey", quorumPublicKey.ToString()));
-}
-
-void CFinalCommitmentTxPayload::ToJson(UniValue& obj) const
-{
-    obj.setObject();
-    obj.push_back(Pair("version", (int)nVersion));
-    obj.push_back(Pair("height", (int)nHeight));
-
-    UniValue qcObj;
-    commitment.ToJson(qcObj);
-    obj.push_back(Pair("commitment", qcObj));
-}
-
 bool CheckLLMQCommitment(const CTransaction& tx, const CBlockIndex* pindexPrev, CValidationState& state)
 {
     CFinalCommitmentTxPayload qcTx;
@@ -193,7 +169,7 @@ bool CheckLLMQCommitment(const CTransaction& tx, const CBlockIndex* pindexPrev, 
         return true;
     }
 
-    auto members = CLLMQUtils::GetAllQuorumMembers(params.type, qcTx.commitment.quorumHash);
+    auto members = CLLMQUtils::GetAllQuorumMembers(params.type, pindexQuorum);
     if (!qcTx.commitment.Verify(members, false)) {
         return state.DoS(100, false, REJECT_INVALID, "bad-qc-invalid");
     }
@@ -201,4 +177,4 @@ bool CheckLLMQCommitment(const CTransaction& tx, const CBlockIndex* pindexPrev, 
     return true;
 }
 
-}
+} // namespace llmq

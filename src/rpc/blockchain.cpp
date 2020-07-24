@@ -34,6 +34,8 @@
 #include <evo/specialtx.h>
 #include <evo/cbtx.h>
 
+#include <llmq/quorums_chainlocks.h>
+
 #include <assert.h>
 #include <stdint.h>
 
@@ -112,6 +114,9 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
     CBlockIndex *pnext = chainActive.Next(blockindex);
     if (pnext)
         result.pushKV("nextblockhash", pnext->GetBlockHash().GetHex());
+
+    result.push_back(Pair("chainlock", llmq::chainLocksHandler->HasChainLock(blockindex->nHeight, blockindex->GetBlockHash())));
+
     return result;
 }
 
@@ -166,6 +171,9 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     CBlockIndex *pnext = chainActive.Next(blockindex);
     if (pnext)
         result.pushKV("nextblockhash", pnext->GetBlockHash().GetHex());
+
+    result.push_back(Pair("chainlock", chainLock));
+
     return result;
 }
 
@@ -201,6 +209,34 @@ static UniValue getbestblockhash(const JSONRPCRequest& request)
 
     LOCK(cs_main);
     return chainActive.Tip()->GetBlockHash().GetHex();
+}
+
+UniValue getbestchainlock(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 0)
+        throw std::runtime_error(
+            "getbestchainlock\n"
+            "\nReturns the block hash of the best chainlock. Throws an error if there is no known chainlock yet.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"blockhash\" : \"hash\",      (string) The block hash hex encoded\n"
+            "  \"height\" : n,              (numeric) The block height or index\n"
+            "  \"known_block\" : true|false (boolean) True if the block is known by our node\n"
+            "}\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getbestchainlock", "")
+            + HelpExampleRpc("getbestchainlock", "")
+        );
+    UniValue result(UniValue::VOBJ);
+    llmq::CChainLockSig clsig = llmq::chainLocksHandler->GetBestChainLock();
+    if (clsig.IsNull()) {
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Unable to find any chainlock");
+    }
+    result.push_back(Pair("blockhash", clsig.blockHash.GetHex()));
+    result.push_back(Pair("height", clsig.nHeight));
+    LOCK(cs_main);
+    result.push_back(Pair("known_block", mapBlockIndex.count(clsig.blockHash) > 0));
+    return result;
 }
 
 void RPCNotifyBlockChange(bool ibd, const CBlockIndex * pindex)
@@ -797,6 +833,12 @@ static UniValue getblock(const JSONRPCRequest& request)
             "     \"transactionid\"     (string) The transaction id\n"
             "     ,...\n"
             "  ],\n"
+            "  \"cbTx\" : {             (json object) The coinbase special transaction \n"
+            "     \"version\"           (numeric) The coinbase special transaction version\n"
+            "     \"height\"            (numeric) The block height\n"
+            "     \"merkleRootMNList\" : \"xxxx\", (string) The merkle root of the masternode list\n"
+            "     \"merkleRootQuorums\" : \"xxxx\", (string) The merkle root of the quorum list\n"
+            "  },\n"
             "  \"time\" : ttt,          (numeric) The block time in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"mediantime\" : ttt,    (numeric) The median block time in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"nonce\" : n,           (numeric) The nonce\n"
@@ -2299,7 +2341,8 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getchaintxstats",        &getchaintxstats,        {"nblocks", "blockhash"} },
     { "blockchain",         "getblockstats",          &getblockstats,          {"hash_or_height", "stats"} },
     { "blockchain",         "getbestblockhash",       &getbestblockhash,       {} },
-    { "blockchain",         "getblockcount",          &getblockcount,          {} },
+    { "blockchain",         "getbestchainlock",       &getbestchainlock,       true,  {} },
+	{ "blockchain",         "getblockcount",          &getblockcount,          {} },
     { "blockchain",         "getblock",               &getblock,               {"blockhash","verbosity|verbose"} },
     { "blockchain",         "getblockhash",           &getblockhash,           {"height"} },
     { "blockchain",         "getblockheader",         &getblockheader,         {"blockhash","verbose"} },

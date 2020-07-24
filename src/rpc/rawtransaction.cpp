@@ -31,6 +31,14 @@
 #include <wallet/rpcwallet.h>
 #endif
 
+#include <evo/specialtx.h>
+#include <evo/providertx.h>
+#include <evo/cbtx.h>
+
+#include <llmq/quorums_chainlocks.h>
+#include <llmq/quorums_commitment.h>
+#include <llmq/quorums_instantsend.h>
+
 #include <future>
 #include <stdint.h>
 
@@ -46,6 +54,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
     // data into the returned UniValue.
     TxToUniv(tx, uint256(), entry, true, RPCSerializationFlags());
 
+	bool chainLock = false;
     if (!hashBlock.IsNull()) {
         LOCK(cs_main);
 
@@ -56,11 +65,15 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
                 entry.pushKV("confirmations", 1 + chainActive.Height() - pindex->nHeight);
                 entry.pushKV("time", pindex->GetBlockTime());
                 entry.pushKV("blocktime", pindex->GetBlockTime());
+
+				chainLock = llmq::chainLocksHandler->HasChainLock(pindex->nHeight, pindex->GetBlockHash());
             }
             else
                 entry.pushKV("confirmations", 0);
         }
     }
+
+	entry.pushKV("chainlock", chainLock);
 }
 
 static UniValue getrawtransaction(const JSONRPCRequest& request)
@@ -129,10 +142,13 @@ static UniValue getrawtransaction(const JSONRPCRequest& request)
             "     }\n"
             "     ,...\n"
             "  ],\n"
+			"  \"extraPayloadSize\" : n    (numeric) Size of DIP2 extra payload. Only present if it's a special TX\n"
+            "  \"extraPayload\" : \"hex\"    (string) Hex encoded DIP2 extra payload data. Only present if it's a special TX\n"
             "  \"blockhash\" : \"hash\",   (string) the block hash\n"
             "  \"confirmations\" : n,      (numeric) The confirmations\n"
             "  \"time\" : ttt,             (numeric) The transaction time in seconds since epoch (Jan 1 1970 GMT)\n"
             "  \"blocktime\" : ttt         (numeric) The block time in seconds since epoch (Jan 1 1970 GMT)\n"
+			"  \"chainlock\" : true|false, (bool) The state of the corresponding block chainlock\n"
             "}\n"
 
             "\nExamples:\n"
@@ -533,6 +549,7 @@ static UniValue decoderawtransaction(const JSONRPCRequest& request)
             "  \"vsize\" : n,            (numeric) The virtual transaction size (differs from size for witness transactions)\n"
             "  \"weight\" : n,           (numeric) The transaction's weight (between vsize*4 - 3 and vsize*4)\n"
             "  \"version\" : n,          (numeric) The version\n"
+            "  \"type\" : n,             (numeric) The type\n"
             "  \"locktime\" : ttt,       (numeric) The lock time\n"
             "  \"vin\" : [               (array of json objects)\n"
             "     {\n"
@@ -564,6 +581,8 @@ static UniValue decoderawtransaction(const JSONRPCRequest& request)
             "     }\n"
             "     ,...\n"
             "  ],\n"
+            "  \"extraPayloadSize\" : n           (numeric) Size of DIP2 extra payload. Only present if it's a special TX\n"
+            "  \"extraPayload\" : \"hex\"           (string) Hex encoded DIP2 extra payload data. Only present if it's a special TX\n"
             "}\n"
 
             "\nExamples:\n"

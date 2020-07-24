@@ -7,21 +7,22 @@
 
 #include <consensus/validation.h>
 #include <primitives/transaction.h>
+#include <univalue.h>
 
 class CBlock;
 class CBlockIndex;
-class UniValue;
 
 // coinbase transaction
 class CCbTx
 {
 public:
-    static const uint16_t CURRENT_VERSION = 1;
+    static const uint16_t CURRENT_VERSION = 2;
 
 public:
     uint16_t nVersion{CURRENT_VERSION};
     int32_t nHeight{0};
     uint256 merkleRootMNList;
+    uint256 merkleRootQuorums;
 
 public:
     ADD_SERIALIZE_METHODS;
@@ -32,15 +33,31 @@ public:
         READWRITE(nVersion);
         READWRITE(nHeight);
         READWRITE(merkleRootMNList);
+
+        if (nVersion >= 2) {
+            READWRITE(merkleRootQuorums);
+        }
     }
 
     std::string ToString() const;
-    void ToJson(UniValue& obj) const;
+
+    void ToJson(UniValue& obj) const
+    {
+        obj.clear();
+        obj.setObject();
+        obj.push_back(Pair("version", (int)nVersion));
+        obj.push_back(Pair("height", (int)nHeight));
+        obj.push_back(Pair("merkleRootMNList", merkleRootMNList.ToString()));
+        if (nVersion >= 2) {
+            obj.push_back(Pair("merkleRootQuorums", merkleRootQuorums.ToString()));
+        }
+    }
 };
 
 bool CheckCbTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValidationState& state);
 
-bool CheckCbTxMerkleRootMNList(const CBlock& block, const CBlockIndex* pindex, CValidationState& state);
+bool CheckCbTxMerkleRoots(const CBlock& block, const CBlockIndex* pindex, CValidationState& state);
 bool CalcCbTxMerkleRootMNList(const CBlock& block, const CBlockIndex* pindexPrev, uint256& merkleRootRet, CValidationState& state);
+bool CalcCbTxMerkleRootQuorums(const CBlock& block, const CBlockIndex* pindexPrev, uint256& merkleRootRet, CValidationState& state);
 
 #endif //DASH_CBTX_H
